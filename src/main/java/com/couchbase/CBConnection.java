@@ -19,7 +19,6 @@ import org.apache.http.NameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.lang.model.element.Name;
 import java.net.URI;
 
 import java.sql.*;
@@ -41,30 +40,31 @@ public class CBConnection implements java.sql.Connection
     private AtomicBoolean connected = new AtomicBoolean(false);
 
     Protocol protocol;
-    Map <String,String> connectionParameters = new HashMap();
 
-    public CBConnection(String url, Properties props)
+    boolean readOnly=false;
+
+    public CBConnection(String url, Properties props) throws SQLException
     {
         try
         {
 
-            url = "http" + url.substring(14) ;
-            URI uri = new URI(url);
-            List <NameValuePair> parameters = URLEncodedUtils.parse(new URI(url),"UTF-8");
+            String connectionURL = "http" + url.substring(14) ;
+
+            List <NameValuePair> parameters = URLEncodedUtils.parse(new URI(connectionURL),"UTF-8");
+
             for(NameValuePair param:parameters)
             {
-                connectionParameters.put(param.getName(),param.getValue());
+                props.put(param.getName(),param.getValue());
             }
-
-            protocol = new ProtocolImpl(url, props);
-            protocol.setConnectionTimeout(connectionParameters.get("connectTimeout"));
-            connected.set(protocol.connect());
+            protocol = new ProtocolImpl(connectionURL, props);
+            protocol.connect();
+            connected.set(true);
         }
         catch (Exception ex)
         {
-            logger.error("Malformed URL {} exception {}", url, ex.getMessage());
+            logger.error("Error opening connection for {} exception {}", url, ex.getMessage());
+            throw new SQLException("Error opening connection", ex.getCause());
         }
-        connected.set(false);
     }
 
     public String getURL()
@@ -368,7 +368,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setReadOnly(boolean readOnly) throws SQLException
     {
-
+        checkClosed();
+        this.readOnly=readOnly;
     }
 
     /**
@@ -383,7 +384,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public boolean isReadOnly() throws SQLException
     {
-        return false;
+        checkClosed();
+        return readOnly;
     }
 
     /**

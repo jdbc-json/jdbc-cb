@@ -13,6 +13,8 @@ package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -28,20 +30,30 @@ import java.sql.Statement;
 @RunWith(JUnit4.class)
 public class StatementTest extends TestCase
 {
+    Connection con;
+
+    @Before
+    public void openConnection() throws Exception
+    {
+        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
+    }
+    @After
+    public void closeConnection() throws Exception
+    {
+        assertNotNull(con);
+        con.close();
+    }
     @Test
     public void createStatement() throws Exception
     {
-        Connection con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
-        con.close();
     }
     @Test
     public void emptyResult() throws Exception
     {
-        Connection con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
@@ -53,15 +65,41 @@ public class StatementTest extends TestCase
     @Test
     public void simpleSelect() throws Exception
     {
-        Connection con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
         ResultSet rs = statement.executeQuery("select 1");
-        while (rs.next())
+
+        assertTrue(rs.next());
+        assertEquals("1",rs.getString(1));
+
+    }
+
+    @Test
+    public void simpleInsert() throws Exception
+    {
+        assertNotNull(con);
+        Statement statement = con.createStatement();
+        assertNotNull(statement);
+
+        for (int i = 0; i++< 100;)
         {
-            assertEquals("1",rs.getString(1));
+
+            int inserted = statement.executeUpdate("INSERT INTO test1  (KEY, VALUE) VALUES ( 'K" + i +"'," + i +")");
+            assertEquals(1, inserted);
         }
+
+        ResultSet resultSet = statement.executeQuery("select count(1) as test_count from test1");
+        assertTrue(resultSet.next());
+        assertEquals(100,resultSet.getInt("test_count"));
+
+        resultSet = statement.executeQuery("select test1 from test1 order by test1");
+        for (int i=0; resultSet.next(); i++)
+        {
+            assertEquals(i+1, resultSet.getInt(1));
+        }
+        statement.executeUpdate("delete from test1");
+
     }
 }

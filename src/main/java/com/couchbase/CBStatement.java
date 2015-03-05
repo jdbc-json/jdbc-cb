@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by davec on 2015-02-20.
@@ -25,6 +26,7 @@ import java.sql.SQLWarning;
 public class CBStatement implements java.sql.Statement
 {
     Protocol protocol;
+    AtomicBoolean closed = new AtomicBoolean(false);
 
     public CBStatement( Protocol protocol )
     {
@@ -83,7 +85,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql) throws SQLException
     {
-        return 0;
+        return protocol.executeUpdate(sql);
     }
 
     /**
@@ -106,7 +108,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void close() throws SQLException
     {
-
+        boolean wasClosed = closed.getAndSet(true);
     }
 
     /**

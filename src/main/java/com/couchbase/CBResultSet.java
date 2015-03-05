@@ -245,7 +245,15 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getInt(int columnIndex) throws SQLException
     {
-        return 0;
+        // point to the current value in the results array
+        JsonObject object = results.getJsonObject(index);
+        //now find the key of the first value
+        Field field  = fields.get(columnIndex - 1);
+
+        int value = object.getInt(field.getName());
+        logger.debug("String value {}",value);
+
+        return value;
     }
 
     /**
@@ -589,7 +597,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getInt(String columnLabel) throws SQLException
     {
-        return 0;
+        // point to the current value in the results array
+        JsonObject object = results.getJsonObject(index);
+        int value = object.getInt(columnLabel);
+        logger.info("value {}",value);
+        return value;
     }
 
     /**

@@ -69,11 +69,15 @@ public class DriverTest extends TestCase
     @org.junit.Test
     public void testBadConnect() throws Exception
     {
-        Connection con = DriverManager.getConnection(TestUtil.getBadURL()+"/?connectionTimeout=1000", TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-        assertEquals(true, con.isClosed());
-        con.close();
-
+        try
+        {
+            Connection con = DriverManager.getConnection(TestUtil.getBadURL()+"/?connectionTimeout=1000", TestUtil.getUser(), TestUtil.getPassword());
+            assertFalse("Should not get here",true);
+        }
+        catch(SQLException ex)
+        {
+            assertEquals("Error opening connection",ex.getMessage());
+        }
     }
     public void getMetaData() throws Exception
     {

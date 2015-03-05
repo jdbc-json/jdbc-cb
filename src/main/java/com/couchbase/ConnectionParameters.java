@@ -9,29 +9,12 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase.jdbc;
-
-import com.couchbase.CBResultSet;
-
-import java.sql.SQLException;
+package com.couchbase;
 
 /**
- * Created by davec on 2015-02-26.
+ * Created by davec on 2015-03-04.
  */
-public interface Protocol
+public class ConnectionParameters
 {
-    public void connect() throws Exception;
-
-    public CBResultSet query( String sql ) throws SQLException;
-    public int executeUpdate( String sql ) throws SQLException;
-
-    public String getURL();
-    public String getUserName();
-    public String getPassword();
-
-    public void setConnectionTimeout(String timeout);
-    public void setConnectionTimeout(int timeout);
-    public void setReadOnly(boolean readOnly);
-
-
+    public final static String CONNECTION_TIMEOUT="connectionTimeout";
 }

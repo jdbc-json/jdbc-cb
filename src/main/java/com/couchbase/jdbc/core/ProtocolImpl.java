@@ -13,27 +13,29 @@ package com.couchbase.jdbc.core;
 
 
 import com.couchbase.CBResultSet;
+import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Protocol;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+
 import org.apache.http.impl.client.*;
+
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
+import javax.json.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -50,6 +52,8 @@ public class ProtocolImpl implements Protocol
     String user;
     String password;
     int connectTimeout=0;
+    boolean readOnly = false;
+
 
     public String getURL()
     {
@@ -68,6 +72,10 @@ public class ProtocolImpl implements Protocol
         return password;
     }
 
+    public void setReadOnly( boolean readOnly )
+    {
+        this.readOnly = readOnly;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(ProtocolImpl.class);
 
@@ -75,12 +83,13 @@ public class ProtocolImpl implements Protocol
 
     public ProtocolImpl(String url, Properties props)
     {
-        this.url = "http" + url.substring(14) ;
+        this.url = url;
+        setConnectionTimeout(props.getProperty(ConnectionParameters.CONNECTION_TIMEOUT));
     }
 
-    public boolean connect()
+    public void connect() throws Exception
     {
-        RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(connectTimeout).build();
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout).build();
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
@@ -107,20 +116,20 @@ public class ProtocolImpl implements Protocol
             };
 
             String httpResponse = httpClient.execute(httpGet, responseHandler);
-            return true;
 
         }
         catch(Exception ex)
         {
             logger.error("Error opening connection {}", ex.getMessage());
-            return false;
+            throw ex;
+
         }
 
     }
 
     public CBResultSet query(String sql) throws SQLException
     {
-        List<BasicNameValuePair> valuePair = new ArrayList();
+        List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
 
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
@@ -163,10 +172,60 @@ public class ProtocolImpl implements Protocol
             throw new SQLException("Error querying cluster", ex);
         }
 
-
     }
 
+    public int executeUpdate(String query) throws SQLException
+    {
+        try
+        {
+            HttpPost httpPost = new HttpPost(url + "/query/service");
+            httpPost.setHeader("Accept", "application/json");
 
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+            nameValuePairs.add(new BasicNameValuePair("statement", query));
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            int status = response.getStatusLine().getStatusCode();
+
+            if ( status >= 200 && status < 300 )
+            {
+                HttpEntity entity = response.getEntity();
+                JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+                JsonObject jsonObject = jsonReader.readObject();
+                String statusString = jsonObject.getString("status");
+
+                if (statusString.equals("errors"))
+                {
+                    JsonArray errors= jsonObject.getJsonArray("errors");
+                    JsonObject error = errors.getJsonObject(0);
+                    throw new SQLException(error.getString("msg"));
+                }
+                else if (statusString.equals("success"))
+                {
+                    JsonObject metrics = jsonObject.getJsonObject("metrics");
+                    return metrics.getInt("mutationCount");
+                }
+                else
+                {
+                    logger.error("Unexpected status string {} for query {}", statusString, query);
+                    throw new SQLException("Unexpected status: " + statusString);
+                }
+            }
+
+            else
+            {
+                throw new ClientProtocolException("Unexpected response status: " + status);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.error ("Error executing update query {} {}", query, ex.getMessage());
+            throw new SQLException("Error executing update",ex.getCause());
+        }
+
+    }
     public void setConnectionTimeout(String timeout)
     {
         if (timeout!=null)
