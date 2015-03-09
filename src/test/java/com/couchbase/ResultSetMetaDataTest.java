@@ -1,0 +1,197 @@
+/*
+ * //  Copyright (c) 2015 Couchbase, Inc.
+ * //  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * //  except in compliance with the License. You may obtain a copy of the License at
+ * //    http://www.apache.org/licenses/LICENSE-2.0
+ * //  Unless required by applicable law or agreed to in writing, software distributed under the
+ * //  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * //  either express or implied. See the License for the specific language governing permissions
+ * //  and limitations under the License.
+ */
+
+package com.couchbase;
+
+import com.couchbase.jdbc.TestUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.*;
+
+import static org.junit.Assert.*;
+
+public class ResultSetMetaDataTest
+{
+    Connection con;
+    ResultSet resultSet;
+    ResultSetMetaData resultSetMetaData;
+
+    @Before
+    public void openConnection() throws Exception
+    {
+        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
+        Statement statement = con.createStatement();
+        assertNotNull(statement);
+
+        resultSet = statement.executeQuery("SELECT true as c1, 1 as c2, 3.14 as c3,  'Hello World!' as c4, [1,2,3,5,8] as c5, { 'a1': 'Object' } as c6");
+        assertTrue(resultSet.next());
+        resultSetMetaData = resultSet.getMetaData();
+
+    }
+    @After
+    public void closeConnection() throws Exception
+    {
+        assertNotNull(resultSet);
+        resultSet.close();
+        assertNotNull(con);
+        con.close();
+    }
+
+    @Test
+    public void testGetColumnCount() throws Exception
+    {
+        assertEquals(6,resultSetMetaData.getColumnCount());
+    }
+
+    @Test
+    public void testIsAutoIncrement() throws Exception
+    {
+        for (int i=1;i<=6;i++)
+        {
+            assertFalse( resultSetMetaData.isAutoIncrement(i) );
+        }
+    }
+
+    @Test
+    public void testIsCaseSensitive() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsSearchable() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsCurrency() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsNullable() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsSigned() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetColumnDisplaySize() throws Exception
+    {
+
+    }
+
+
+    @Test
+    public void testGetColumnLabel() throws Exception
+    {
+        for (int i=1;i<=6;i++)
+        {
+            assertEquals("c"+i,resultSetMetaData.getColumnLabel(i));
+        }
+    }
+
+    @Test
+    public void testGetColumnName() throws Exception
+    {
+        for (int i=1;i<=6;i++)
+        {
+            assertEquals("c"+i,resultSetMetaData.getColumnName(i));
+        }
+
+    }
+
+    @Test
+    public void testGetSchemaName() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetPrecision() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetScale() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetTableName() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetCatalogName() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetColumnType() throws Exception
+    {
+
+        int [] types = {Types.BOOLEAN, Types.NUMERIC,Types.NUMERIC, Types.VARCHAR, Types.ARRAY, Types.OTHER};
+        for (int i=1;i<=6;i++)
+        {
+            assertEquals(types[i-1],resultSetMetaData.getColumnType(i));
+        }
+
+    }
+
+    @Test
+    public void testGetColumnTypeName() throws Exception
+    {
+        String [] types = {"boolean", "number", "number", "string", "array", "object" };
+        for (int i=1;i<=6;i++)
+        {
+            assertEquals(types[i-1],resultSetMetaData.getColumnTypeName(i));
+        }
+    }
+
+    @Test
+    public void testIsReadOnly() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsWritable() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testIsDefinitelyWritable() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetColumnClassName() throws Exception
+    {
+
+    }
+}

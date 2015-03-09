@@ -11,6 +11,8 @@
 
 package com.couchbase.jdbc.core;
 
+import java.sql.Types;
+
 /**
  * Created by davec on 2015-02-26.
  */
@@ -45,4 +47,15 @@ public class Field
         this.name = name;
     }
 
+
+    public int getSqlType()
+    {
+        if (type.equals("number"))  return Types.NUMERIC;
+        if (type.equals("string"))  return Types.VARCHAR;
+        if (type.equals("boolean")) return Types.BOOLEAN;
+        if (type.equals("array"))   return Types.ARRAY;
+        if (type.equals("json"))    return Types.OTHER;
+        if (type.equals("null"))    return Types.NULL;
+        return Types.OTHER;
+    }
 }

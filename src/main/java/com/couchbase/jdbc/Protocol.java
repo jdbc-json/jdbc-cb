@@ -24,6 +24,12 @@ public interface Protocol
 
     public CBResultSet query( String sql ) throws SQLException;
     public int executeUpdate( String sql ) throws SQLException;
+    public boolean execute( String sql ) throws SQLException;
+    public void addBatch( String sql ) throws SQLException;
+    public int [] executeBatch(  ) throws SQLException;
+
+    public int getUpdateCount();
+    public CBResultSet getResultSet();
 
     public String getURL();
     public String getUserName();
@@ -33,5 +39,6 @@ public interface Protocol
     public void setConnectionTimeout(int timeout);
     public void setReadOnly(boolean readOnly);
 
+    public void setQueryTimeout(int seconds) throws SQLException;
 
 }

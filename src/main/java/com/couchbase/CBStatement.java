@@ -263,7 +263,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setQueryTimeout(int seconds) throws SQLException
     {
-
+        protocol.setQueryTimeout(seconds);
     }
 
     /**
@@ -593,7 +593,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void addBatch(String sql) throws SQLException
     {
-
+        protocol.addBatch(sql);
     }
 
     /**
@@ -671,7 +671,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int[] executeBatch() throws SQLException
     {
-        return new int[0];
+        return protocol.executeBatch();
     }
 
     /**

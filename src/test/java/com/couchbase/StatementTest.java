@@ -19,10 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import java.sql.*;
 
 /**
  * Created by davec on 2015-02-26.
@@ -36,6 +37,7 @@ public class StatementTest extends TestCase
     public void openConnection() throws Exception
     {
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
+        assertNotNull(con);
     }
     @After
     public void closeConnection() throws Exception
@@ -46,7 +48,6 @@ public class StatementTest extends TestCase
     @Test
     public void createStatement() throws Exception
     {
-        assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
@@ -54,7 +55,6 @@ public class StatementTest extends TestCase
     @Test
     public void emptyResult() throws Exception
     {
-        assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
@@ -65,7 +65,6 @@ public class StatementTest extends TestCase
     @Test
     public void simpleSelect() throws Exception
     {
-        assertNotNull(con);
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
@@ -99,7 +98,74 @@ public class StatementTest extends TestCase
         {
             assertEquals(i+1, resultSet.getInt(1));
         }
+
+        boolean hasResultSet = statement.execute("update test1 set test1=0 returning test1");
+        if ( hasResultSet )
+        {
+            resultSet = statement.getResultSet();
+            for (int i=0; resultSet.next(); i++)
+            {
+                assertEquals(0, resultSet.getInt(1));
+            }
+
+        }
+
         statement.executeUpdate("delete from test1");
 
+        resultSet = statement.executeQuery("select count(1) as count from test1");
+        assertTrue(resultSet.next());
+        assertEquals(0, resultSet.getInt(1));
+
     }
+    @Test
+    public void getAllTypes() throws Exception
+    {
+        JsonArray array = Json.createArrayBuilder().add(1).add(2).add(3).add(5).add(8).build();
+
+        JsonObject jsonObject = Json.createObjectBuilder().add("a1","Object").build();
+
+        Statement statement = con.createStatement();
+        assertNotNull(statement);
+
+        ResultSet resultSet = statement.executeQuery("SELECT true as c1, 1 as c2, 3.14 as c3,  'Hello World!' as c4, [1,2,3,5,8] as c5, { 'a1': 'Object' } as c6");
+
+        assertTrue(resultSet.next());
+
+        assertTrue(resultSet.getBoolean(1));
+        assertTrue(resultSet.getBoolean("c1"));
+
+        assertEquals(1,resultSet.getInt(2));
+        assertEquals(1,resultSet.getInt("c2"));
+
+
+        assertEquals(3.14F, resultSet.getFloat(3), 0.0f);
+        assertEquals(3.14F, resultSet.getFloat("c3"), 0.0f);
+
+        assertEquals("Hello World!",resultSet.getString(4));
+        assertEquals("Hello World!",resultSet.getString("c4"));
+
+        assertEquals(array,resultSet.getArray(5).getArray());
+        assertEquals(array,resultSet.getArray("c5").getArray());
+
+        assertEquals(jsonObject, resultSet.getObject(6));
+        assertEquals(jsonObject, resultSet.getObject("c6"));
+
+
+    }
+    /*
+    @Test
+    public void batchInsert() throws Exception
+    {
+        assertNotNull(con);
+        Statement statement = con.createStatement();
+        assertNotNull(statement);
+
+        for (int i = 0; i++ < 2; )
+        {
+
+            statement.addBatch("INSERT INTO test1  (KEY, VALUE) VALUES ( 'K" + i + "'," + i + ")");
+        }
+        statement.executeBatch();
+    }
+    */
 }

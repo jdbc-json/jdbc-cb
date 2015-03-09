@@ -52,8 +52,11 @@ public class ProtocolImpl implements Protocol
     String user;
     String password;
     int connectTimeout=0;
+    int queryTimeout=0;
     boolean readOnly = false;
-
+    int updateCount;
+    CBResultSet resultSet;
+    List <String> batchStatements = new ArrayList<String>();
 
     public String getURL()
     {
@@ -131,6 +134,10 @@ public class ProtocolImpl implements Protocol
     {
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
+        if ( queryTimeout != 0 )
+        {
+            valuePair.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+        }
 
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
 
@@ -176,6 +183,20 @@ public class ProtocolImpl implements Protocol
 
     public int executeUpdate(String query) throws SQLException
     {
+        boolean hasResultSet = execute(query);
+        if (!hasResultSet)
+        {
+            return getUpdateCount();
+        }
+        else
+        {
+            return 0;
+        }
+
+    }
+
+    public boolean execute(String query) throws SQLException
+    {
         try
         {
             HttpPost httpPost = new HttpPost(url + "/query/service");
@@ -184,6 +205,10 @@ public class ProtocolImpl implements Protocol
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
             nameValuePairs.add(new BasicNameValuePair("statement", query));
+            if ( queryTimeout != 0 )
+            {
+                nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+            }
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             CloseableHttpResponse response = httpClient.execute(httpPost);
             int status = response.getStatusLine().getStatusCode();
@@ -205,8 +230,38 @@ public class ProtocolImpl implements Protocol
                 else if (statusString.equals("success"))
                 {
                     JsonObject metrics = jsonObject.getJsonObject("metrics");
-                    return metrics.getInt("mutationCount");
+                    if ( metrics.containsKey("mutationCount") )
+                    {
+                        updateCount = metrics.getInt("mutationCount");
+                        return false;
+                    }
+                    if ( metrics.containsKey("resultCount") )
+                    {
+                        resultSet = new CBResultSet(jsonObject);
+                        return true;
+                    }
                 }
+                else if (statusString.equals("running"))
+                {
+                   return false;
+                }
+                else if (statusString.equals("completed"))
+                {
+                   return false;
+                }
+                else if (statusString.equals("stopped"))
+                {
+                   return false;
+                }
+                else if (statusString.equals("timeout"))
+                {
+                   return false;
+                }
+                else if (statusString.equals("fatal"))
+                {
+                   return false;
+                }
+
                 else
                 {
                     logger.error("Unexpected status string {} for query {}", statusString, query);
@@ -224,8 +279,111 @@ public class ProtocolImpl implements Protocol
             logger.error ("Error executing update query {} {}", query, ex.getMessage());
             throw new SQLException("Error executing update",ex.getCause());
         }
+        return false;
+    }
+    public int [] executeBatch() throws SQLException
+    {
+        try
+        {
+            HttpPost httpPost = new HttpPost(url + "/query/service");
+            httpPost.setHeader("Accept", "application/json");
+
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+            for (String query:batchStatements)
+            {
+                nameValuePairs.add(new BasicNameValuePair("statement", query));
+            }
+            if ( queryTimeout != 0 )
+            {
+                nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+            }
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            int status = response.getStatusLine().getStatusCode();
+
+            if ( status >= 200 && status < 300 )
+            {
+                HttpEntity entity = response.getEntity();
+                JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+                JsonObject jsonObject = jsonReader.readObject();
+                String statusString = jsonObject.getString("status");
+
+                if (statusString.equals("errors"))
+                {
+                    JsonArray errors= jsonObject.getJsonArray("errors");
+                    JsonObject error = errors.getJsonObject(0);
+                    throw new SQLException(error.getString("msg"));
+                }
+                else if (statusString.equals("success"))
+                {
+                    JsonObject metrics = jsonObject.getJsonObject("metrics");
+                    if ( metrics.containsKey("mutationCount") )
+                    {
+                        updateCount = metrics.getInt("mutationCount");
+                        return new int [0];
+                    }
+                    if ( metrics.containsKey("resultCount") )
+                    {
+                        resultSet = new CBResultSet(jsonObject);
+                        return new int [0];
+                    }
+                }
+                else if (statusString.equals("running"))
+                {
+                    return new int [0];
+                }
+                else if (statusString.equals("completed"))
+                {
+                    return new int [0];
+                }
+                else if (statusString.equals("stopped"))
+                {
+                    return new int [0];
+                }
+                else if (statusString.equals("timeout"))
+                {
+                    return new int [0];
+                }
+                else if (statusString.equals("fatal"))
+                {
+                    return new int [0];
+                }
+
+                else
+                {
+                    //logger.error("Unexpected status string {} for query {}", statusString, query);
+                    throw new SQLException("Unexpected status: " + statusString);
+                }
+            }
+
+            else
+            {
+                throw new ClientProtocolException("Unexpected response status: " + status);
+            }
+        }
+        catch (Exception ex)
+        {
+            //logger.error ("Error executing update query {} {}", query, ex.getMessage());
+            throw new SQLException("Error executing update",ex.getCause());
+        }
+        return new int [0];
 
     }
+    public void addBatch( String query ) throws SQLException
+    {
+        batchStatements.add(query);
+    }
+    public int getUpdateCount()
+    {
+        return updateCount;
+    }
+    public CBResultSet getResultSet()
+    {
+        return resultSet;
+    }
+
     public void setConnectionTimeout(String timeout)
     {
         if (timeout!=null)
@@ -236,5 +394,9 @@ public class ProtocolImpl implements Protocol
     public void setConnectionTimeout(int timeout )
     {
         connectTimeout=timeout;
+    }
+    public void setQueryTimeout( int seconds ) throws SQLException
+    {
+        this.queryTimeout =  seconds;
     }
 }

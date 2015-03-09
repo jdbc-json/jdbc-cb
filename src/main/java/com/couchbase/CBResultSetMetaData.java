@@ -20,6 +20,12 @@ import java.sql.SQLException;
  */
 public class CBResultSetMetaData implements ResultSetMetaData
 {
+    final CBResultSet resultSet;
+
+    CBResultSetMetaData(CBResultSet resultSet)
+    {
+        this.resultSet = resultSet;
+    }
     /**
      * Returns the number of columns in this <code>ResultSet</code> object.
      *
@@ -29,7 +35,7 @@ public class CBResultSetMetaData implements ResultSetMetaData
     @Override
     public int getColumnCount() throws SQLException
     {
-        return 0;
+        return resultSet.fields.size();
     }
 
     /**
@@ -139,7 +145,8 @@ public class CBResultSetMetaData implements ResultSetMetaData
     @Override
     public String getColumnLabel(int column) throws SQLException
     {
-        return null;
+
+        return resultSet.getField(column).getName();
     }
 
     /**
@@ -152,7 +159,7 @@ public class CBResultSetMetaData implements ResultSetMetaData
     @Override
     public String getColumnName(int column) throws SQLException
     {
-        return null;
+        return resultSet.getField(column).getName();
     }
 
     /**
@@ -233,12 +240,12 @@ public class CBResultSetMetaData implements ResultSetMetaData
      * @param column the first column is 1, the second is 2, ...
      * @return SQL type from java.sql.Types
      * @throws java.sql.SQLException if a database access error occurs
-     * @see Types
+     * @see java.sql.Types
      */
     @Override
     public int getColumnType(int column) throws SQLException
     {
-        return 0;
+        return resultSet.getField(column).getSqlType();
     }
 
     /**
@@ -252,7 +259,7 @@ public class CBResultSetMetaData implements ResultSetMetaData
     @Override
     public String getColumnTypeName(int column) throws SQLException
     {
-        return null;
+        return resultSet.getField(column).getType();
     }
 
     /**
