@@ -27,6 +27,8 @@ public class CBStatement implements java.sql.Statement
 {
     Protocol protocol;
     AtomicBoolean closed = new AtomicBoolean(false);
+    int updateCount=0;
+    CBResultSet resultSet;
 
     public CBStatement( Protocol protocol )
     {
@@ -231,7 +233,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getQueryTimeout() throws SQLException
     {
-        return 0;
+        return protocol.getQueryTimeout();
     }
 
     /**

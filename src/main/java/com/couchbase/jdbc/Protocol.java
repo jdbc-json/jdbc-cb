@@ -12,8 +12,11 @@
 package com.couchbase.jdbc;
 
 import com.couchbase.CBResultSet;
+import org.apache.http.NameValuePair;
 
+import javax.json.JsonObject;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by davec on 2015-02-26.
@@ -28,6 +31,9 @@ public interface Protocol
     public void addBatch( String sql ) throws SQLException;
     public int [] executeBatch(  ) throws SQLException;
 
+    public JsonObject prepareStatement( String sql ) throws SQLException;
+    public JsonObject doQuery(String query, List<NameValuePair> nameValuePairs ) throws SQLException;
+
     public int getUpdateCount();
     public CBResultSet getResultSet();
 
@@ -40,5 +46,5 @@ public interface Protocol
     public void setReadOnly(boolean readOnly);
 
     public void setQueryTimeout(int seconds) throws SQLException;
-
+    public int getQueryTimeout() throws SQLException;
 }

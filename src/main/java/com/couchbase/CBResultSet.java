@@ -25,10 +25,8 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * Created by davec on 2015-02-20.
@@ -39,6 +37,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     final JsonObject response;
     final JsonObject signature;
+    final JsonValue signatureValue;
     final JsonArray results;
 
     int index=-1;
@@ -49,10 +48,38 @@ public class CBResultSet implements java.sql.ResultSet
 
         this.response = jsonObject;
         results = jsonObject.getJsonArray("results");
-        signature = jsonObject.getJsonObject("signature");
-        for (String key : signature.keySet() )
+        signatureValue = jsonObject.get("signature");
+
+        if ( signatureValue.getValueType().equals(JsonValue.ValueType.STRING))
         {
-            fields.add(new Field(key, signature.getString(key)));
+            fields.add(new Field(jsonObject.getString("signature"), JsonValue.ValueType.STRING.name()));
+            signature=null;
+
+        }
+        else
+        {
+            signature = jsonObject.getJsonObject("signature");
+            Set<String> keySet;
+
+            if (signature.containsKey("*"))
+            {
+                JsonObject firstRow = results.getJsonObject(0);
+                keySet = firstRow.keySet();
+
+                for (String key : keySet)
+                {
+                    fields.add(new Field(key, firstRow.get(key).getValueType().toString()));
+                }
+
+            }
+            else
+            {
+                keySet = signature.keySet();
+                for (String key : keySet)
+                {
+                    fields.add(new Field(key, signature.getString(key)));
+                }
+            }
         }
         logger.debug("Loaded result set");
     }
@@ -158,8 +185,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getString(int columnIndex) throws SQLException
     {
-        // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
+
         //now find the key of the first value
         Field field  = getField(columnIndex);
 
@@ -191,8 +217,8 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkIndex();
         Field field = getField(columnIndex);
-        String fieldName = field.getName();
-        return getBoolean(fieldName);
+
+        return getBoolean(field.getName());
     }
 
     /**
@@ -228,7 +254,10 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public short getShort(int columnIndex) throws SQLException
     {
-        return 0;
+        checkIndex();
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getShort(field.getName());
     }
 
     /**
@@ -247,8 +276,7 @@ public class CBResultSet implements java.sql.ResultSet
     public int getInt(int columnIndex) throws SQLException
     {
         checkIndex();
-        // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
+
         //now find the key of the first value
         Field field  = getField(columnIndex);
 
@@ -271,8 +299,7 @@ public class CBResultSet implements java.sql.ResultSet
     public long getLong(int columnIndex) throws SQLException
     {
         checkIndex();
-        // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
+
         //now find the key of the first value
         Field field  = getField(columnIndex);
         return getLong( field.getName() );
@@ -294,8 +321,7 @@ public class CBResultSet implements java.sql.ResultSet
     public float getFloat(int columnIndex) throws SQLException
     {
         checkIndex();
-        // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
+
         //now find the key of the first value
         Field field  = getField(columnIndex);
 
@@ -318,8 +344,7 @@ public class CBResultSet implements java.sql.ResultSet
     public double getDouble(int columnIndex) throws SQLException
     {
         checkIndex();
-        // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
+
         //now find the key of the first value
         Field field  = getField(columnIndex);
 
@@ -346,7 +371,7 @@ public class CBResultSet implements java.sql.ResultSet
     public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException
     {
         checkIndex();
-        // point to the current value in the results array
+
         JsonObject object = results.getJsonObject(index);
         //now find the key of the first value
         Field field  = getField(columnIndex);
@@ -606,7 +631,27 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public short getShort(String columnLabel) throws SQLException
     {
-        return 0;
+        short value;
+
+        checkIndex();
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = (short)results.getInt(index);
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
+            // point to the current value in the results array
+            JsonObject object = results.getJsonObject(index);
+            value = (short)object.getInt(columnLabel);
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
+        return value;
     }
 
     /**
@@ -624,10 +669,27 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getInt(String columnLabel) throws SQLException
     {
+        int value ;
+
+        checkIndex();
+
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = results.getInt(index);
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
         // point to the current value in the results array
-        JsonObject object = results.getJsonObject(index);
-        int value = object.getInt(columnLabel);
-        logger.info("value {}",value);
+            JsonObject object = results.getJsonObject(index);
+            value = object.getInt(columnLabel);
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
         return value;
     }
 
@@ -646,7 +708,28 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public long getLong(String columnLabel) throws SQLException
     {
-        return 0;
+        long value ;
+
+        checkIndex();
+
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = results.getJsonNumber(index).longValue();
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
+            // point to the current value in the results array
+            JsonObject object = results.getJsonObject(index);
+            value = object.getJsonNumber(columnLabel).longValue();
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
+        return value;
     }
 
     /**
@@ -664,9 +747,30 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public float getFloat(String columnLabel) throws SQLException
     {
+        double value;
+
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        return ((float) jsonObject.getJsonNumber(columnLabel).doubleValue());
+
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = results.getJsonNumber(index).doubleValue();
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
+            // point to the current value in the results array
+            JsonObject object = results.getJsonObject(index);
+            value = object.getJsonNumber(columnLabel).doubleValue();
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
+        return (float)value;
+
+
     }
 
     /**
@@ -684,9 +788,28 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public double getDouble(String columnLabel) throws SQLException
     {
+        double value;
+
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        return jsonObject.getJsonNumber(columnLabel).doubleValue();
+
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = results.getJsonNumber(index).doubleValue();
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
+            // point to the current value in the results array
+            JsonObject object = results.getJsonObject(index);
+            value = object.getJsonNumber(columnLabel).doubleValue();
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
+        return value;
     }
 
     /**
@@ -708,9 +831,29 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public BigDecimal getBigDecimal(String columnLabel, int scale) throws SQLException
     {
+        BigDecimal value;
+
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        return jsonObject.getJsonNumber(columnLabel).bigDecimalValue();
+
+        JsonValue.ValueType valueType = results.get(index).getValueType();
+
+        if ( valueType == JsonValue.ValueType.NUMBER )
+        {
+            value = results.getJsonNumber(index).bigDecimalValue();
+        }
+        else if (valueType == JsonValue.ValueType.OBJECT )
+        {
+            // point to the current value in the results array
+            JsonObject object = results.getJsonObject(index);
+            value = object.getJsonNumber(columnLabel).bigDecimalValue();
+        }
+        else
+        {
+            throw new SQLException("value is not an integer");
+        }
+        logger.info("value {}", value);
+        return value;
+
     }
 
     /**

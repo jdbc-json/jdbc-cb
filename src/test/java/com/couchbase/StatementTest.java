@@ -93,10 +93,16 @@ public class StatementTest extends TestCase
         assertTrue(resultSet.next());
         assertEquals(100,resultSet.getInt("test_count"));
 
-        resultSet = statement.executeQuery("select test1 from test1 order by test1");
+        resultSet = statement.executeQuery("select * from test1 order by test1");
         for (int i=0; resultSet.next(); i++)
         {
             assertEquals(i+1, resultSet.getInt(1));
+        }
+
+        resultSet = statement.executeQuery("select raw test1 from test1 order by test1");
+        for (int i=0; resultSet.next(); i++)
+        {
+            assertTrue(resultSet.getInt(1)>0);
         }
 
         boolean hasResultSet = statement.execute("update test1 set test1=0 returning test1");

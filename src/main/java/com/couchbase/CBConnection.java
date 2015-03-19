@@ -139,7 +139,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException
     {
-        return null;
+        checkClosed();
+        return new CBPreparedStatement(protocol, sql);
     }
 
     /**

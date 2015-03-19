@@ -13,13 +13,20 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.util.SqlParser;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
+
+import javax.json.JsonObject;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by davec on 2015-02-20.
@@ -27,9 +34,25 @@ import java.util.Calendar;
 public class CBPreparedStatement extends CBStatement implements java.sql.PreparedStatement
 {
 
-    public CBPreparedStatement(Protocol protocol)
+    static final String QUOTE="\"";
+
+    final String sql;
+
+    final JsonObject preparedStatement;
+    final SqlParser parser;
+
+    final String []fields;
+    List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
+
+
+    public CBPreparedStatement(Protocol protocol, String sql) throws SQLException
     {
         super(protocol);
+        parser = new SqlParser(sql);
+        parser.parse();
+        fields = new String[parser.getNumFields()];
+        this.sql = sql;
+        preparedStatement = protocol.prepareStatement(parser.toString());
     }
 
     /**
@@ -49,7 +72,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ResultSet executeQuery() throws SQLException
     {
-        return null;
+
+
+        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
+        if (fields!=null && fields.length>0)
+        {
+            valuePair.add(getPositionalParameters());
+        }
+        JsonObject jsonObject = protocol.doQuery(sql, valuePair);
+
+        return new CBResultSet(jsonObject);
     }
 
     /**
@@ -69,8 +101,24 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      *                               the currently running {@code Statement}
      */
     @Override
+
     public int executeUpdate() throws SQLException
     {
+        valuePair.clear();
+        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
+        if (fields!=null && fields.length>0)
+        {
+            valuePair.add(getPositionalParameters());
+        }
+
+        JsonObject jsonObject = protocol.doQuery(sql, valuePair);
+        JsonObject metrics = jsonObject.getJsonObject("metrics");
+
+        if ( metrics.containsKey("mutationCount") )
+        {
+            updateCount = metrics.getInt("mutationCount");
+            return updateCount;
+        }
         return 0;
     }
 
@@ -95,7 +143,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNull(int parameterIndex, int sqlType) throws SQLException
     {
-
+        checkFields(parameterIndex);
+        fields[parameterIndex-1]="NULL";
     }
 
     /**
@@ -113,7 +162,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBoolean(int parameterIndex, boolean x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Boolean.toString(x);
     }
 
     /**
@@ -130,7 +179,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Byte.toString(x);
     }
 
     /**
@@ -147,7 +196,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Short.toString(x);
     }
 
     /**
@@ -164,7 +213,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Integer.toString(x);
     }
 
     /**
@@ -181,7 +230,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Long.toString(x);
     }
 
     /**
@@ -198,7 +247,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Float.toString(x);
     }
 
     /**
@@ -215,7 +264,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDouble(int parameterIndex, double x) throws SQLException
     {
-
+        fields[parameterIndex-1] = Double.toString(x);
     }
 
     /**
@@ -232,7 +281,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
     {
-
+        fields[parameterIndex-1] = x.toString();
     }
 
     /**
@@ -252,7 +301,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setString(int parameterIndex, String x) throws SQLException
     {
-
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -270,7 +319,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
-
+        fields[parameterIndex-1] = QUOTE+new String(x)+QUOTE;
     }
 
     /**
@@ -289,7 +338,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDate(int parameterIndex, Date x) throws SQLException
     {
-
+        fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
     }
 
     /**
@@ -306,7 +355,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTime(int parameterIndex, Time x) throws SQLException
     {
-
+        fields[parameterIndex-1] = QUOTE +x.toString()+QUOTE;
     }
 
     /**
@@ -324,7 +373,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
     {
-
+        fields[parameterIndex-1] = QUOTE+x.toString()+QUOTE;
     }
 
     /**
@@ -426,7 +475,11 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void clearParameters() throws SQLException
     {
-
+        for (int i = 0;i < fields.length;i++)
+        {
+            fields[i] = null;
+        }
+        valuePair.clear();
     }
 
     /**
@@ -453,7 +506,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
     {
-
+        fields[parameterIndex-1] = x.toString();
     }
 
     /**
@@ -498,7 +551,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setObject(int parameterIndex, Object x) throws SQLException
     {
-
+        fields[parameterIndex-1] = x.toString();
     }
 
     /**
@@ -1374,6 +1427,24 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException
     {
+
+    }
+    private void checkFields(int index) throws SQLException
+    {
+        if (fields == null) throw new SQLException("fields not initialized");
+        if ( index-1 > fields.length ) throw new SQLException("Column number out of bounds");
+    }
+    private NameValuePair getPositionalParameters()
+    {
+        StringBuffer parameters = new StringBuffer("[");
+        for (String field:fields)
+        {
+            parameters.append(field).append(',');
+        }
+        parameters.deleteCharAt(parameters.lastIndexOf(","));
+        parameters.append(']');
+
+        return new BasicNameValuePair("args",parameters.toString());
 
     }
 }
