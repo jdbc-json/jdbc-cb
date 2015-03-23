@@ -42,7 +42,14 @@ public class CBResultSet implements java.sql.ResultSet
 
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
+    static final Map <JsonValue.ValueType,Integer> valueTypes = new HashMap<JsonValue.ValueType,Integer>();
 
+    static {
+        for ( JsonValue.ValueType valueType : JsonValue.ValueType.values() )
+        {
+            valueTypes.put(valueType,valueType.ordinal());
+        }
+    }
     public CBResultSet(JsonObject jsonObject)
     {
 
@@ -1192,7 +1199,27 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkIndex();
         JsonObject jsonObject = results.getJsonObject(index);
-        return jsonObject.getJsonObject(columnLabel);
+        JsonValue jsonValue = jsonObject.get(columnLabel);
+
+        switch (jsonValue.getValueType())
+        {
+            case ARRAY:
+                return jsonObject.getJsonArray(columnLabel);
+            case NUMBER:
+                return jsonObject.getJsonNumber(columnLabel);
+            case NULL:
+                return jsonObject.get(columnLabel);
+            case TRUE:
+            case FALSE:
+                return jsonObject.getBoolean(columnLabel);
+            case STRING:
+                return jsonObject.getJsonString(columnLabel);
+            case OBJECT:
+                return jsonObject.getJsonObject(columnLabel);
+
+
+        }
+        return null;
     }
 
     /**
@@ -1208,7 +1235,16 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int findColumn(String columnLabel) throws SQLException
     {
-        return 0;
+
+        for (int i=0; i < fields.size();i++)
+        {
+
+            if (fields.get(i).getName().equals(columnLabel) )
+            {
+                return i+1;
+            }
+        }
+        throw new SQLException("column " + columnLabel + " does not exist");
     }
 
     /**

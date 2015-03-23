@@ -16,6 +16,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonString;
+import java.io.StringReader;
 import java.sql.*;
 
 import static org.junit.Assert.*;
@@ -108,8 +112,47 @@ public class PreparedStatementTest
     }
 
     @Test
-    public void testExecuteUpdate() throws Exception
+    public void testN1QLSpecific() throws Exception
     {
+        String jsonString = "{ \"age\": 56, \"children\": [ { \"age\": 17, \"fname\": \"Abama\", \"gender\": \"m\"}," +
+         "{ \"age\": 21, \"fname\": \"Bebama\", \"gender\": \"m\" } ]," +
+         "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
+
+
+        JsonObject jsonObject = Json.createReader(new StringReader(jsonString)).readObject();
+
+        String jsonString2 = "{ \"age\": 56," +
+                "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
+        JsonObject jsonObject2 = Json.createReader(new StringReader(jsonString2)).readObject();
+
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into employees (key,value) values(?,?)"))
+        {
+            assertNotNull(preparedStatement);
+
+            preparedStatement.setString(1, "employees");
+            preparedStatement.setObject(2, jsonObject);
+
+            assertEquals(1,preparedStatement.executeUpdate());
+
+            preparedStatement.setObject(2,jsonObject2);
+
+            assertEquals(1,preparedStatement.executeUpdate());
+
+        }
+        try (Statement statement = con.createStatement()) {
+            assertNotNull(statement);
+            ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
+                    "FROM employees emp\n" +
+                    "WHERE children is not NULL\n");
+
+            assertTrue(resultSet.next());
+            JsonString jsonString1 = (JsonString)resultSet.getObject(1);
+            assertEquals("Abama",jsonString1.getString());
+
+        }
+        try(Statement statement = con.createStatement()){
+            statement.executeUpdate("delete from employes");
+        }
 
     }
 }

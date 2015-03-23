@@ -226,16 +226,17 @@ public class ProtocolImpl implements Protocol
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             CloseableHttpResponse response = httpClient.execute(httpPost);
             int status = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+            JsonObject jsonObject = jsonReader.readObject();
+            String statusString = jsonObject.getString("status");
+
+            Integer iStatus = statusStrings.get(statusString);
 
             if ( status >= 200 && status < 300 )
             {
-                HttpEntity entity = response.getEntity();
-                JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
 
-                JsonObject jsonObject = jsonReader.readObject();
-                String statusString = jsonObject.getString("status");
-
-                Integer iStatus = statusStrings.get(statusString);
 
                 switch (iStatus.intValue())
                 {
@@ -261,7 +262,13 @@ public class ProtocolImpl implements Protocol
                 }
 
             }
+            else if ( status == 500 )
+            {
+                JsonObject errors = jsonObject.getJsonArray("errors").getJsonObject(0);
 
+                logger.error("{} for query ",errors.getString("msg"), query);
+                throw new SQLException(errors.getString("msg") + " query " + query );
+            }
             else
             {
                 throw new ClientProtocolException("Unexpected response status: " + status);
@@ -293,7 +300,7 @@ public class ProtocolImpl implements Protocol
                 updateCount = metrics.getInt("mutationCount");
                 return false;
             }
-            if ( metrics.containsKey("resultCount") )
+            if ( metrics.containsKey("resultCount") && metrics.getInt("resultCount") > 0 )
             {
                 resultSet = new CBResultSet(jsonObject);
                 return true;
