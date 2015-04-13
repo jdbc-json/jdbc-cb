@@ -75,14 +75,14 @@ public class CBResultSet implements java.sql.ResultSet
 
             if (signature.containsKey("*"))
             {
-                JsonObject firstRow = results.getJsonObject(0);
-                keySet = firstRow.keySet();
+                if (results.size()>0) {
+                    JsonObject firstRow = results.getJsonObject(0);
+                    keySet = firstRow.keySet();
 
-                for (String key : keySet)
-                {
-                    fields.add(new Field(key, firstRow.get(key).getValueType().toString()));
+                    for (String key : keySet) {
+                        fields.add(new Field(key, firstRow.get(key).getValueType().toString()));
+                    }
                 }
-
             }
             else
             {

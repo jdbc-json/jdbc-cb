@@ -164,41 +164,66 @@ public class ProtocolImpl implements Protocol
         HttpGet httpGet = new HttpGet(url + "/query/service?" + select );
         httpGet.setHeader("Accept", "application/json");
 
+
+
         try
         {
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>()
+
+            CloseableHttpResponse response = httpClient.execute(httpGet);
+            int status = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+            JsonObject jsonObject = jsonReader.readObject();
+            String statusString = jsonObject.getString("status");
+
+            Integer iStatus = statusStrings.get(statusString);
+
+            if ( status >= 200 && status < 300 )
             {
 
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException
+
+                switch (iStatus.intValue())
                 {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300)
-                    {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    }
-                    else
-                    {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
+                    case N1QL_ERROR:
+                        JsonArray errors= jsonObject.getJsonArray("errors");
+                        JsonObject error = errors.getJsonObject(0);
+                        throw new SQLException(error.getString("msg"));
+
+                    case N1QL_SUCCESS:
+                        return new CBResultSet(jsonObject);
+
+                    case N1QL_COMPLETED:
+                    case N1QL_FATAL:
+                    case N1QL_RUNNING:
+                    case N1QL_STOPPED:
+                    case N1QL_TIMEOUT:
+                        throw  new SQLException("Invalid status " + statusString );
+
+                    default:
+                        logger.error("Unexpected status string {} for query {}", statusString, sql);
+                        throw new SQLException("Unexpected status: " + statusString);
+
                 }
 
-            };
+            }
+            else if ( status == 500 )
+            {
+                JsonObject errors = jsonObject.getJsonArray("errors").getJsonObject(0);
 
-            String httpResponse = httpClient.execute(httpGet, responseHandler);
-            JsonReader jsonReader = Json.createReader(new StringReader(httpResponse));
-            JsonObject jsonObject = jsonReader.readObject();
-
-            return new CBResultSet(jsonObject);
-
+                logger.error("{} for query ",errors.getString("msg"), sql);
+                throw new SQLException(errors.getString("msg") + " query " + sql );
+            }
+            else
+            {
+                throw new ClientProtocolException("Unexpected response status: " + status);
+            }
         }
         catch (Exception ex)
         {
-            throw new SQLException("Error querying cluster", ex);
+            logger.error ("Error executing query [{}] {}", sql, ex.getMessage());
+            throw new SQLException("Error executing update",ex.getCause());
         }
-
     }
 
     public int executeUpdate(String query) throws SQLException

@@ -135,9 +135,6 @@ public class PreparedStatementTest
 
             assertEquals(1,preparedStatement.executeUpdate());
 
-            preparedStatement.setObject(2,jsonObject2);
-
-            assertEquals(1,preparedStatement.executeUpdate());
 
         }
         try (Statement statement = con.createStatement()) {
@@ -152,7 +149,81 @@ public class PreparedStatementTest
 
         }
         try(Statement statement = con.createStatement()){
-            statement.executeUpdate("delete from employes");
+            statement.executeUpdate("delete from employees");
+        }
+
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into employees (key,value) values(?,?)"))
+        {
+            assertNotNull(preparedStatement);
+
+            preparedStatement.setString(1, "employees");
+            preparedStatement.setObject(2,jsonObject2);
+
+            assertEquals(1,preparedStatement.executeUpdate());
+
+
+        }
+        try (Statement statement = con.createStatement()) {
+            assertNotNull(statement);
+            ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
+                    "FROM employees emp\n" +
+                    "WHERE children is not NULL\n");
+
+            assertFalse(resultSet.next());
+
+        }
+        try(Statement statement = con.createStatement()){
+            statement.executeUpdate("delete from employees");
+        }
+
+
+    }
+    @Test
+    public void schemaLessTest() throws Exception
+    {
+
+        String name1 = "{\"name\":\"Travel Route1\", \"cities\": [ \"C1\", \"C2\", \"C3\" ],  " +
+                "\"type\": \"route\" }";
+        String name2 = "{\"name\":\"First Town\", \"type\": \"city\"}";
+        String name3 = "{\"name\":\"Second Stop\", \"type\": \"city\"}";
+        String name4 = "{\"name\":\"Destination\", \"type\": \"city\"}";
+
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into travel(key,value) values (?,?)"))
+        {
+            JsonObject jsonObject = Json.createReader(new StringReader(name1)).readObject();
+            preparedStatement.setString(1,"name");
+            preparedStatement.setString(2, jsonObject.getString("name"));
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            jsonObject = Json.createReader(new StringReader(name2)).readObject();
+            preparedStatement.setString(1,"name");
+            preparedStatement.setString(2, jsonObject.getString("name"));
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            jsonObject = Json.createReader(new StringReader(name3)).readObject();
+            preparedStatement.setString(1,"name");
+            preparedStatement.setString(2, jsonObject.getString("name"));
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            jsonObject = Json.createReader(new StringReader(name4)).readObject();
+            preparedStatement.setString(1,"name");
+            preparedStatement.setString(2, jsonObject.getString("name"));
+
+            assertEquals(1, preparedStatement.executeUpdate());
+        }
+        try(Statement statement = con.createStatement())
+        {
+            ResultSet rs = statement.executeQuery("SELECT r.name as route_name, c as route_cities " +
+                                                    "FROM travel r NEST travel c ON KEYS r.cities" +
+                                                    " WHERE r.name = \"Travel Route1\"");
+            assertTrue(rs.next());
+        }
+        try(Statement statement = con.createStatement())
+        {
+            statement.executeUpdate("delete from travel");
         }
 
     }
