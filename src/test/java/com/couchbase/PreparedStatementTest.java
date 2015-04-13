@@ -41,6 +41,7 @@ public class PreparedStatementTest
     {
         assertNotNull(con);
         con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from employees");
         con.close();
     }
 

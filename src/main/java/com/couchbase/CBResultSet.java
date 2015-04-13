@@ -56,6 +56,11 @@ public class CBResultSet implements java.sql.ResultSet
         this.response = jsonObject;
         results = jsonObject.getJsonArray("results");
         signatureValue = jsonObject.get("signature");
+        if ( results.size() == 0 )
+        {
+            signature=null;
+            return;
+        }
 
         if ( signatureValue.getValueType().equals(JsonValue.ValueType.STRING))
         {

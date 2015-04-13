@@ -1,7 +1,5 @@
 package com.couchbase.jdbc;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -9,9 +7,9 @@ import java.util.Properties;
  */
 public class TestUtil
 {
-    public static String getURL() { return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://localhost:8093");}
+    public static String getURL() { return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://192.168.127.101:8093");}
 
-    public static String getBadURL() {return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://localhos:8093");}
+    public static String getBadURL() {return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://192.168.127.101:8093");}
 
     public static String getServer() {
         return System.getProperty("couchbasedb.test.server", "localhost");

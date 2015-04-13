@@ -21,9 +21,11 @@ import org.junit.runners.JUnit4;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * Created by davec on 2015-02-26.
@@ -71,7 +73,7 @@ public class StatementTest extends TestCase
         ResultSet rs = statement.executeQuery("select 1");
 
         assertTrue(rs.next());
-        assertEquals("1",rs.getString(1));
+        assertEquals(1,rs.getInt(1));
 
     }
 
