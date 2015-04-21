@@ -25,17 +25,18 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
-
-import org.apache.http.impl.client.*;
-
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -170,56 +171,10 @@ public class ProtocolImpl implements Protocol
         {
 
             CloseableHttpResponse response = httpClient.execute(httpGet);
-            int status = response.getStatusLine().getStatusCode();
-            HttpEntity entity = response.getEntity();
-            JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+            return new CBResultSet(handleResponse(sql, response));
 
-            JsonObject jsonObject = jsonReader.readObject();
-            String statusString = jsonObject.getString("status");
-
-            Integer iStatus = statusStrings.get(statusString);
-
-            if ( status >= 200 && status < 300 )
-            {
-
-
-                switch (iStatus.intValue())
-                {
-                    case N1QL_ERROR:
-                        JsonArray errors= jsonObject.getJsonArray("errors");
-                        JsonObject error = errors.getJsonObject(0);
-                        throw new SQLException(error.getString("msg"));
-
-                    case N1QL_SUCCESS:
-                        return new CBResultSet(jsonObject);
-
-                    case N1QL_COMPLETED:
-                    case N1QL_FATAL:
-                    case N1QL_RUNNING:
-                    case N1QL_STOPPED:
-                    case N1QL_TIMEOUT:
-                        throw  new SQLException("Invalid status " + statusString );
-
-                    default:
-                        logger.error("Unexpected status string {} for query {}", statusString, sql);
-                        throw new SQLException("Unexpected status: " + statusString);
-
-                }
-
-            }
-            else if ( status == 500 )
-            {
-                JsonObject errors = jsonObject.getJsonArray("errors").getJsonObject(0);
-
-                logger.error("{} for query ",errors.getString("msg"), sql);
-                throw new SQLException(errors.getString("msg") + " query " + sql );
-            }
-            else
-            {
-                throw new ClientProtocolException("Unexpected response status: " + status);
-            }
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
             logger.error ("Error executing query [{}] {}", sql, ex.getMessage());
             throw new SQLException("Error executing update",ex.getCause());
@@ -240,29 +195,21 @@ public class ProtocolImpl implements Protocol
 
     }
 
-    public JsonObject doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
+    public JsonObject handleResponse(String sql, CloseableHttpResponse response) throws SQLException,IOException
     {
-        try
+        int status = response.getStatusLine().getStatusCode();
+        HttpEntity entity = response.getEntity();
+        JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+        JsonObject jsonObject = jsonReader.readObject();
+        String statusString = jsonObject.getString("status");
+
+        Integer iStatus = statusStrings.get(statusString);
+        String message;
+
+        switch (status)
         {
-            HttpPost httpPost = new HttpPost(url + "/query/service");
-            httpPost.setHeader("Accept", "application/json");
-
-
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            CloseableHttpResponse response = httpClient.execute(httpPost);
-            int status = response.getStatusLine().getStatusCode();
-            HttpEntity entity = response.getEntity();
-            JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
-
-            JsonObject jsonObject = jsonReader.readObject();
-            String statusString = jsonObject.getString("status");
-
-            Integer iStatus = statusStrings.get(statusString);
-
-            if ( status >= 200 && status < 300 )
-            {
-
-
+            case 200:
                 switch (iStatus.intValue())
                 {
                     case N1QL_ERROR:
@@ -281,23 +228,65 @@ public class ProtocolImpl implements Protocol
                         throw  new SQLException("Invalid status " + statusString );
 
                     default:
-                        logger.error("Unexpected status string {} for query {}", statusString, query);
+                        logger.error("Unexpected status string {} for query {}", statusString, sql);
                         throw new SQLException("Unexpected status: " + statusString);
 
                 }
+            case 400:
+                message = "Bad Request";
+            case 401:
+                message = "Unauthorized Request credentials are missing or invalid";
+            case 403:
+                message = "Forbidden Request: read only violation or client unauthorized to modify";
+            case 404:
+                message = "Not found: Request references an invalid keyspace or there is no primary key";
+            case 405:
+                message = "Method not allowed: The REST method type in request is supported";
+            case 409:
+                message = "Conflict: attempt to create a keyspace or index that already exists";
+            case 410:
+                message = "Gone: The server is doing a graceful shutdown";
+            case 500:
+                message = "Internal server error: unforeseen problem processing the request";
+            case 503:
+                message = "Service Unavailable: there is an issue preventing the request from being serv serviced";
 
-            }
-            else if ( status == 500 )
-            {
-                JsonObject errors = jsonObject.getJsonArray("errors").getJsonObject(0);
+                JsonObject  errors =  null,
+                        warnings = null;
 
-                logger.error("{} for query ",errors.getString("msg"), query);
-                throw new SQLException(errors.getString("msg") + " query " + query );
-            }
-            else
-            {
+                if (jsonObject.containsKey("errors"))
+                {
+                    errors= jsonObject.getJsonArray("errors").getJsonObject(0);
+                    logger.error("Error Code: {} Message: {} for query {} ",errors.getInt("code"),errors.getString("msg"), sql);
+                }
+                if ( jsonObject.containsKey("warnings"))
+                {
+                    warnings = jsonObject.getJsonArray("warnings").getJsonObject(0);
+                    logger.error("Warning Code: {} Message: {} for query {}",warnings.getInt("code"), warnings.getString("msg"), sql);
+                }
+
+
+                throw new SQLException(errors.getString("msg") + " query " + sql );
+
+            default:
                 throw new ClientProtocolException("Unexpected response status: " + status);
-            }
+
+        }
+
+    }
+    public JsonObject doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
+    {
+        try
+        {
+            HttpPost httpPost = new HttpPost(url + "/query/service");
+            httpPost.setHeader("Accept", "application/json");
+
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+
+            return handleResponse(query, response);
+
         }
         catch (Exception ex)
         {
@@ -318,7 +307,9 @@ public class ProtocolImpl implements Protocol
                 nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
             }
 
+            // do the query
             JsonObject jsonObject = doQuery(query, nameValuePairs );
+
             JsonObject metrics = jsonObject.getJsonObject("metrics");
             if ( metrics.containsKey("mutationCount") )
             {

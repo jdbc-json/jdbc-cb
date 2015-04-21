@@ -34,6 +34,9 @@ public class PreparedStatementTest
     {
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
+        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from employees");
+
     }
 
     @After
@@ -130,7 +133,7 @@ public class PreparedStatementTest
         {
             assertNotNull(preparedStatement);
 
-            preparedStatement.setString(1, "employees");
+            preparedStatement.setString(1, "employee");
             preparedStatement.setObject(2, jsonObject);
 
             assertEquals(1,preparedStatement.executeUpdate());
