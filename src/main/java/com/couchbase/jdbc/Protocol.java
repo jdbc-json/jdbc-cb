@@ -24,6 +24,7 @@ import java.util.List;
 public interface Protocol
 {
     public void connect() throws Exception;
+    public void close() throws Exception;
 
     public CBResultSet query( String sql ) throws SQLException;
     public int executeUpdate( String sql ) throws SQLException;

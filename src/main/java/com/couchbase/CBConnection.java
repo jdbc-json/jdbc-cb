@@ -14,15 +14,13 @@ package com.couchbase;
 
 import com.couchbase.jdbc.Protocol;
 import com.couchbase.jdbc.core.ProtocolImpl;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-
 import java.sql.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -309,7 +307,16 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void close() throws SQLException
     {
-        connected.set(false);
+        try
+        {
+            protocol.close();
+            connected.set(false);
+        }
+        catch (Exception ex)
+        {
+            logger.debug( "Error closing connection", ex);
+            throw new SQLException(ex.getCause());
+        }
     }
 
     /**

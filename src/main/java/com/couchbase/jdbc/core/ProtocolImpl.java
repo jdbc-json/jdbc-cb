@@ -202,6 +202,8 @@ public class ProtocolImpl implements Protocol
         JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
 
         JsonObject jsonObject = jsonReader.readObject();
+        logger.trace( "response from query {} {}", sql, jsonObject.toString());
+
         String statusString = jsonObject.getString("status");
 
         Integer iStatus = statusStrings.get(statusString);
@@ -274,14 +276,20 @@ public class ProtocolImpl implements Protocol
         }
 
     }
+
+    private static NameValuePair scanConstistency= new BasicNameValuePair("scan_consistency","request_plus");
+
     public JsonObject doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
     {
         try
         {
+
             HttpPost httpPost = new HttpPost(url + "/query/service");
             httpPost.setHeader("Accept", "application/json");
 
+            logger.trace("do query {}",httpPost.toString());
 
+            nameValuePairs.add(scanConstistency);
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             CloseableHttpResponse response = httpClient.execute(httpPost);
 
@@ -467,5 +475,9 @@ public class ProtocolImpl implements Protocol
     public int getQueryTimeout( ) throws SQLException
     {
         return queryTimeout;
+    }
+    public void close() throws Exception
+    {
+        httpClient.close();
     }
 }

@@ -73,7 +73,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public ResultSet executeQuery() throws SQLException
     {
 
-
+        // get the query identifier TODO: this should be a function call for clarity
         valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
         if (fields!=null && fields.length>0)
         {
@@ -105,7 +105,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public int executeUpdate() throws SQLException
     {
         valuePair.clear();
+
         valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
+
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());

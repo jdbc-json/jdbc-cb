@@ -36,7 +36,8 @@ public class PreparedStatementTest
         assertNotNull(con);
         con.createStatement().executeUpdate("delete from test1");
         con.createStatement().executeUpdate("delete from employees");
-
+        con.createStatement().executeUpdate("delete from employees");
+        System.out.print("connection opened");
     }
 
     @After
@@ -45,6 +46,12 @@ public class PreparedStatementTest
         assertNotNull(con);
         con.createStatement().executeUpdate("delete from test1");
         con.createStatement().executeUpdate("delete from employees");
+
+        try(Statement statement = con.createStatement())
+        {
+            statement.executeUpdate("delete from travel");
+        }
+
         con.close();
     }
 
@@ -200,19 +207,19 @@ public class PreparedStatementTest
             assertEquals(1, preparedStatement.executeUpdate());
 
             jsonObject = Json.createReader(new StringReader(name2)).readObject();
-            preparedStatement.setString(1,"name");
+            preparedStatement.setString(1,"name1");
             preparedStatement.setString(2, jsonObject.getString("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
 
             jsonObject = Json.createReader(new StringReader(name3)).readObject();
-            preparedStatement.setString(1,"name");
+            preparedStatement.setString(1,"name2");
             preparedStatement.setString(2, jsonObject.getString("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
 
             jsonObject = Json.createReader(new StringReader(name4)).readObject();
-            preparedStatement.setString(1,"name");
+            preparedStatement.setString(1,"name3");
             preparedStatement.setString(2, jsonObject.getString("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
@@ -224,10 +231,7 @@ public class PreparedStatementTest
                                                     " WHERE r.name = \"Travel Route1\"");
             assertTrue(rs.next());
         }
-        try(Statement statement = con.createStatement())
-        {
-            statement.executeUpdate("delete from travel");
-        }
+
 
     }
 }
