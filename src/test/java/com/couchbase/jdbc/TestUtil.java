@@ -7,12 +7,12 @@ import java.util.Properties;
  */
 public class TestUtil
 {
-    public static String getURL() { return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://192.168.127.101:8093");}
+    public static String getURL() { return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
 
-    public static String getBadURL() {return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://192.168.127.101:8093");}
+    public static String getBadURL() {return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
 
     public static String getServer() {
-        return System.getProperty("couchbasedb.test.server", "localhost");
+        return System.getProperty("couchbasedb.test.server", "ec2-54-146-69-136.compute-1.amazonaws.com");
     }
 
     public static String getPort() {

@@ -72,6 +72,8 @@ public class ProtocolImpl implements Protocol
     String url;
     String user;
     String password;
+    String credentials;
+
     int connectTimeout=0;
     int queryTimeout=0;
     boolean readOnly = false;
@@ -84,17 +86,17 @@ public class ProtocolImpl implements Protocol
         return url;
     }
 
-
     public String getUserName()
     {
         return user;
     }
 
-
     public String getPassword()
     {
         return password;
     }
+
+    public String getCredentials() { return credentials; }
 
     public void setReadOnly( boolean readOnly )
     {
@@ -107,6 +109,18 @@ public class ProtocolImpl implements Protocol
 
     public ProtocolImpl(String url, Properties props)
     {
+        if ( props.containsKey("user"))
+        {
+            user=props.getProperty("user");
+        }
+        if (props.containsKey("password"))
+        {
+            password=props.getProperty("password");
+        }
+        if (props.containsKey("credentials"))
+        {
+            credentials = props.getProperty("credentials");
+        }
         this.url = url;
         setConnectionTimeout(props.getProperty(ConnectionParameters.CONNECTION_TIMEOUT));
     }
@@ -115,8 +129,8 @@ public class ProtocolImpl implements Protocol
     {
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout).build();
 
-        httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
+        httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
         HttpGet httpGet = new HttpGet(url+"/admin/ping");
         httpGet.setHeader("Accept", "application/json");
 
@@ -140,6 +154,7 @@ public class ProtocolImpl implements Protocol
             };
 
             String httpResponse = httpClient.execute(httpGet, responseHandler);
+            logger.trace("Connected {}", httpResponse);
 
         }
         catch(Exception ex)
@@ -155,9 +170,14 @@ public class ProtocolImpl implements Protocol
     {
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
+
         if ( queryTimeout != 0 )
         {
             valuePair.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+        }
+        if (credentials != null)
+        {
+            valuePair.add(new BasicNameValuePair("creds",credentials));
         }
 
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
@@ -290,6 +310,11 @@ public class ProtocolImpl implements Protocol
             logger.trace("do query {}",httpPost.toString());
 
             nameValuePairs.add(scanConstistency);
+            if (credentials != null)
+            {
+                nameValuePairs.add(new BasicNameValuePair("creds",credentials));
+            }
+
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             CloseableHttpResponse response = httpClient.execute(httpPost);
 
@@ -313,6 +338,11 @@ public class ProtocolImpl implements Protocol
             if ( queryTimeout != 0 )
             {
                 nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+            }
+
+            if (credentials != null)
+            {
+                nameValuePairs.add(new BasicNameValuePair("creds",credentials));
             }
 
             // do the query
