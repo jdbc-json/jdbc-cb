@@ -1,5 +1,6 @@
 package com.couchbase.jdbc;
 
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -7,20 +8,34 @@ import java.util.Properties;
  */
 public class TestUtil
 {
-    public static String getURL() { return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+    static Properties environment=new Properties();
 
-    public static String getBadURL() {return System.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+    static {
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream( "environment.properties");
+        try
+
+        {
+            environment.load( stream );
+        }
+        catch (Exception ex )
+        {
+            ex.printStackTrace(System.err);
+        }
+    }
+    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+
+    public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
 
     public static String getServer() {
         return System.getProperty("couchbasedb.test.server", "ec2-54-146-69-136.compute-1.amazonaws.com");
     }
 
     public static String getPort() {
-        return System.getProperty("couchbasedb.test.port", "8093");
+        return environment.getProperty("couchbasedb.test.port", "8093");
     }
 
     public static String getDatabase() {
-        return System.getProperty("couchbasedb.test.db", "test");
+        return environment.getProperty("couchbasedb.test.db", "test");
     }
 
     public static Properties getProperties() {
@@ -34,11 +49,11 @@ public class TestUtil
     }
 
     public static String getUser() {
-        return System.getProperty("couchbasedb.test.user", "pgjdbc");
+        return environment.getProperty("couchbasedb.test.user", "pgjdbc");
     }
 
     public static String getPassword() {
-        return System.getProperty("couchbasedb.test.password", "test");
+        return environment.getProperty("couchbasedb.test.password", "test");
     }
 
 

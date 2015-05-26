@@ -1,0 +1,33 @@
+{
+  "requestID": "bf1a57e9-e240-4c1d-91af-ead85c5488fb",
+  "signature": {
+    "emp": "json"
+  },
+  "results": [
+    {
+      "emp": {
+        "ENO": 1234,
+        "address": {
+          "city": "Raleigh",
+          "state": "NC",
+          "street": "123 Doe Lane"
+        },
+        "emails": [
+          "fred@firm.co",
+          "fred.regis@gmail.com"
+        ],
+        "name": {
+          "fname": "Fred",
+          "lname": "Regis"
+        }
+      }
+    }
+  ],
+  "status": "success",
+  "metrics": {
+    "elapsedTime": "17.521371ms",
+    "executionTime": "17.402437ms",
+    "resultCount": 1,
+    "resultSize": 486
+  }
+}
