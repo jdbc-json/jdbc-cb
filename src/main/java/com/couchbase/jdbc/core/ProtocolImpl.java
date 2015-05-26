@@ -211,9 +211,10 @@ public class ProtocolImpl implements Protocol
         String endpoint = cluster.getNextEndpoint();
         logger.trace("Using endpoint {}", endpoint);
 
-        HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() + select );
+        HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() +'?' + select );
 
         httpGet.setHeader("Accept", "application/json");
+        logger.trace("Get request {}",httpGet.toString());
 
 
 
