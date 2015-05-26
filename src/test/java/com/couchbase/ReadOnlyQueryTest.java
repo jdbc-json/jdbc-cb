@@ -93,28 +93,34 @@ public class ReadOnlyQueryTest extends TestCase
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
+        System.err.println(" executing query with product");
         ResultSet rs = statement.executeQuery("SELECT product.name, product.unitPrice"
         +" FROM product"
         +" WHERE ANY cat IN product.categories SATISFIES lower(cat) = 'golf' END"
         +" ORDER BY product.unitPrice DESC"
         +" LIMIT 5");
 
+
+        System.err.println(" executing query with product 2");
         rs = statement.executeQuery("SELECT product.name, count(reviewID) AS  numReviews"
         +" FROM product UNNEST reviewList AS reviewID"
         +" GROUP BY product.productId, product.name"
         +" HAVING count(reviewID) >= 20"
         +" ORDER BY numReviews desc");
 
+        System.err.println(" executing query with product 3");
         rs = statement.executeQuery("SELECT product.name, ARRAY_LENGTH(reviewList) as numReviews"
         +" FROM product"
         +" WHERE array_length(reviewList) >= 20"
         +" ORDER BY numReviews desc");
 
+        System.err.println(" executing query with product 4");
         rs = statement.executeQuery("SELECT product.name, product.categories, reviews"
         +" FROM product"
         +" JOIN reviews ON KEYS product.reviewList"
         +" LIMIT 5");
 
+        System.err.println(" executing query with product 5");
         rs = statement.executeQuery("SELECT product.name, AVG(reviews.rating) AS avg_rating"
         +" FROM reviews"
         +" JOIN product ON KEYS reviews.productId"
@@ -122,17 +128,20 @@ public class ReadOnlyQueryTest extends TestCase
         +" ORDER BY avg_rating DESC"
         +" LIMIT 5");
 
+        System.err.println(" executing query with product 6");
         rs = statement.executeQuery("SELECT product.name, reviews"
         +" FROM product"
         +" NEST reviews ON KEYS product.reviewList"
         +" LIMIT 5");
 
+        System.err.println(" executing query with product 7");
         rs = statement.executeQuery("SELECT product.name,"
         +"  ARRAY review.rating FOR review IN reviews END AS ratings"
         +" FROM product"
         +" NEST reviews ON KEYS product.reviewList"
         +" LIMIT 5");
 
+        System.err.println(" executing query with product 8");
         rs = statement.executeQuery("SELECT cat, product, reviews"
         +" FROM product UNNEST product.categories AS cat"
         +" JOIN reviews ON KEYS product.reviewList"
