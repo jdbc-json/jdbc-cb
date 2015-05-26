@@ -14,12 +14,11 @@ package com.couchbase.jdbc.core;
 
 import com.couchbase.CBResultSet;
 import com.couchbase.ConnectionParameters;
+import com.couchbase.jdbc.Cluster;
 import com.couchbase.jdbc.Protocol;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -73,6 +72,8 @@ public class ProtocolImpl implements Protocol
     String user;
     String password;
     String credentials;
+
+    Cluster cluster;
 
     int connectTimeout=0;
     int queryTimeout=0;
@@ -131,38 +132,63 @@ public class ProtocolImpl implements Protocol
 
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-        HttpGet httpGet = new HttpGet(url+"/admin/ping");
+        HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
         httpGet.setHeader("Accept", "application/json");
 
         try
         {
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException
-                {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-
-            String httpResponse = httpClient.execute(httpGet, responseHandler);
-            logger.trace("Connected {}", httpResponse);
-
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+            cluster  = handleClusterResponse( httpResponse );
         }
         catch(Exception ex)
         {
             logger.error("Error opening connection {}", ex.getMessage());
             throw ex;
-
         }
+
+    }
+    public Cluster handleClusterResponse(CloseableHttpResponse response) throws IOException
+    {
+        int status = response.getStatusLine().getStatusCode();
+        HttpEntity entity = response.getEntity();
+        JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+        JsonArray jsonArray = jsonReader.readArray();
+        String message="";
+
+        switch (status)
+        {
+            case 200:
+                return new Cluster(jsonArray);
+            case 400:
+                message = "Bad Request";
+                break;
+            case 401:
+                message = "Unauthorized Request credentials are missing or invalid";
+                break;
+            case 403:
+                message = "Forbidden Request: read only violation or client unauthorized to modify";
+                break;
+            case 404:
+                message = "Not found: Request references an invalid keyspace or there is no primary key";
+                break;
+            case 405:
+                message = "Method not allowed: The REST method type in request is supported";
+                break;
+            case 409:
+                message = "Conflict: attempt to create a keyspace or index that already exists";
+                break;
+            case 410:
+                message = "Gone: The server is doing a graceful shutdown";
+                break;
+            case 500:
+                message = "Internal server error: unforeseen problem processing the request";
+                break;
+            case 503:
+                message = "Service Unavailable: there is an issue preventing the request from being serv serviced";
+                break;
+        }
+        throw new ClientProtocolException(message +": " + status);
 
     }
 
@@ -182,7 +208,7 @@ public class ProtocolImpl implements Protocol
 
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
 
-        HttpGet httpGet = new HttpGet(url + "/query/service?" + select );
+        HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() + select );
         httpGet.setHeader("Accept", "application/json");
 
 
@@ -256,22 +282,31 @@ public class ProtocolImpl implements Protocol
                 }
             case 400:
                 message = "Bad Request";
+                break;
             case 401:
                 message = "Unauthorized Request credentials are missing or invalid";
+                break;
             case 403:
                 message = "Forbidden Request: read only violation or client unauthorized to modify";
+                break;
             case 404:
                 message = "Not found: Request references an invalid keyspace or there is no primary key";
+                break;
             case 405:
                 message = "Method not allowed: The REST method type in request is supported";
+                break;
             case 409:
                 message = "Conflict: attempt to create a keyspace or index that already exists";
+                break;
             case 410:
                 message = "Gone: The server is doing a graceful shutdown";
+                break;
             case 500:
                 message = "Internal server error: unforeseen problem processing the request";
+                break;
             case 503:
-                message = "Service Unavailable: there is an issue preventing the request from being serv serviced";
+                message = "Service Unavailable: there is an issue preventing the request from being serviced";
+                logger.debug("Error with the request {}", message);
 
                 JsonObject  errors =  null,
                         warnings = null;
@@ -294,7 +329,8 @@ public class ProtocolImpl implements Protocol
                 throw new ClientProtocolException("Unexpected response status: " + status);
 
         }
-
+        logger.debug("Error with the request {}", message);
+        throw new ClientProtocolException(message +": " + status);
     }
 
     private static NameValuePair scanConstistency= new BasicNameValuePair("scan_consistency","request_plus");
@@ -304,7 +340,7 @@ public class ProtocolImpl implements Protocol
         try
         {
 
-            HttpPost httpPost = new HttpPost(url + "/query/service");
+            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint());
             httpPost.setHeader("Accept", "application/json");
 
             logger.trace("do query {}",httpPost.toString());
@@ -387,7 +423,7 @@ public class ProtocolImpl implements Protocol
     {
         try
         {
-            HttpPost httpPost = new HttpPost(url + "/query/service");
+            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint());
             httpPost.setHeader("Accept", "application/json");
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
