@@ -209,7 +209,7 @@ public class ProtocolImpl implements Protocol
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
 
         String endpoint = cluster.getNextEndpoint();
-        logger.trace("Using endpoing {}", endpoint);
+        logger.trace("Using endpoint {}", endpoint);
 
         HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() + select );
 
@@ -249,7 +249,11 @@ public class ProtocolImpl implements Protocol
     {
         int status = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
-        JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+
+        String strResponse = EntityUtils.toString(entity);
+        logger.trace( "Response to query {} {}", sql, strResponse );
+
+        JsonReader jsonReader = Json.createReader(new StringReader(strResponse));
 
         JsonObject jsonObject = jsonReader.readObject();
         logger.trace( "response from query {} {}", sql, jsonObject.toString());
