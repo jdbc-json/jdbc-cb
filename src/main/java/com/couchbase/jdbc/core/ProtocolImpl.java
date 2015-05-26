@@ -208,7 +208,11 @@ public class ProtocolImpl implements Protocol
 
         String select = URLEncodedUtils.format(valuePair, "UTF-8");
 
+        String endpoint = cluster.getNextEndpoint();
+        logger.trace("Using endpoing {}", endpoint);
+
         HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() + select );
+
         httpGet.setHeader("Accept", "application/json");
 
 
