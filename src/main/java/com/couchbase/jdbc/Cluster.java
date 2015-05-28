@@ -25,8 +25,10 @@ public class Cluster
 {
     private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
+    Integer instanceIndex = new Integer(0);
+    int numInstances;
     List<Instance> endpoints = new ArrayList<Instance>();
-    int i=0;
+
     /*
     [{"cluster":"default","name":"10.168.209.119","queryEndpoint":"http://10.168.209.119:8093/query/service","adminEndpoint":"http://10.168.209.119:8093/admin","options":null},
     {"cluster":"default","name":"10.169.93.182","queryEndpoint":"http://10.169.93.182:8093/query/service","adminEndpoint":"http://10.169.93.182:8093/admin","options":null},
@@ -36,8 +38,8 @@ public class Cluster
 
     public Cluster( JsonArray jsonArray )
     {
-        int size = jsonArray.size();
-        for(int i=0; i<size;i++)
+        numInstances = jsonArray.size();
+        for(int i=0; i < numInstances ;i++)
         {
             endpoints.add(new Instance(jsonArray.getJsonObject(i)));
         }
@@ -45,9 +47,18 @@ public class Cluster
     public String getNextEndpoint()
     {
         //return "http://54.237.32.30:8093/query/service";
+        int i;
+        synchronized (instanceIndex)
+        {
+            i = instanceIndex++;
 
-        if (i++ > endpoints.size()-1) i=0;
-        logger.trace( "Endpoint {} of ",i,endpoints.size());
+            if (i >= numInstances)
+            {
+                instanceIndex = 0;
+            }
+        }
+
+        logger.trace( "Endpoint {} of {}",i,endpoints.size());
         return endpoints.get(i).getQueryEndPoint();
 
     }
