@@ -151,7 +151,9 @@ public class ProtocolImpl implements Protocol
     {
         int status = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
-        JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+        String string = EntityUtils.toString(entity);
+        logger.trace ("Cluster response {}", string);
+        JsonReader jsonReader = Json.createReader(new StringReader(string));
 
         JsonArray jsonArray = jsonReader.readArray();
         String message="";
