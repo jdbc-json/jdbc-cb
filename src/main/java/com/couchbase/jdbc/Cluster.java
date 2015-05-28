@@ -55,10 +55,11 @@ public class Cluster
             if (i >= numInstances)
             {
                 instanceIndex = 0;
+                i=0;
             }
         }
 
-        logger.trace( "Endpoint {} of {}",i,endpoints.size());
+        logger.trace( "Endpoint {} of {}",i,numInstances);
         return endpoints.get(i).getQueryEndPoint();
 
     }
