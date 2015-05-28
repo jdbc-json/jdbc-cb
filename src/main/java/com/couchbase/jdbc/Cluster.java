@@ -47,7 +47,7 @@ public class Cluster
         //return "http://54.237.32.30:8093/query/service";
 
         if (i++ > endpoints.size()-1) i=0;
-        logger.trace( "Endpoint {}",i)
+        logger.trace( "Endpoint {} of ",i,endpoints.size());
         return endpoints.get(i).getQueryEndPoint();
 
     }
