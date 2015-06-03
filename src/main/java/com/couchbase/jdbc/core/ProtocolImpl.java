@@ -133,8 +133,6 @@ public class ProtocolImpl implements Protocol
 
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-        httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
-        httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 
         HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
         httpGet.setHeader("Accept", "application/json");
@@ -366,7 +364,8 @@ public class ProtocolImpl implements Protocol
                 nameValuePairs.add(new BasicNameValuePair("creds",credentials));
             }
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"));
+
             CloseableHttpResponse response = httpClient.execute(httpPost);
 
             return handleResponse(query, response);
