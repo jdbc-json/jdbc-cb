@@ -17,6 +17,7 @@ import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Cluster;
 import com.couchbase.jdbc.Protocol;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
@@ -132,6 +133,9 @@ public class ProtocolImpl implements Protocol
 
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+        httpClient.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
+        httpClient.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+
         HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
         httpGet.setHeader("Accept", "application/json");
 
