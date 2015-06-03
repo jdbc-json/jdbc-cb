@@ -213,7 +213,7 @@ public class ProtocolImpl implements Protocol
         String select=null;
 
         try{
-            select = new UrlEncodedFormEntity(valuePair,"UTF-8").toString();
+            select = new UrlEncodedFormEntity(valuePair,"UTF-8").getContent().toString();
         }
 
         catch ( Exception ex )
