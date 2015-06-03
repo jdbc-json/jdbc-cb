@@ -210,7 +210,16 @@ public class ProtocolImpl implements Protocol
             valuePair.add(new BasicNameValuePair("creds",credentials));
         }
 
-        String select = URLEncodedUtils.format(valuePair, "UTF-8");
+        String select=null;
+
+        try{
+            select = new UrlEncodedFormEntity(valuePair,"UTF-8").toString();
+        }
+
+        catch ( Exception ex )
+        {
+
+        }
 
         String endpoint = cluster.getNextEndpoint();
         logger.trace("Using endpoint {}", endpoint);
