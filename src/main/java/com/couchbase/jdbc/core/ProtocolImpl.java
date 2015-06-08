@@ -24,7 +24,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -38,6 +38,8 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -208,12 +210,23 @@ public class ProtocolImpl implements Protocol
             valuePair.add(new BasicNameValuePair("creds",credentials));
         }
 
-        String select = URLEncodedUtils.format(valuePair, "UTF-8");
+
 
         String endpoint = cluster.getNextEndpoint();
         logger.trace("Using endpoint {}", endpoint);
 
-        HttpGet httpGet = new HttpGet(cluster.getNextEndpoint() +'?' + select );
+        URI uri=null;
+        try
+
+        {
+            uri = new URIBuilder(endpoint).addParameters(valuePair).build();
+        }
+        catch ( URISyntaxException ex)
+        {
+            logger.error("Invalid request {}", endpoint);
+        }
+
+        HttpGet httpGet = new HttpGet( uri );
 
         httpGet.setHeader("Accept", "application/json");
         logger.trace("Get request {}",httpGet.toString());
