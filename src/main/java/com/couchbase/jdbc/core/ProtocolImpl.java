@@ -17,6 +17,7 @@ import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Cluster;
 import com.couchbase.jdbc.Protocol;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
@@ -134,6 +135,7 @@ public class ProtocolImpl implements Protocol
 
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+
         HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
         httpGet.setHeader("Accept", "application/json");
 
@@ -210,6 +212,7 @@ public class ProtocolImpl implements Protocol
             valuePair.add(new BasicNameValuePair("creds",credentials));
         }
 
+       
 
 
         String endpoint = cluster.getNextEndpoint();
@@ -375,7 +378,8 @@ public class ProtocolImpl implements Protocol
                 nameValuePairs.add(new BasicNameValuePair("creds",credentials));
             }
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"));
+
             CloseableHttpResponse response = httpClient.execute(httpPost);
 
             return handleResponse(query, response);
