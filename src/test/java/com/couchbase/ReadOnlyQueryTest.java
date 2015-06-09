@@ -81,10 +81,8 @@ public class ReadOnlyQueryTest extends TestCase
     @Test
     public void testAuthentication() throws Exception
     {
-        Credentials credentials = new Credentials();
 
-        credentials.add("product","Pr0dct");
-        credentials.add("purchases","Prch3s3s");
+        Credentials credentials = TestUtil.getCredentials();
 
         Properties props = new Properties();
         props.setProperty("credentials", credentials.toString());

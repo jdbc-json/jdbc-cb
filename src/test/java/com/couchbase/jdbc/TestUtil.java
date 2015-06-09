@@ -1,5 +1,7 @@
 package com.couchbase.jdbc;
 
+import com.couchbase.jdbc.util.Credentials;
+
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -54,6 +56,19 @@ public class TestUtil
 
     public static String getPassword() {
         return environment.getProperty("couchbasedb.test.password", "test");
+    }
+
+    public static Credentials getCredentials() {
+        Credentials credentials = new Credentials();
+        String auth = environment.getProperty("couchbasedb.test.auth","");
+        String [] parts = auth.split(",");
+        for (String part : parts )
+        {
+            String []creds = part.split(":");
+            credentials.add(creds[0],creds[1]);
+        }
+        return credentials;
+
     }
 
 
