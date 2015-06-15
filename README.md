@@ -1,23 +1,23 @@
-Couchbase JDBC Driver
+#Couchbase JDBC Driver
 
-Build instructions
+##Build instructions
 
-Requirements:
-java 1.8
-git
-maven
+### Requirements:
+* java 1.8
+* git
+* maven
 
 Steps:
 
-git clone git@github.com:couchbaselabs/jdbc_n1ql.git
-cd jdbc_n1ql
-mvn -Dmaven.test.skip=true package
+    git clone git@github.com:couchbaselabs/jdbc_n1ql.git
+    cd jdbc_n1ql
+    mvn -Dmaven.test.skip=true package
 
 the jar file will be in the target directory.
 
 Tests can be run using
 
-mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
+    mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
 
 for instance
 
