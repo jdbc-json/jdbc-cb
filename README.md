@@ -23,4 +23,9 @@ for instance
 
 jars can be found at http://ec2-54-237-21-240.compute-1.amazonaws.com/index.html
 
+Usage:
+
+The driver url is jdbc:couchbase://<host>:<port>
+
+Port should be 8093
 
