@@ -12,7 +12,6 @@
 package com.couchbase.jdbc.util;
 
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonValue;
 import java.sql.*;
 import java.util.Map;
@@ -25,6 +24,8 @@ public class CouchbaseArray implements Array
     JsonArray jsonArray;
     JsonValue.ValueType jsonType;
 
+    public CouchbaseArray( Object jsonArray )
+    {}
     public CouchbaseArray( JsonArray jsonArray )
     {
         this.jsonArray = jsonArray;

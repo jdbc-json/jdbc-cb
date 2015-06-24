@@ -13,12 +13,11 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-
-import javax.json.JsonObject;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -38,7 +37,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
     final String sql;
 
-    final JsonObject preparedStatement;
+    final CouchResponse preparedStatement;
     final SqlParser parser;
 
     final String []fields;
@@ -74,14 +73,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
 
         // get the query identifier TODO: this should be a function call for clarity
-        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
+        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getResults().get(0).toString()));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
         }
-        JsonObject jsonObject = protocol.doQuery(sql, valuePair);
+        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
 
-        return new CBResultSet(jsonObject);
+        return new CBResultSet(couchResponse);
     }
 
     /**
@@ -106,22 +105,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         valuePair.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getJsonArray("results").getJsonObject(0).toString()));
-
+        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getResults().get(0).toString()));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
         }
 
-        JsonObject jsonObject = protocol.doQuery(sql, valuePair);
-        JsonObject metrics = jsonObject.getJsonObject("metrics");
-
-        if ( metrics.containsKey("mutationCount") )
-        {
-            updateCount = metrics.getInt("mutationCount");
-            return updateCount;
-        }
-        return 0;
+        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
+        return (int)couchResponse.getMetrics().getMutationCount();
     }
 
     /**

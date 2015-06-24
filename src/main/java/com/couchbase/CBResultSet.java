@@ -12,13 +12,12 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.core.Field;
 import com.couchbase.jdbc.util.CouchbaseArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonValue;
 import java.io.InputStream;
 import java.io.Reader;
@@ -35,10 +34,7 @@ public class CBResultSet implements java.sql.ResultSet
 {
     private final static Logger logger = LoggerFactory.getLogger(CBResultSet.class);
 
-    final JsonObject response;
-    final JsonObject signature;
-    final JsonValue signatureValue;
-    final JsonArray results;
+    final CouchResponse response;
 
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
@@ -50,49 +46,18 @@ public class CBResultSet implements java.sql.ResultSet
             valueTypes.put(valueType,valueType.ordinal());
         }
     }
-    public CBResultSet(JsonObject jsonObject)
+    public CBResultSet(CouchResponse response)
     {
 
-        this.response = jsonObject;
-        results = jsonObject.getJsonArray("results");
-        signatureValue = jsonObject.get("signature");
-        if ( results.size() == 0 )
+        this.response = response;
+
+        if ( response.getMetrics().getResultSize()  == 0 )
         {
-            signature=null;
             return;
         }
 
-        if ( signatureValue.getValueType().equals(JsonValue.ValueType.STRING))
-        {
-            fields.add(new Field(jsonObject.getString("signature"), JsonValue.ValueType.STRING.name()));
-            signature=null;
 
-        }
-        else
-        {
-            signature = jsonObject.getJsonObject("signature");
-            Set<String> keySet;
-
-            if (signature.containsKey("*"))
-            {
-                if (results.size()>0) {
-                    JsonObject firstRow = results.getJsonObject(0);
-                    keySet = firstRow.keySet();
-
-                    for (String key : keySet) {
-                        fields.add(new Field(key, firstRow.get(key).getValueType().toString()));
-                    }
-                }
-            }
-            else
-            {
-                keySet = signature.keySet();
-                for (String key : keySet)
-                {
-                    fields.add(new Field(key, signature.getString(key)));
-                }
-            }
-        }
+        fields = response.getFields();
         logger.debug("Loaded result set");
     }
     /**
@@ -125,7 +90,7 @@ public class CBResultSet implements java.sql.ResultSet
     public boolean next() throws SQLException
     {
         index++;
-        return (index < results.size() );
+        return (index < response.getMetrics().getResultSize() );
 
     }
 
@@ -384,8 +349,6 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkIndex();
 
-        JsonObject object = results.getJsonObject(index);
-        //now find the key of the first value
         Field field  = getField(columnIndex);
 
         return getBigDecimal(field.getName());
@@ -578,8 +541,8 @@ public class CBResultSet implements java.sql.ResultSet
     public String getString(String columnLabel) throws SQLException
     {
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        return jsonObject.getString(columnLabel);
+        Map jsonObject = response.getResults().get(index);
+        return (String)jsonObject.get(columnLabel);
     }
 
     /**
@@ -605,8 +568,8 @@ public class CBResultSet implements java.sql.ResultSet
     public boolean getBoolean(String columnLabel) throws SQLException
     {
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        return jsonObject.getBoolean(columnLabel);
+        Map jsonObject = response.getResults().get(index);
+        return  (boolean) jsonObject.get(columnLabel);
 
     }
 
@@ -646,22 +609,17 @@ public class CBResultSet implements java.sql.ResultSet
         short value;
 
         checkIndex();
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map jsonObject = response.getResults().get(index);
+        try
+        {
+            value = new Short((String)jsonObject.get(columnLabel));
+        }
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+        catch( Exception ex)
         {
-            value = (short)results.getInt(index);
+            throw new SQLException("value is not a short");
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
-        {
-            // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = (short)object.getInt(columnLabel);
-        }
-        else
-        {
-            throw new SQLException("value is not an integer");
-        }
+
         logger.info("value {}", value);
         return value;
     }
@@ -685,23 +643,19 @@ public class CBResultSet implements java.sql.ResultSet
 
         checkIndex();
 
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map  jsonObject = response.getResults().get(index);
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+
+        try
         {
-            value = results.getInt(index);
+            value = (int)jsonObject.get(columnLabel);
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
-        {
-        // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = object.getInt(columnLabel);
-        }
-        else
+        catch( Exception ex)
         {
             throw new SQLException("value is not an integer");
         }
-        logger.info("value {}", value);
+
+        logger.info("value {}", jsonObject.get(columnLabel));
         return value;
     }
 
@@ -724,23 +678,18 @@ public class CBResultSet implements java.sql.ResultSet
 
         checkIndex();
 
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map jsonObject = response.getResults().get(index);
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+        try
         {
-            value = results.getJsonNumber(index).longValue();
+            value = (long)jsonObject.get(columnLabel);
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
+        catch( Exception ex)
         {
-            // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = object.getJsonNumber(columnLabel).longValue();
-        }
-        else
-        {
-            throw new SQLException("value is not an integer");
+            throw new SQLException("value is not a long");
         }
         logger.info("value {}", value);
+
         return value;
     }
 
@@ -763,22 +712,17 @@ public class CBResultSet implements java.sql.ResultSet
 
         checkIndex();
 
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map jsonObject = response.getResults().get(index);
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+        try
         {
-            value = results.getJsonNumber(index).doubleValue();
+            value = (double)jsonObject.get(columnLabel);
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
+        catch( Exception ex)
         {
-            // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = object.getJsonNumber(columnLabel).doubleValue();
+            throw new SQLException("value is not a float");
         }
-        else
-        {
-            throw new SQLException("value is not an integer");
-        }
+
         logger.info("value {}", value);
         return (float)value;
 
@@ -804,22 +748,17 @@ public class CBResultSet implements java.sql.ResultSet
 
         checkIndex();
 
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map jsonObject = response.getResults().get(index);
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+        try
         {
-            value = results.getJsonNumber(index).doubleValue();
+            value = (double)jsonObject.get(columnLabel);
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
+        catch( Exception ex)
         {
-            // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = object.getJsonNumber(columnLabel).doubleValue();
+            throw new SQLException("value is not a double");
         }
-        else
-        {
-            throw new SQLException("value is not an integer");
-        }
+
         logger.info("value {}", value);
         return value;
     }
@@ -847,22 +786,17 @@ public class CBResultSet implements java.sql.ResultSet
 
         checkIndex();
 
-        JsonValue.ValueType valueType = results.get(index).getValueType();
+        Map jsonObject = response.getResults().get(index);
 
-        if ( valueType == JsonValue.ValueType.NUMBER )
+        try
         {
-            value = results.getJsonNumber(index).bigDecimalValue();
+            value = new BigDecimal((double)jsonObject.get(columnLabel));
         }
-        else if (valueType == JsonValue.ValueType.OBJECT )
+        catch( Exception ex)
         {
-            // point to the current value in the results array
-            JsonObject object = results.getJsonObject(index);
-            value = object.getJsonNumber(columnLabel).bigDecimalValue();
+            throw new SQLException("value is not a Big Decimal");
         }
-        else
-        {
-            throw new SQLException("value is not an integer");
-        }
+
         logger.info("value {}", value);
         return value;
 
@@ -1203,27 +1137,30 @@ public class CBResultSet implements java.sql.ResultSet
     public Object getObject(String columnLabel) throws SQLException
     {
         checkIndex();
-        JsonObject jsonObject = results.getJsonObject(index);
-        JsonValue jsonValue = jsonObject.get(columnLabel);
-
-        switch (jsonValue.getValueType())
+        Map jsonObject = response.getResults().get(index);
+        for (Field field:fields)
         {
-            case ARRAY:
-                return jsonObject.getJsonArray(columnLabel);
-            case NUMBER:
-                return jsonObject.getJsonNumber(columnLabel);
-            case NULL:
-                return jsonObject.get(columnLabel);
-            case TRUE:
-            case FALSE:
-                return jsonObject.getBoolean(columnLabel);
-            case STRING:
-                return jsonObject.getJsonString(columnLabel);
-            case OBJECT:
-                return jsonObject.getJsonObject(columnLabel);
-
-
+            if (field.getName().equals(columnLabel))
+            {
+                switch (field.getSqlType())
+                {
+                    case Types.NUMERIC:
+                        return new Double((String)jsonObject.get(columnLabel));
+                    case Types.BOOLEAN:
+                        return new Boolean((String)jsonObject.get(columnLabel));
+                    case Types.VARCHAR:
+                        return (String)jsonObject.get(columnLabel);
+                    case Types.ARRAY:
+                        return (String)jsonObject.get(columnLabel);
+                    case Types.OTHER:
+                        return jsonObject.get(columnLabel);
+                    case Types.NULL:
+                        return null;
+                }
+            }
         }
+
+
         return null;
     }
 
@@ -3142,8 +3079,8 @@ public class CBResultSet implements java.sql.ResultSet
     public Array getArray(String columnLabel) throws SQLException
     {
         checkIndex();
-        JsonObject object = results.getJsonObject(index);
-        return new CouchbaseArray(object.getJsonArray(columnLabel));
+        Map object = response.getResults().get(index);
+        return new CouchbaseArray(object.get(columnLabel));
     }
 
     /**
@@ -4955,6 +4892,6 @@ public class CBResultSet implements java.sql.ResultSet
 
     void checkIndex() throws SQLException
     {
-        if ( index > results.size() ) throw new SQLException("Invalid index");
+        if ( index > response.getMetrics().getResultSize() ) throw new SQLException("Invalid index");
     }
 }

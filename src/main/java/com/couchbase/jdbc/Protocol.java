@@ -12,9 +12,9 @@
 package com.couchbase.jdbc;
 
 import com.couchbase.CBResultSet;
+import com.couchbase.jdbc.core.CouchResponse;
 import org.apache.http.NameValuePair;
 
-import javax.json.JsonObject;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -32,10 +32,10 @@ public interface Protocol
     public void addBatch( String sql ) throws SQLException;
     public int [] executeBatch(  ) throws SQLException;
 
-    public JsonObject prepareStatement( String sql ) throws SQLException;
-    public JsonObject doQuery(String query, List<NameValuePair> nameValuePairs ) throws SQLException;
+    public CouchResponse prepareStatement( String sql ) throws SQLException;
+    public CouchResponse doQuery(String query, List<NameValuePair> nameValuePairs ) throws SQLException;
 
-    public int getUpdateCount();
+    public long getUpdateCount();
     public CBResultSet getResultSet();
 
     public String getURL();

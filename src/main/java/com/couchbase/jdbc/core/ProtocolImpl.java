@@ -17,7 +17,6 @@ import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Cluster;
 import com.couchbase.jdbc.Protocol;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
@@ -30,6 +29,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.boon.core.reflection.MapObjectConversion;
+import org.boon.json.JsonFactory;
+import org.boon.json.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -81,7 +84,7 @@ public class ProtocolImpl implements Protocol
     int connectTimeout=0;
     int queryTimeout=0;
     boolean readOnly = false;
-    int updateCount;
+    long updateCount;
     CBResultSet resultSet;
     List <String> batchStatements = new ArrayList<String>();
 
@@ -202,6 +205,8 @@ public class ProtocolImpl implements Protocol
     {
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
+        valuePair.add(new BasicNameValuePair("encoding","UTF-8"));
+        valuePair.add(scanConstistency);
 
         if ( queryTimeout != 0 )
         {
@@ -255,7 +260,7 @@ public class ProtocolImpl implements Protocol
         boolean hasResultSet = execute(query);
         if (!hasResultSet)
         {
-            return getUpdateCount();
+            return (int)getUpdateCount();
         }
         else
         {
@@ -264,22 +269,46 @@ public class ProtocolImpl implements Protocol
 
     }
 
-    public JsonObject handleResponse(String sql, CloseableHttpResponse response) throws SQLException,IOException
+    public CouchResponse handleResponse(String sql, CloseableHttpResponse response) throws SQLException,IOException
     {
         int status = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
 
-        String strResponse = EntityUtils.toString(entity);
-        logger.trace( "Response to query {} {}", sql, strResponse );
 
-        JsonReader jsonReader = Json.createReader(new StringReader(strResponse));
+        //String strResponse = EntityUtils.toString(entity);
+        //logger.trace( "Response to query {} {}", sql, strResponse );
 
-        JsonObject jsonObject = jsonReader.readObject();
-        logger.trace( "response from query {} {}", sql, jsonObject.toString());
+        ObjectMapper mapper = JsonFactory.create();
 
-        String statusString = jsonObject.getString("status");
+        CouchResponse couchResponse = new CouchResponse();
 
-        Integer iStatus = statusStrings.get(statusString);
+        Map <String,Object> rootAsMap = mapper.readValue(new InputStreamReader(entity.getContent(), "UTF-8"), Map.class);
+
+        couchResponse.status    = (String)rootAsMap.get("status");
+        couchResponse.requestId = (String)rootAsMap.get("requestID");
+        couchResponse.signature = (Map <String, String> )rootAsMap.get("signature");
+        couchResponse.results   = (List)rootAsMap.get("results");
+
+        couchResponse.metrics   = MapObjectConversion.fromMap((Map)rootAsMap.get("metrics"), CouchMetrics.class);
+        List errorList = (List)rootAsMap.get("errors");
+        if ( errorList != null )
+        {
+            couchResponse.errors    = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, errorList);
+        }
+        List warningList = (List)rootAsMap.get("warnings");
+        if ( warningList != null )
+        {
+            couchResponse.warnings  = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, warningList );
+        }
+
+
+        //JsonObject jsonObject = jsonReader.readObject();
+        //logger.trace( "response from query {} {}", sql, jsonObject.toString());
+
+
+        //String statusString = (String)jsonObject.get("status");
+
+        Integer iStatus = statusStrings.get(couchResponse.status);
         String message;
 
         switch (status)
@@ -288,23 +317,22 @@ public class ProtocolImpl implements Protocol
                 switch (iStatus.intValue())
                 {
                     case N1QL_ERROR:
-                        JsonArray errors= jsonObject.getJsonArray("errors");
-                        JsonObject error = errors.getJsonObject(0);
-                        throw new SQLException(error.getString("msg"));
+                        List <CouchError> errors = couchResponse.errors;
+                        throw new SQLException(errors.get(0).msg);
 
                     case N1QL_SUCCESS:
-                        return jsonObject;
+                        return couchResponse;
 
                     case N1QL_COMPLETED:
                     case N1QL_FATAL:
                     case N1QL_RUNNING:
                     case N1QL_STOPPED:
                     case N1QL_TIMEOUT:
-                        throw  new SQLException("Invalid status " + statusString );
+                        throw  new SQLException("Invalid status " + couchResponse.status );
 
                     default:
-                        logger.error("Unexpected status string {} for query {}", statusString, sql);
-                        throw new SQLException("Unexpected status: " + statusString);
+                        logger.error("Unexpected status string {} for query {}", couchResponse.status, sql);
+                        throw new SQLException("Unexpected status: " + couchResponse.status );
 
                 }
             case 400:
@@ -335,22 +363,22 @@ public class ProtocolImpl implements Protocol
                 message = "Service Unavailable: there is an issue preventing the request from being serviced";
                 logger.debug("Error with the request {}", message);
 
-                JsonObject  errors =  null,
+                CouchError  errors =  null,
                         warnings = null;
 
-                if (jsonObject.containsKey("errors"))
+                if (couchResponse.metrics.errorCount > 0 )
                 {
-                    errors= jsonObject.getJsonArray("errors").getJsonObject(0);
-                    logger.error("Error Code: {} Message: {} for query {} ",errors.getInt("code"),errors.getString("msg"), sql);
+                    errors= couchResponse.errors.get(0);
+                    logger.error("Error Code: {} Message: {} for query {} ",errors.code,errors.msg, sql);
                 }
-                if ( jsonObject.containsKey("warnings"))
+                if ( couchResponse.metrics.warningCount > 0 )
                 {
-                    warnings = jsonObject.getJsonArray("warnings").getJsonObject(0);
-                    logger.error("Warning Code: {} Message: {} for query {}",warnings.getInt("code"), warnings.getString("msg"), sql);
+                    warnings = couchResponse.warnings.get(0);
+                    logger.error("Warning Code: {} Message: {} for query {}",warnings.code, warnings.msg, sql);
                 }
 
 
-                throw new SQLException(errors.getString("msg") + " query " + sql );
+                throw new SQLException(errors.msg + " query " + sql );
 
             default:
                 throw new ClientProtocolException("Unexpected response status: " + status);
@@ -362,7 +390,7 @@ public class ProtocolImpl implements Protocol
 
     private static NameValuePair scanConstistency= new BasicNameValuePair("scan_consistency","request_plus");
 
-    public JsonObject doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
+    public CouchResponse doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
     {
         try
         {
@@ -410,19 +438,18 @@ public class ProtocolImpl implements Protocol
             }
 
             // do the query
-            JsonObject jsonObject = doQuery(query, nameValuePairs );
+            CouchResponse response = doQuery(query, nameValuePairs );
 
-            JsonObject metrics = jsonObject.getJsonObject("metrics");
-            if ( metrics.containsKey("mutationCount") )
+            updateCount = response.metrics.mutationCount;
+            if ( updateCount > 0 )
             {
-                updateCount = metrics.getInt("mutationCount");
                 return false;
             }
-            if ( metrics.containsKey("resultCount") && metrics.getInt("resultCount") > 0 )
-            {
-                resultSet = new CBResultSet(jsonObject);
+
+            // no sense creating the object if it is false
+            if ( response.metrics.resultCount == 0 ) return false;
+            resultSet = new CBResultSet(response);
                 return true;
-            }
 
 
         }
@@ -431,10 +458,9 @@ public class ProtocolImpl implements Protocol
             logger.error ("Error executing update query {} {}", query, ex.getMessage());
             throw new SQLException("Error executing update",ex.getCause());
         }
-        return false;
     }
 
-    public JsonObject prepareStatement( String sql ) throws SQLException
+    public CouchResponse prepareStatement( String sql ) throws SQLException
     {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
@@ -492,7 +518,7 @@ public class ProtocolImpl implements Protocol
                     }
                     if ( metrics.containsKey("resultCount") )
                     {
-                        resultSet = new CBResultSet(jsonObject);
+                       // TODO FIX ME resultSet = new CBResultSet(jsonObject);
                         return new int [0];
                     }
                 }
@@ -541,7 +567,7 @@ public class ProtocolImpl implements Protocol
     {
         batchStatements.add(query);
     }
-    public int getUpdateCount()
+    public long getUpdateCount()
     {
         return updateCount;
     }
