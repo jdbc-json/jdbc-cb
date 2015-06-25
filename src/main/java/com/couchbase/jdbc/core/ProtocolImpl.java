@@ -286,7 +286,12 @@ public class ProtocolImpl implements Protocol
 
         couchResponse.status    = (String)rootAsMap.get("status");
         couchResponse.requestId = (String)rootAsMap.get("requestID");
-        couchResponse.signature = (Map <String, String> )rootAsMap.get("signature");
+        Object signature = (Object)rootAsMap.get("signature");
+        if ( signature instanceof Map )
+        {
+            couchResponse.signature = (Map)signature;
+        }
+        //couchResponse.signature = (Map <String, String> )rootAsMap.get("signature");
         couchResponse.results   = (List)rootAsMap.get("results");
 
         couchResponse.metrics   = MapObjectConversion.fromMap((Map)rootAsMap.get("metrics"), CouchMetrics.class);

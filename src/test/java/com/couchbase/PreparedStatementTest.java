@@ -35,8 +35,6 @@ public class PreparedStatementTest
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
         con.createStatement().executeUpdate("delete from test1");
-        con.createStatement().executeUpdate("delete from employees");
-        con.createStatement().executeUpdate("delete from employees");
         System.out.print("connection opened");
     }
 
@@ -44,12 +42,10 @@ public class PreparedStatementTest
     public void closeConnection() throws Exception
     {
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
-        con.createStatement().executeUpdate("delete from employees");
 
         try(Statement statement = con.createStatement())
         {
-            statement.executeUpdate("delete from travel");
+            statement.executeUpdate("delete from test1");
         }
 
         con.close();
@@ -136,7 +132,7 @@ public class PreparedStatementTest
                 "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
         JsonObject jsonObject2 = Json.createReader(new StringReader(jsonString2)).readObject();
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into employees (key,value) values(?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1 (key,value) values(?,?)"))
         {
             assertNotNull(preparedStatement);
 
@@ -150,7 +146,7 @@ public class PreparedStatementTest
         try (Statement statement = con.createStatement()) {
             assertNotNull(statement);
             ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
-                    "FROM employees emp\n" +
+                    "FROM test1 emp\n" +
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
@@ -159,10 +155,10 @@ public class PreparedStatementTest
 
         }
         try(Statement statement = con.createStatement()){
-            statement.executeUpdate("delete from employees");
+            statement.executeUpdate("delete from test1");
         }
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into employees (key,value) values(?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1 (key,value) values(?,?)"))
         {
             assertNotNull(preparedStatement);
 
@@ -176,14 +172,14 @@ public class PreparedStatementTest
         try (Statement statement = con.createStatement()) {
             assertNotNull(statement);
             ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
-                    "FROM employees emp\n" +
+                    "FROM test1 emp\n" +
                     "WHERE children is not NULL\n");
 
             assertFalse(resultSet.next());
 
         }
         try(Statement statement = con.createStatement()){
-            statement.executeUpdate("delete from employees");
+            statement.executeUpdate("delete from test1");
         }
 
 
@@ -198,7 +194,7 @@ public class PreparedStatementTest
         String name3 = "{\"name\":\"Second Stop\", \"type\": \"city\"}";
         String name4 = "{\"name\":\"Destination\", \"type\": \"city\"}";
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into travel(key,value) values (?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
         {
             JsonObject jsonObject = Json.createReader(new StringReader(name1)).readObject();
             preparedStatement.setString(1,"name");
@@ -227,7 +223,7 @@ public class PreparedStatementTest
         try(Statement statement = con.createStatement())
         {
             ResultSet rs = statement.executeQuery("SELECT r.name as route_name, c as route_cities " +
-                                                    "FROM travel r NEST travel c ON KEYS r.cities" +
+                                                    "FROM test1 r NEST travel c ON KEYS r.cities" +
                                                     " WHERE r.name = \"Travel Route1\"");
             assertTrue(rs.next());
         }
