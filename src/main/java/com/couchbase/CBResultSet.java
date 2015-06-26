@@ -3080,7 +3080,7 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkIndex();
         Map object = response.getResults().get(index);
-        return new CouchbaseArray(object.get(columnLabel));
+        return new CouchbaseArray((List)object.get(columnLabel));
     }
 
     /**

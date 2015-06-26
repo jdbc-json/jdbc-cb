@@ -73,7 +73,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
 
         // get the query identifier TODO: this should be a function call for clarity
-        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getResults().get(0).toString()));
+        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
@@ -105,7 +105,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         valuePair.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", preparedStatement.getResults().get(0).toString()));
+        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());

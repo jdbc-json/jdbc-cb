@@ -19,13 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-02-26.
@@ -129,9 +129,12 @@ public class StatementTest extends TestCase
     @Test
     public void getAllTypes() throws Exception
     {
-        JsonArray array = Json.createArrayBuilder().add(1).add(2).add(3).add(5).add(8).build();
+        Integer []foo = new Integer[]{1, 2, 3, 5, 8};
+        Object array = Arrays.asList(foo);
 
-        JsonObject jsonObject = Json.createObjectBuilder().add("a1","Object").build();
+
+        Map object = new HashMap();
+        object.put("a1","Object");
 
         Statement statement = con.createStatement();
         assertNotNull(statement);
@@ -156,8 +159,9 @@ public class StatementTest extends TestCase
         assertEquals(array,resultSet.getArray(5).getArray());
         assertEquals(array,resultSet.getArray("c5").getArray());
 
-        assertEquals(jsonObject, resultSet.getObject(6));
-        assertEquals(jsonObject, resultSet.getObject("c6"));
+        Object foo2 = resultSet.getObject(6);
+        assertEquals(object, resultSet.getObject(6));
+        assertEquals(object, resultSet.getObject("c6"));
 
 
     }

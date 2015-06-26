@@ -92,15 +92,16 @@ public class ReadOnlyQueryTest extends TestCase
         assertNotNull(statement);
 
         System.err.println(" executing query with product");
+        /*
         ResultSet rs = statement.executeQuery("SELECT product.name, product.unitPrice"
         +" FROM product"
         +" WHERE ANY cat IN product.categories SATISFIES lower(cat) = 'golf' END"
         +" ORDER BY product.unitPrice DESC"
         +" LIMIT 5");
-
+         */
 
         System.err.println(" executing query with product 2");
-        rs = statement.executeQuery("SELECT product.name, count(reviewID) AS  numReviews"
+        ResultSet rs = statement.executeQuery("SELECT product.name, count(reviewID) AS  numReviews"
         +" FROM product UNNEST reviewList AS reviewID"
         +" GROUP BY product.productId, product.name"
         +" HAVING count(reviewID) >= 20"

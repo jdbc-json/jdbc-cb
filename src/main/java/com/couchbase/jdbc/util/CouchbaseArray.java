@@ -11,9 +11,8 @@
 
 package com.couchbase.jdbc.util;
 
-import javax.json.JsonArray;
-import javax.json.JsonValue;
 import java.sql.*;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,26 +20,28 @@ import java.util.Map;
  */
 public class CouchbaseArray implements Array
 {
-    JsonArray jsonArray;
-    JsonValue.ValueType jsonType;
+    List array;
 
-    public CouchbaseArray( Object jsonArray )
-    {}
-    public CouchbaseArray( JsonArray jsonArray )
+    public CouchbaseArray( List list )
     {
-        this.jsonArray = jsonArray;
+        array = list;
     }
     @Override
     public String getBaseTypeName() throws SQLException
     {
-
-        return jsonArray.get(0).getValueType().toString();
+        if ( array.size() > 0)
+        {
+            return array.get(0).getClass().getName();
+        }
+        return "Object";
     }
 
     @Override
     public int getBaseType() throws SQLException
     {
-        jsonType = jsonArray.get(0).getValueType();
+
+        int jsonType=0;
+       /*
         switch (jsonType)
         {
             case ARRAY:     return Types.ARRAY;
@@ -50,13 +51,14 @@ public class CouchbaseArray implements Array
             case OBJECT:    return Types.JAVA_OBJECT;
             default:        return Types.OTHER;
         }
-
+         */
+        return Types.NUMERIC;
     }
 
     @Override
     public Object getArray() throws SQLException
     {
-        return jsonArray;
+        return array;
     }
 
     @Override

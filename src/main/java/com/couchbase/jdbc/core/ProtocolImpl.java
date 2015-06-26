@@ -30,6 +30,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.boon.core.reflection.MapObjectConversion;
+import org.boon.json.JsonException;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
 import org.slf4j.Logger;
@@ -40,7 +41,6 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -275,14 +275,15 @@ public class ProtocolImpl implements Protocol
         HttpEntity entity = response.getEntity();
 
 
-        //String strResponse = EntityUtils.toString(entity);
-        //logger.trace( "Response to query {} {}", sql, strResponse );
 
         ObjectMapper mapper = JsonFactory.create();
 
         CouchResponse couchResponse = new CouchResponse();
 
-        Map <String,Object> rootAsMap = mapper.readValue(new InputStreamReader(entity.getContent(), "UTF-8"), Map.class);
+        String strResponse = EntityUtils.toString(entity);
+//        logger.trace( "Response to query {} {}", sql, strResponse );
+
+        Map <String,Object> rootAsMap = mapper.readValue(strResponse, Map.class);
 
         couchResponse.status    = (String)rootAsMap.get("status");
         couchResponse.requestId = (String)rootAsMap.get("requestID");
@@ -420,6 +421,7 @@ public class ProtocolImpl implements Protocol
         }
         catch (Exception ex)
         {
+            JsonException foo;
             logger.error ("Error executing query [{}] {}", query, ex.getMessage());
             throw new SQLException("Error executing update",ex.getCause());
         }
@@ -431,6 +433,7 @@ public class ProtocolImpl implements Protocol
         {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
+//            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
             nameValuePairs.add(new BasicNameValuePair("statement", query));
             if ( queryTimeout != 0 )
             {
