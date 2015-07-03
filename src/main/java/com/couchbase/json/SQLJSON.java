@@ -24,7 +24,7 @@ public interface SQLJSON
     public InputStream getBinaryStream();
     public Reader getCharacterStream();
     public String getString();
-    public void setString();
+    public void setString(String str);
     public Object parse(Class clazz);
     public Map parse();
 }

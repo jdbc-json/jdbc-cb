@@ -14,7 +14,9 @@ package com.couchbase;
 
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.core.Field;
+import com.couchbase.jdbc.core.SqlJsonImplementation;
 import com.couchbase.jdbc.util.CouchbaseArray;
+import com.couchbase.json.SQLJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1164,6 +1166,21 @@ public class CBResultSet implements java.sql.ResultSet
         return null;
     }
 
+    public SQLJSON getSQLJSON(int columnIndex ) throws SQLException
+    {
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+
+        return getSQLJSON(field.getName());
+    }
+    public SQLJSON getSQLJSON(String columnLabel) throws SQLException
+    {
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        SQLJSON sqljson = new SqlJsonImplementation( (String)jsonObject.get(columnLabel));
+        return sqljson;
+    }
     /**
      * Maps the given <code>ResultSet</code> column label to its
      * <code>ResultSet</code> column index.
