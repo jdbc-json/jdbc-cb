@@ -17,6 +17,7 @@ import com.couchbase.jdbc.core.Field;
 import com.couchbase.jdbc.core.SqlJsonImplementation;
 import com.couchbase.jdbc.util.CouchbaseArray;
 import com.couchbase.json.SQLJSON;
+import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ public class CBResultSet implements java.sql.ResultSet
     public boolean next() throws SQLException
     {
         index++;
-        return (index < response.getMetrics().getResultSize() );
+        return (index < response.getResults().size() );
 
     }
 
@@ -544,7 +545,15 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkIndex();
         Map jsonObject = response.getResults().get(index);
-        return (String)jsonObject.get(columnLabel);
+        Object object = jsonObject.get(columnLabel);
+        if (object instanceof  Map)
+        {
+            return JsonFactory.toJson(object);
+        }
+        else
+        {
+            return (String)jsonObject.get(columnLabel);
+        }
     }
 
     /**
