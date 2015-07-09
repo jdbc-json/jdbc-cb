@@ -12,6 +12,7 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.core.CouchError;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.core.Field;
 import com.couchbase.jdbc.core.SqlJsonImplementation;
@@ -1009,7 +1010,22 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public SQLWarning getWarnings() throws SQLException
     {
-        return null;
+        if ( response == null ) throw new SQLException("Result Set is closed");
+
+        SQLWarning sqlWarning=null;
+
+        for (CouchError warning : response.getWarnings())
+        {
+            if ( sqlWarning != null )
+            {
+                sqlWarning = new SQLWarning(warning.getMsg(),null, warning.getCode());
+            }
+            else
+            {
+                sqlWarning.setNextWarning(new SQLWarning(warning.getMsg(),null, warning.getCode()));
+            }
+        }
+        return sqlWarning;
     }
 
     /**

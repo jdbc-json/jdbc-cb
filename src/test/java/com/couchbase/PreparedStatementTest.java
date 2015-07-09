@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonString;
 import java.io.StringReader;
 import java.sql.*;
 
@@ -150,8 +149,8 @@ public class PreparedStatementTest
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
-            JsonString jsonString1 = (JsonString)resultSet.getObject(1);
-            assertEquals("Abama",jsonString1.getString());
+            String jsonString1 = (String)resultSet.getObject(1);
+            assertEquals("Abama",jsonString1);
 
         }
         try(Statement statement = con.createStatement()){
@@ -220,6 +219,7 @@ public class PreparedStatementTest
 
             assertEquals(1, preparedStatement.executeUpdate());
         }
+        /*
         try(Statement statement = con.createStatement())
         {
             ResultSet rs = statement.executeQuery("SELECT r.name as route_name, c as route_cities " +
@@ -227,7 +227,7 @@ public class PreparedStatementTest
                                                     " WHERE r.name = \"Travel Route1\"");
             assertTrue(rs.next());
         }
-
+        */
 
     }
 }

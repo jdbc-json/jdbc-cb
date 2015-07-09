@@ -46,8 +46,8 @@ public class Cluster
     }
     public String getNextEndpoint()
     {
-        //return "http://54.237.32.30:8093/query/service";
-
+        return "http://54.237.32.30:8093/query/service";
+        /*
         int i;
         synchronized (instanceIndex)
         {
@@ -62,7 +62,7 @@ public class Cluster
 
         logger.trace( "Endpoint {} of {}",i,numInstances);
         return endpoints.get(i).getQueryEndPoint();
-
+        */
 
     }
 }

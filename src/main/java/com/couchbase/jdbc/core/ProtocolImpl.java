@@ -45,6 +45,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.util.*;
 
 /**
@@ -78,6 +79,7 @@ public class ProtocolImpl implements Protocol
     String user;
     String password;
     String credentials;
+    SQLWarning sqlWarning;
 
     Cluster cluster;
 
@@ -301,10 +303,22 @@ public class ProtocolImpl implements Protocol
         {
             couchResponse.errors    = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, errorList);
         }
-        List warningList = (List)rootAsMap.get("warnings");
+        List  warningList = (List)rootAsMap.get("warnings");
         if ( warningList != null )
         {
             couchResponse.warnings  = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, warningList );
+
+            for (CouchError warning : couchResponse.warnings)
+            {
+                if ( sqlWarning != null )
+                {
+                    sqlWarning = new SQLWarning(warning.msg,null, warning.code);
+                }
+                else
+                {
+                    sqlWarning.setNextWarning(new SQLWarning(warning.msg,null, warning.code));
+                }
+            }
         }
 
 
@@ -343,28 +357,28 @@ public class ProtocolImpl implements Protocol
                 }
             case 400:
                 message = "Bad Request";
-                break;
+                fillSQLException(message, couchResponse);
             case 401:
                 message = "Unauthorized Request credentials are missing or invalid";
-                break;
+                fillSQLException(message, couchResponse);
             case 403:
                 message = "Forbidden Request: read only violation or client unauthorized to modify";
-                break;
+                fillSQLException(message, couchResponse);
             case 404:
                 message = "Not found: Request references an invalid keyspace or there is no primary key";
-                break;
+                fillSQLException(message, couchResponse);
             case 405:
                 message = "Method not allowed: The REST method type in request is supported";
-                break;
+                fillSQLException(message, couchResponse);
             case 409:
                 message = "Conflict: attempt to create a keyspace or index that already exists";
-                break;
+                fillSQLException(message, couchResponse);
             case 410:
                 message = "Gone: The server is doing a graceful shutdown";
-                break;
+                fillSQLException(message, couchResponse);
             case 500:
                 message = "Internal server error: unforeseen problem processing the request";
-                break;
+                fillSQLException(message, couchResponse);
             case 503:
                 message = "Service Unavailable: there is an issue preventing the request from being serviced";
                 logger.debug("Error with the request {}", message);
@@ -384,14 +398,30 @@ public class ProtocolImpl implements Protocol
                 }
 
 
-                throw new SQLException(errors.msg + " query " + sql );
+                fillSQLException(message, couchResponse);
 
             default:
                 throw new ClientProtocolException("Unexpected response status: " + status);
 
         }
-        logger.debug("Error with the request {}", message);
-        throw new ClientProtocolException(message +": " + status);
+    }
+
+    private void fillSQLException(String msg, CouchResponse response)  throws SQLException
+    {
+        CouchError error ;
+        if ( response.metrics.errorCount > 0 )
+        {
+            error = response.errors.get(0);
+        }
+        else if ( response.metrics.warningCount > 0)
+        {
+            error = response.errors.get(0);
+        }
+        else
+        {
+            throw new SQLException(msg);
+        }
+        throw new SQLException(error.msg, null, error.code);
     }
 
     private static NameValuePair scanConstistency= new BasicNameValuePair("scan_consistency","request_plus");
@@ -608,4 +638,17 @@ public class ProtocolImpl implements Protocol
     {
         httpClient.close();
     }
+
+    @Override
+    public SQLWarning getWarnings() throws SQLException
+    {
+        return sqlWarning;
+    }
+
+    @Override
+    public void clearWarning() throws SQLException
+    {
+       sqlWarning=null;
+    }
 }
+

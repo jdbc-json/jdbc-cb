@@ -91,5 +91,7 @@ public class CouchResponse
     {
         return results;
     }
+    public List <CouchError> getWarnings() {return warnings;}
+    public List <CouchError> getErrors(){return errors;}
 
 }
