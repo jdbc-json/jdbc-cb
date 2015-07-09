@@ -23,7 +23,7 @@ public class Query {
     public static void main(String[] args) throws SQLException
     {
 
-        String query = "SELECT * FROM CUSTOMER LIMIT 1";
+        String query = "SELECT * FROM customer LIMIT 1";
 
         try ( Connection con = DriverManager.getConnection(ConnectionURL) )
         {
