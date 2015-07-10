@@ -89,7 +89,7 @@
     </build>
     <profiles>
         <profile>
-            <id>deploy</id>
+            <id>amazon</id>
             <build>
                 <plugins>
                     <plugin>
@@ -97,7 +97,7 @@
                         <executions>
                             <execution>
                                 <id>copy-jar-file</id>
-                                <phase>deploy</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
