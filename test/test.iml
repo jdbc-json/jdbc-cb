@@ -20,5 +20,6 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: io.fastjson:boon:0.33" level="project" />
+    <orderEntry type="module" module-name="jdbc" />
   </component>
 </module>
