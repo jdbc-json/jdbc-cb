@@ -62,7 +62,7 @@ public class Cluster
 
         logger.trace( "Endpoint {} of {}",i,numInstances);
         return endpoints.get(i).getQueryEndPoint();
-          */
+        */
 
     }
 }

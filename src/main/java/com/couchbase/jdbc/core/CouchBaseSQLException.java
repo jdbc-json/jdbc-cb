@@ -11,14 +11,19 @@
 
 package com.couchbase.jdbc.core;
 
-/**
- * Created by davec on 2015-06-23.
- */
-public class CouchError
-{
-    Integer code;
-    String msg;
-    public Integer getCode() {return code;}
-    public String getMsg() { return msg;}
+import java.sql.SQLException;
 
+/**
+ * Created by davec on 2015-07-08.
+ */
+public class CouchBaseSQLException extends SQLException
+{
+    public CouchBaseSQLException()
+    {
+        super();
+    }
+    public CouchBaseSQLException(String msg)
+    {
+        super(msg);
+    }
 }

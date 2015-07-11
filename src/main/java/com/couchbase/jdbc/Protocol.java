@@ -16,6 +16,7 @@ import com.couchbase.jdbc.core.CouchResponse;
 import org.apache.http.NameValuePair;
 
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.util.List;
 
 /**
@@ -48,4 +49,6 @@ public interface Protocol
 
     public void setQueryTimeout(int seconds) throws SQLException;
     public int getQueryTimeout() throws SQLException;
+    public SQLWarning getWarnings() throws SQLException;
+    public void clearWarning() throws SQLException;
 }
