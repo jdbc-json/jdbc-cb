@@ -12,6 +12,8 @@
 
 package com.couchbase;
 
+import org.slf4j.LoggerFactory;
+
 import java.lang.String;
 import java.net.URL;
 import java.sql.Connection;
@@ -180,7 +182,33 @@ public class CBDriver implements java.sql.Driver
     @Override
     public boolean jdbcCompliant()
     {
+
         return false;
+    }
+
+    public static java.sql.SQLFeatureNotSupportedException notImplemented(Class callClass, String functionName)
+    {
+        return new java.sql.SQLFeatureNotSupportedException("Method {0} is not yet implemented.",
+                callClass.getName() + "." + functionName,null);
+    }
+
+    public static void setLogLevel(int logLevel)
+    {
+        synchronized (CBDriver.class)
+        {
+
+            //logger.setLogLevel(logLevel);
+            //logLevelSet = true;
+        }
+    }
+
+    public static int getLogLevel()
+    {
+        synchronized (CBDriver.class)
+        {
+            //return logger.getLogLevel();
+        }
+        return 0;
     }
 
     /**

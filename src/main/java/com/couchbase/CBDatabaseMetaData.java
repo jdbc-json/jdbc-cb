@@ -49,7 +49,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean allTablesAreSelectable() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -160,7 +160,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getDatabaseProductName() throws SQLException
     {
-        return null;
+        return "Couchbase";
     }
 
     /**
@@ -388,7 +388,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getNumericFunctions() throws SQLException
     {
-        return null;
+        return "";
     }
 
     /**
@@ -402,7 +402,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getStringFunctions() throws SQLException
     {
-        return null;
+        return "";
     }
 
     /**
@@ -416,7 +416,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getSystemFunctions() throws SQLException
     {
-        return null;
+        return "";
     }
 
     /**
@@ -429,7 +429,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getTimeDateFunctions() throws SQLException
     {
-        return null;
+        return "";
     }
 
     /**
@@ -461,7 +461,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getExtraNameCharacters() throws SQLException
     {
-        return null;
+        return "";
     }
 
     /**

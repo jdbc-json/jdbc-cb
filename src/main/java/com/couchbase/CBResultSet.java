@@ -30,6 +30,7 @@ import java.net.URL;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by davec on 2015-02-20.
@@ -39,6 +40,8 @@ public class CBResultSet implements java.sql.ResultSet
     private final static Logger logger = LoggerFactory.getLogger(CBResultSet.class);
 
     final CouchResponse response;
+
+    AtomicBoolean closed = new AtomicBoolean(false);
 
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
@@ -129,6 +132,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void close() throws SQLException
     {
+        closed.set(true);
 
     }
 
@@ -1331,7 +1335,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isBeforeFirst() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented( CBResultSet.class, "isBeforeFirst" );
     }
 
     /**
@@ -1354,7 +1358,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isAfterLast() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented( CBResultSet.class, "isBeforeFirst" );
     }
 
     /**
@@ -1376,7 +1380,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isFirst() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented( CBResultSet.class, "isBeforeFirst" );
     }
 
     /**
@@ -1402,7 +1406,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isLast() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented( CBResultSet.class, "isBeforeFirst" );
     }
 
     /**
@@ -1420,7 +1424,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void beforeFirst() throws SQLException
     {
-
+        throw CBDriver.notImplemented( CBResultSet.class, "isBeforeFirst" );
     }
 
     /**
@@ -1438,6 +1442,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void afterLast() throws SQLException
     {
+        if (isClosed() )
+        {
+            throw new SQLException("ResultSet is closed");
+        }
+
+        index = (int)response.getMetrics().getResultCount();
 
     }
 
@@ -1457,8 +1467,16 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean first() throws SQLException
     {
-        return false;
+        if (isClosed() )
+        {
+            throw new SQLException("ResultSet is closed");
+        }
+        index =0;
+
+        // if there are results
+        return response.getResults().size() > 0;
     }
+
 
     /**
      * Moves the cursor to the last row in
@@ -1476,7 +1494,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean last() throws SQLException
     {
-        return false;
+        if (isClosed() )
+        {
+            throw new SQLException("ResultSet is closed");
+        }
+        index = response.getResults().size();
+
+        // if there are results
+        return response.getResults().size() > 0;
     }
 
     /**
@@ -1497,7 +1522,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getRow() throws SQLException
     {
-        return 0;
+        if (isClosed() )
+        {
+           throw new SQLException("ResultSet is closed");
+        }
+        return index + 1;
     }
 
     /**
@@ -1546,7 +1575,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean absolute(int row) throws SQLException
     {
-        return false;
+        throw  CBDriver.notImplemented(CBResultSet.class, "absolute");
     }
 
     /**
@@ -1576,7 +1605,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean relative(int rows) throws SQLException
     {
-        return false;
+        throw  CBDriver.notImplemented(CBResultSet.class, "relative");
     }
 
     /**
@@ -1605,7 +1634,17 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean previous() throws SQLException
     {
+        if (isClosed() )
+        {
+           throw new SQLException("ResultSet is closed");
+        }
+        if (index > 0)
+        {
+            index--;
+            return true;
+        }
         return false;
+
     }
 
     /**
@@ -4934,6 +4973,11 @@ public class CBResultSet implements java.sql.ResultSet
 
     void checkIndex() throws SQLException
     {
-        if ( index > response.getMetrics().getResultSize() ) throw new SQLException("Invalid index");
+        if ( index > response.getMetrics().getResultCount() ) throw new SQLException("Invalid index");
     }
+    void checkClosed() throws SQLException
+    {
+        if (closed.get() == true) throw new SQLException("ResultSet is closed");
+    }
+
 }
