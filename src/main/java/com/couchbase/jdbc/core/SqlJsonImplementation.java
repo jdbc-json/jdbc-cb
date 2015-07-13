@@ -1,6 +1,9 @@
 package com.couchbase.jdbc.core;
 
 import com.couchbase.json.SQLJSON;
+import org.boon.core.reflection.Mapper;
+import org.boon.core.reflection.MapperSimple;
+import org.boon.json.JsonFactory;
 
 import java.io.*;
 import java.util.Map;
@@ -10,10 +13,12 @@ import java.util.Map;
  */
 public class SqlJsonImplementation implements SQLJSON
 {
+    Map jsonObject;
     String sqlJson;
-    public SqlJsonImplementation(String jsonString)
+
+    public SqlJsonImplementation(Map map)
     {
-        sqlJson = jsonString;
+        jsonObject = map;
     }
 
     @Override
@@ -21,8 +26,21 @@ public class SqlJsonImplementation implements SQLJSON
 
     }
 
+    private void toJson()
+    {
+        synchronized (sqlJson)
+        {
+            if (sqlJson == null )
+            {
+                JsonFactory.toJson(jsonObject);
+            }
+        }
+
+    }
     @Override
-    public InputStream getBinaryStream() {
+    public InputStream getBinaryStream()
+    {
+        toJson();
         try
         {
             return new ByteArrayInputStream(sqlJson.getBytes("UTF-8"));
@@ -35,12 +53,15 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
     @Override
-    public Reader getCharacterStream() {
+    public Reader getCharacterStream()
+    {
+        toJson();
         return new StringReader(sqlJson);
     }
 
     @Override
     public String getString() {
+        toJson();
         return sqlJson;
     }
 
@@ -51,12 +72,15 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
     @Override
-    public Object parse(Class clazz) {
+    public Object parse(Class clazz)
+    {
+        Mapper mapper = new MapperSimple();
+        mapper.fromMap(jsonObject,clazz);
         return null;
     }
 
     @Override
     public Map parse() {
-        return null;
+        return jsonObject;
     }
 }

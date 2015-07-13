@@ -1204,10 +1204,11 @@ public class CBResultSet implements java.sql.ResultSet
     }
     public SQLJSON getSQLJSON(String columnLabel) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         Map jsonObject = response.getResults().get(index);
-        SQLJSON sqljson = new SqlJsonImplementation( (String)jsonObject.get(columnLabel));
+        SQLJSON sqljson = new SqlJsonImplementation(jsonObject);
         return sqljson;
     }
     /**
