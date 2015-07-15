@@ -19,9 +19,11 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -57,7 +59,7 @@ public class TestSQLJson
     @Test
     public void getSqlJson() throws Exception
     {
-        String query = "SELECT * FROM customer LIMIT 1";
+        String query = "SELECT * FROM customer limit 10";
 
         try (Statement stmt= con.createStatement())
         {
@@ -70,6 +72,38 @@ public class TestSQLJson
                 Map map = sqljson.parse();
                 assertNotNull(map);
             }
+        }
+    }
+    @Test
+    public void setSqlJson() throws Exception
+    {
+        String json = "{\n" +
+                "  \"emailAddress\": \"jakayla@crooks.info\",\n" +
+                "  \"type\": \"customer\",\n" +
+                "  \"dateLastActive\": \"2014-05-06T15:52:14Z\",\n" +
+                "  \"firstName\": \"Darrin\",\n" +
+                "  \"phoneNumber\": \"497-854-2229 x000\",\n" +
+                "  \"postalCode\": \"45603-9112\",\n" +
+                "  \"lastName\": \"Ortiz\",\n" +
+                "  \"ccInfo\": {\n" +
+                "    \"cardNumber\": \"1234-2121-1221-1211\",\n" +
+                "    \"cardType\": \"discover\",\n" +
+                "    \"cardExpiry\": \"2012-11-12\"\n" +
+                "  },\n" +
+                "  \"dateAdded\": \"2013-06-10T15:52:14Z\",\n" +
+                "  \"state\": \"IN\",\n" +
+                "  \"customerId\": \"customer10\"\n" +
+                "}";
+
+        String query = "insert into test1 (key,value) values (?,?)";
+
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+        sqljson.setString( json );
+        try (PreparedStatement pstmt = con.prepareStatement(query))
+        {
+            pstmt.setString(1,"customer1");
+            ((CBPreparedStatement)pstmt).setSQLJSON(2,sqljson);
+            assertEquals(1,pstmt.executeUpdate());
         }
     }
 }

@@ -15,6 +15,7 @@ package com.couchbase;
 import com.couchbase.jdbc.Protocol;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
+import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -155,7 +156,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBoolean(int parameterIndex, boolean x) throws SQLException
     {
-        fields[parameterIndex-1] = Boolean.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -172,7 +173,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException
     {
-        fields[parameterIndex-1] = Byte.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -189,7 +190,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException
     {
-        fields[parameterIndex-1] = Short.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -206,7 +207,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException
     {
-        fields[parameterIndex-1] = Integer.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -223,7 +224,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException
     {
-        fields[parameterIndex-1] = Long.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -240,7 +241,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException
     {
-        fields[parameterIndex-1] = Float.toString(x);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -257,7 +258,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDouble(int parameterIndex, double x) throws SQLException
     {
-        fields[parameterIndex-1] = Double.toString(x);
+        checkFields(parameterIndex);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -274,7 +276,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
     {
-        fields[parameterIndex-1] = x.toString();
+        checkFields(parameterIndex);
+        fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
     /**
@@ -294,6 +297,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setString(int parameterIndex, String x) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
@@ -312,6 +316,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = QUOTE+new String(x)+QUOTE;
     }
 
@@ -331,6 +336,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDate(int parameterIndex, Date x) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
     }
 
@@ -348,6 +354,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTime(int parameterIndex, Time x) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = QUOTE +x.toString()+QUOTE;
     }
 
@@ -366,6 +373,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = QUOTE+x.toString()+QUOTE;
     }
 
@@ -499,9 +507,34 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
     {
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = x.toString();
     }
-
+    /**
+     * Sets the value of the designated parameter with the given object.
+     * This method is like the method <code>setObject</code>
+     * above, except that it assumes a scale of zero.
+     *
+     * @param parameterIndex the first parameter is 1, the second is 2, ...
+     * @param sqljson        sqlJson to update
+     *                       sent to the database
+     * @throws java.sql.SQLException                    if parameterIndex does not correspond to a parameter
+     *                                                  marker in the SQL statement; if a database access error occurs or
+     *                                                  this method is called on a closed <code>PreparedStatement</code>
+     * @throws java.sql.SQLFeatureNotSupportedException if <code>targetSqlType</code> is
+     *                                                  a <code>ARRAY</code>, <code>BLOB</code>, <code>CLOB</code>,
+     *                                                  <code>DATALINK</code>, <code>JAVA_OBJECT</code>, <code>NCHAR</code>,
+     *                                                  <code>NCLOB</code>, <code>NVARCHAR</code>, <code>LONGNVARCHAR</code>,
+     *                                                  <code>REF</code>, <code>ROWID</code>, <code>SQLXML</code>
+     *                                                  or  <code>STRUCT</code> data type and the JDBC driver does not support
+     *                                                  this data type
+     * @see java.sql.Types
+     */
+    public void setSQLJSON(int parameterIndex,SQLJSON sqljson) throws SQLException
+    {
+        checkFields(parameterIndex);
+        fields[parameterIndex-1] = sqljson.getString();
+    }
     /**
      * <p>Sets the value of the designated parameter using the given object.
      * The second parameter must be of type <code>Object</code>; therefore, the

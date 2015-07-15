@@ -16,6 +16,10 @@ public class SqlJsonImplementation implements SQLJSON
     Map jsonObject;
     String sqlJson;
 
+    public SqlJsonImplementation()
+    {
+
+    }
     public SqlJsonImplementation(Map map)
     {
         jsonObject = map;

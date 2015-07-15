@@ -14,6 +14,8 @@ package com.couchbase;
 
 import com.couchbase.jdbc.Protocol;
 import com.couchbase.jdbc.core.ProtocolImpl;
+import com.couchbase.jdbc.core.SqlJsonImplementation;
+import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
@@ -1668,5 +1670,9 @@ public class CBConnection implements java.sql.Connection
     void checkClosed() throws SQLException
     {
         if (isClosed() ) throw new SQLException("Connection is closed");
+    }
+    public SQLJSON createSQLJSON()
+    {
+        return new SqlJsonImplementation();
     }
 }
