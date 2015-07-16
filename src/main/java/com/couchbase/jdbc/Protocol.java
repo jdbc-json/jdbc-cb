@@ -12,6 +12,7 @@
 package com.couchbase.jdbc;
 
 import com.couchbase.CBResultSet;
+import com.couchbase.CBStatement;
 import com.couchbase.jdbc.core.CouchResponse;
 import org.apache.http.NameValuePair;
 
@@ -27,9 +28,9 @@ public interface Protocol
     public void connect() throws Exception;
     public void close() throws Exception;
 
-    public CBResultSet query( String sql ) throws SQLException;
-    public int executeUpdate( String sql ) throws SQLException;
-    public boolean execute( String sql ) throws SQLException;
+    public CBResultSet query( CBStatement statement, String sql ) throws SQLException;
+    public int executeUpdate( CBStatement statement, String sql ) throws SQLException;
+    public boolean execute( CBStatement statement, String sql ) throws SQLException;
     public void addBatch( String sql ) throws SQLException;
     public int [] executeBatch(  ) throws SQLException;
 

@@ -81,7 +81,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         }
         CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
 
-        return new CBResultSet(couchResponse);
+        return new CBResultSet(this, couchResponse);
     }
 
     /**

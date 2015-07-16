@@ -13,6 +13,7 @@ package com.couchbase.jdbc.core;
 
 
 import com.couchbase.CBResultSet;
+import com.couchbase.CBStatement;
 import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Cluster;
 import com.couchbase.jdbc.Protocol;
@@ -203,7 +204,7 @@ public class ProtocolImpl implements Protocol
 
     }
 
-    public CBResultSet query(String sql) throws SQLException
+    public CBResultSet query(CBStatement statement, String sql) throws SQLException
     {
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
@@ -247,7 +248,7 @@ public class ProtocolImpl implements Protocol
         {
 
             CloseableHttpResponse response = httpClient.execute(httpGet);
-            return new CBResultSet(handleResponse(sql, response));
+            return new CBResultSet(statement, handleResponse(sql, response));
 
         }
         catch (IOException ex)
@@ -257,9 +258,9 @@ public class ProtocolImpl implements Protocol
         }
     }
 
-    public int executeUpdate(String query) throws SQLException
+    public int executeUpdate(CBStatement statement, String query) throws SQLException
     {
-        boolean hasResultSet = execute(query);
+        boolean hasResultSet = execute(statement, query);
         if (!hasResultSet)
         {
             return (int)getUpdateCount();
@@ -457,7 +458,7 @@ public class ProtocolImpl implements Protocol
         }
     }
 
-    public boolean execute(String query) throws SQLException
+    public boolean execute(CBStatement statement, String query) throws SQLException
     {
         try
         {
@@ -486,7 +487,7 @@ public class ProtocolImpl implements Protocol
 
             // no sense creating the object if it is false
             if ( response.metrics.resultCount == 0 ) return false;
-            resultSet = new CBResultSet(response);
+            resultSet = new CBResultSet(statement, response);
                 return true;
 
 

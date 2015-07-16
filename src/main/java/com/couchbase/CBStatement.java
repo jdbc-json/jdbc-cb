@@ -59,7 +59,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public ResultSet executeQuery(String sql) throws SQLException
     {
-        return protocol.query(sql);
+        return protocol.query(this, sql);
     }
 
     /**
@@ -87,7 +87,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql) throws SQLException
     {
-        return protocol.executeUpdate(sql);
+        return protocol.executeUpdate(this, sql);
     }
 
     /**

@@ -192,4 +192,50 @@ public class ResultSetTest
             }
         }
     }
+    @Test
+    public void testGetDate() throws Exception
+    {
+        try (Statement stmt = con.createStatement())
+        {
+            try (ResultSet rs = stmt.executeQuery("select now_str() as cur_time"))
+            {
+                assertTrue(rs.next());
+                Date date = rs.getDate("cur_time");
+                assertNotNull(date);
+
+                date = rs.getDate(1);
+                assertNotNull(date);
+
+                date = (Date)rs.getObject("cur_time");
+                assertNotNull(date);
+
+                date = (Date)rs.getObject(1);
+                assertNotNull(date);
+
+
+
+            }
+        }
+    }
+
+    @Test
+    public void testGetTimestamp() throws Exception
+    {
+        try (Statement stmt = con.createStatement())
+        {
+            try (ResultSet rs = stmt.executeQuery("select now_str() as cur_time"))
+            {
+                assertTrue(rs.next());
+                Timestamp ts = rs.getTimestamp("cur_time");
+                assertNotNull(ts);
+                ts=rs.getTimestamp(1);
+                assertNotNull(ts);
+
+                ts=rs.getObject("cur_time", Timestamp.class);
+                assertNotNull(ts);
+                ts=rs.getObject(1, Timestamp.class);
+                assertNotNull(ts);
+            }
+        }
+    }
 }

@@ -43,6 +43,9 @@ public class CBResultSet implements java.sql.ResultSet
 
     AtomicBoolean closed = new AtomicBoolean(false);
 
+    Statement statement;
+    boolean wasNull = false;
+
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
     static final Map <JsonValue.ValueType,Integer> valueTypes = new HashMap<JsonValue.ValueType,Integer>();
@@ -53,9 +56,10 @@ public class CBResultSet implements java.sql.ResultSet
             valueTypes.put(valueType,valueType.ordinal());
         }
     }
-    public CBResultSet(CouchResponse response)
+    public CBResultSet(Statement statement, CouchResponse response)
     {
 
+        this.statement = statement;
         this.response = response;
 
         if ( response.getMetrics().getResultSize()  == 0 )
@@ -96,6 +100,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean next() throws SQLException
     {
+        checkClosed();
         index++;
         return (index < response.getResults().size() );
 
@@ -152,7 +157,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean wasNull() throws SQLException
     {
-        return false;
+        checkClosed();
+        return wasNull;
     }
 
     /**
@@ -170,6 +176,9 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getString(int columnIndex) throws SQLException
     {
+
+        checkClosed();
+        checkIndex();
 
         //now find the key of the first value
         Field field  = getField(columnIndex);
@@ -200,6 +209,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean getBoolean(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
         Field field = getField(columnIndex);
 
@@ -221,7 +231,10 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte getByte(int columnIndex) throws SQLException
     {
-        return 0;
+        checkClosed();
+        checkIndex();
+        Field field  = getField(columnIndex);
+        return getByte(field.getName());
     }
 
     /**
@@ -239,6 +252,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public short getShort(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
         //now find the key of the first value
         Field field  = getField(columnIndex);
@@ -305,6 +319,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public float getFloat(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         //now find the key of the first value
@@ -328,6 +343,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public double getDouble(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         //now find the key of the first value
@@ -355,6 +371,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         Field field  = getField(columnIndex);
@@ -378,6 +395,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte[] getBytes(int columnIndex) throws SQLException
     {
+        checkClosed();
+        checkIndex();
         return new byte[0];
     }
 
@@ -396,7 +415,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+
+        return getDate(field.getName());
+
     }
 
     /**
@@ -432,7 +458,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Timestamp getTimestamp(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getTimestamp(field.getName());
+
     }
 
     /**
@@ -655,8 +687,9 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getInt(String columnLabel) throws SQLException
     {
-        int value ;
+        int value = 0;
 
+        checkClosed();
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
@@ -664,9 +697,26 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
-            value = (int)jsonObject.get(columnLabel);
+            Object object = jsonObject.get(columnLabel);
+
+            if ( object == null )
+            {
+                wasNull=true;
+            }
+            else if ( object instanceof  Number )
+            {
+                value = ((Number)object).intValue();
+            }
+            else if (object instanceof String)
+            {
+                value = Integer.parseInt((String)object);
+            }
+            else
+            {
+                throw new SQLException("value {} is not an integer", object.toString());
+            }
         }
-        catch( Exception ex)
+        catch( NumberFormatException ex)
         {
             throw new SQLException("value is not an integer");
         }
@@ -690,22 +740,41 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public long getLong(String columnLabel) throws SQLException
     {
-        long value ;
+        long value = 0;
 
+        checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map  jsonObject = response.getResults().get(index);
+
 
         try
         {
-            value = (long)jsonObject.get(columnLabel);
+            Object object = jsonObject.get(columnLabel);
+
+            if ( object == null )
+            {
+                wasNull=true;
+            }
+            else if ( object instanceof  Number )
+            {
+                value = ((Number)object).intValue();
+            }
+            else if (object instanceof String)
+            {
+                value = Long.parseLong((String) object);
+            }
+            else
+            {
+                throw new SQLException("value {} is not a long", object.toString());
+            }
         }
-        catch( Exception ex)
+        catch( NumberFormatException ex)
         {
             throw new SQLException("value is not a long");
         }
-        logger.info("value {}", value);
 
+        logger.info("value {}", jsonObject.get(columnLabel));
         return value;
     }
 
@@ -724,23 +793,42 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public float getFloat(String columnLabel) throws SQLException
     {
-        double value;
+        float value=0;
 
+        checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map  jsonObject = response.getResults().get(index);
+
 
         try
         {
-            value = (double)jsonObject.get(columnLabel);
+            Object object = jsonObject.get(columnLabel);
+
+            if ( object == null )
+            {
+                wasNull=true;
+            }
+            else if ( object instanceof  Number )
+            {
+                value = ((Number)object).floatValue();
+            }
+            else if (object instanceof String)
+            {
+                value = Float.parseFloat((String) object);
+            }
+            else
+            {
+                throw new SQLException("value {} is not a float", object.toString());
+            }
         }
-        catch( Exception ex)
+        catch( NumberFormatException ex)
         {
             throw new SQLException("value is not a float");
         }
 
-        logger.info("value {}", value);
-        return (float)value;
+        logger.info("value {}", jsonObject.get(columnLabel));
+        return value;
 
 
     }
@@ -760,22 +848,39 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public double getDouble(String columnLabel) throws SQLException
     {
-        double value;
-
+        double value=0;
+        checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map  jsonObject = response.getResults().get(index);
+
 
         try
         {
-            value = (double)jsonObject.get(columnLabel);
+            Object object = jsonObject.get(columnLabel);
+
+            if ( object == null )
+            {
+                wasNull=true;
+            }
+            else if ( object instanceof  Number )
+            {
+                value = ((Number)object).doubleValue();
+            }
+            else if (object instanceof String)
+            {
+                value = Double.parseDouble((String)object);
+            }
+            else
+            {
+                throw new SQLException("value {} is not a double", object.toString());
+            }
         }
-        catch( Exception ex)
+        catch( NumberFormatException ex)
         {
             throw new SQLException("value is not a double");
         }
 
-        logger.info("value {}", value);
         return value;
     }
 
@@ -852,7 +957,22 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(String columnLabel) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Date date;
+        Map  jsonObject = response.getResults().get(index);
+
+        try
+        {
+            java.util.Date jsonDate = (java.util.Date)jsonObject.get(columnLabel);
+            date = new Date( jsonDate.getTime()  );
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value is not a Date");
+        }
+        return date;
     }
 
     /**
@@ -889,7 +1009,23 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Timestamp getTimestamp(String columnLabel) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Timestamp ts;
+
+        Map  jsonObject = response.getResults().get(index);
+
+        try
+        {
+            java.util.Date jsonDate = (java.util.Date)jsonObject.get(columnLabel);
+            ts = new Timestamp( jsonDate.getTime()  );
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value is not a Date");
+        }
+
+        return ts;
     }
 
     /**
@@ -1180,9 +1316,17 @@ public class CBResultSet implements java.sql.ResultSet
                     case Types.BOOLEAN:
                         return new Boolean((String)jsonObject.get(columnLabel));
                     case Types.VARCHAR:
-                        return (String)jsonObject.get(columnLabel);
+                        Object object = jsonObject.get(columnLabel);
+                        if (object instanceof java.util.Date)
+                        {
+                            return new java.sql.Date(((java.util.Date)object).getTime());
+                        }
+                        else
+                        {
+                            return object;
+                        }
                     case Types.ARRAY:
-                        return (String)jsonObject.get(columnLabel);
+                        return jsonObject.get(columnLabel);
                     case Types.OTHER:
                         return jsonObject.get(columnLabel);
                     case Types.NULL:
@@ -1992,7 +2136,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateFloat(int columnIndex, float x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateFload");
     }
 
     /**
@@ -2015,7 +2159,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateDouble(int columnIndex, double x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateDouble");
     }
 
     /**
@@ -2039,7 +2183,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBigDecimal");
     }
 
     /**
@@ -2062,7 +2206,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateString(int columnIndex, String x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateString");
     }
 
     /**
@@ -2085,7 +2229,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBytes(int columnIndex, byte[] x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBytes");
     }
 
     /**
@@ -2108,7 +2252,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateDate(int columnIndex, Date x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateDate");
     }
 
     /**
@@ -2131,7 +2275,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateTime(int columnIndex, Time x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateTime");
     }
 
     /**
@@ -2155,7 +2299,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateTimestamp");
     }
 
     /**
@@ -2180,7 +2324,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -2205,7 +2349,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBinaryStream");
     }
 
     /**
@@ -2230,7 +2374,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(int columnIndex, Reader x, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -2265,7 +2409,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateObject(int columnIndex, Object x, int scaleOrLength) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
     }
 
     /**
@@ -2288,7 +2432,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateObject(int columnIndex, Object x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
     }
 
     /**
@@ -2310,7 +2454,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNull(String columnLabel) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNull");
     }
 
     /**
@@ -2333,7 +2477,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBoolean(String columnLabel, boolean x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBoolean");
     }
 
     /**
@@ -2356,7 +2500,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateByte(String columnLabel, byte x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateByte");
     }
 
     /**
@@ -2379,7 +2523,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateShort(String columnLabel, short x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateShort");
     }
 
     /**
@@ -2402,7 +2546,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateInt(String columnLabel, int x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateInt");
     }
 
     /**
@@ -2425,7 +2569,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateLong(String columnLabel, long x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateLong");
     }
 
     /**
@@ -2448,7 +2592,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateFloat(String columnLabel, float x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateFloat");
     }
 
     /**
@@ -2471,7 +2615,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateDouble(String columnLabel, double x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateDouble");
     }
 
     /**
@@ -2495,7 +2639,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBigDecimal(String columnLabel, BigDecimal x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBigDecimal");
     }
 
     /**
@@ -2518,7 +2662,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateString(String columnLabel, String x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateString");
     }
 
     /**
@@ -2542,7 +2686,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBytes(String columnLabel, byte[] x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBytes");
     }
 
     /**
@@ -2565,7 +2709,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateDate(String columnLabel, Date x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateDate");
     }
 
     /**
@@ -2588,7 +2732,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateTime(String columnLabel, Time x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateTime");
     }
 
     /**
@@ -2612,7 +2756,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateTimestamp(String columnLabel, Timestamp x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateTimestamp");
     }
 
     /**
@@ -2637,7 +2781,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(String columnLabel, InputStream x, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -2662,7 +2806,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(String columnLabel, InputStream x, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBinaryStream");
     }
 
     /**
@@ -2688,7 +2832,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(String columnLabel, Reader reader, int length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -2723,7 +2867,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateObject(String columnLabel, Object x, int scaleOrLength) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
     }
 
     /**
@@ -2746,7 +2890,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateObject(String columnLabel, Object x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
     }
 
     /**
@@ -2767,7 +2911,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void insertRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "insertRow");
     }
 
     /**
@@ -2786,7 +2930,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateRow");
     }
 
     /**
@@ -2805,7 +2949,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void deleteRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "deleteRow");
     }
 
     /**
@@ -2841,7 +2985,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void refreshRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "refreshRow");
     }
 
     /**
@@ -2866,7 +3010,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void cancelRowUpdates() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "cancelRowUpdates");
     }
 
     /**
@@ -2896,7 +3040,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void moveToInsertRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "moveToInsertRow");
     }
 
     /**
@@ -2914,7 +3058,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void moveToCurrentRow() throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "moveToCurrentRow");
     }
 
     /**
@@ -2934,7 +3078,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Statement getStatement() throws SQLException
     {
-        return null;
+        checkClosed();
+        return statement;
     }
 
     /**
@@ -2983,7 +3128,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Ref getRef(int columnIndex) throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(CBResultSet.class, "getRef");
     }
 
     /**
@@ -3097,7 +3242,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Ref getRef(String columnLabel) throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(CBResultSet.class, "getRef");
     }
 
     /**
@@ -3334,7 +3479,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public URL getURL(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Field field =  getField(columnIndex);
+        String fieldName = field.getName();
+
+        return getURL(fieldName);
     }
 
     /**
@@ -3356,6 +3506,9 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public URL getURL(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
         return null;
     }
 
@@ -3379,7 +3532,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateRef(int columnIndex, Ref x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateRef");
     }
 
     /**
@@ -3402,7 +3555,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateRef(String columnLabel, Ref x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateRef");
     }
 
     /**
@@ -3425,7 +3578,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(int columnIndex, Blob x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -3448,7 +3601,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(String columnLabel, Blob x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -3471,7 +3624,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(int columnIndex, Clob x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -3494,7 +3647,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(String columnLabel, Clob x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -3517,7 +3670,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateArray(int columnIndex, Array x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateArray");
     }
 
     /**
@@ -3540,7 +3693,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateArray(String columnLabel, Array x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateArray");
     }
 
     /**
@@ -3561,7 +3714,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public RowId getRowId(int columnIndex) throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(CBResultSet.class, "getRowId");
     }
 
     /**
@@ -3582,7 +3735,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public RowId getRowId(String columnLabel) throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(CBResultSet.class, "getRowId");
     }
 
     /**
@@ -3605,7 +3758,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateRowId(int columnIndex, RowId x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateRowId");
     }
 
     /**
@@ -3628,7 +3781,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateRowId(String columnLabel, RowId x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateRowId");
     }
 
     /**
@@ -3642,7 +3795,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getHoldability() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
     }
 
     /**
@@ -3656,7 +3810,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isClosed() throws SQLException
     {
-        return false;
+        return closed.get();
     }
 
     /**
@@ -3683,7 +3837,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNString(int columnIndex, String nString) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNString");
     }
 
     /**
@@ -3710,7 +3864,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNString(String columnLabel, String nString) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNString");
     }
 
     /**
@@ -3735,7 +3889,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(int columnIndex, NClob nClob) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNClob");
     }
 
     /**
@@ -3760,7 +3914,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(String columnLabel, NClob nClob) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNClob");
     }
 
     /**
@@ -3877,7 +4031,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateSQLXML");
     }
 
     /**
@@ -3908,7 +4062,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateSQLXML");
     }
 
     /**
@@ -4036,7 +4190,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNCharacterStream(int columnIndex, Reader x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNCharacterStream");
     }
 
     /**
@@ -4067,7 +4221,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNCharacterStream(String columnLabel, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNCharacterStream");
     }
 
     /**
@@ -4093,7 +4247,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -4119,7 +4273,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -4145,7 +4299,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -4171,7 +4325,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -4197,7 +4351,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBinaryStream");
     }
 
     /**
@@ -4224,7 +4378,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -4252,7 +4406,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -4280,7 +4434,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -4311,7 +4465,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(int columnIndex, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -4342,7 +4496,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(String columnLabel, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -4375,7 +4529,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNClob");
     }
 
     /**
@@ -4408,7 +4562,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNClob");
     }
 
     /**
@@ -4442,7 +4596,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNCharacterStream(int columnIndex, Reader x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNCharacterStream");
     }
 
     /**
@@ -4477,7 +4631,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNCharacterStream(String columnLabel, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNCharacterStream");
     }
 
     /**
@@ -4507,6 +4661,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException
     {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
 
     }
 
@@ -4537,7 +4692,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBinaryStream");
     }
 
     /**
@@ -4567,7 +4722,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(int columnIndex, Reader x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -4597,7 +4752,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateAsciiStream");
     }
 
     /**
@@ -4627,6 +4782,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException
     {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBinaryStream");
 
     }
 
@@ -4657,7 +4813,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateCharacterStream");
     }
 
     /**
@@ -4686,7 +4842,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -4715,7 +4871,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBlob");
     }
 
     /**
@@ -4748,7 +4904,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(int columnIndex, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -4780,7 +4936,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateClob(String columnLabel, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateClob");
     }
 
     /**
@@ -4815,7 +4971,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(int columnIndex, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNClob");
     }
 
     /**
@@ -4849,7 +5005,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNClob(String columnLabel, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateN        throw CBDriver.notImplemented(CBResultSet.class, \"updateClob\");\ngetClob");
     }
 
     /**
@@ -4880,7 +5036,10 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public <T> T getObject(int columnIndex, Class<T> type) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Field field = getField(columnIndex);
+        return getObject(field.getName(),type);
     }
 
     /**
@@ -4913,7 +5072,16 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public <T> T getObject(String columnLabel, Class<T> type) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+
+        if ( type.getName().equals("java.sql.Timestamp"))
+        {
+            return (T) getTimestamp(columnLabel);
+        }
+
+        throw new SQLException("Conversion not supported to {}", type.getName());
     }
 
     /**
