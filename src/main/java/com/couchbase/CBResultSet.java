@@ -22,14 +22,15 @@ import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.JsonValue;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -48,14 +49,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
-    static final Map <JsonValue.ValueType,Integer> valueTypes = new HashMap<JsonValue.ValueType,Integer>();
 
-    static {
-        for ( JsonValue.ValueType valueType : JsonValue.ValueType.values() )
-        {
-            valueTypes.put(valueType,valueType.ordinal());
-        }
-    }
     public CBResultSet(Statement statement, CouchResponse response)
     {
 
@@ -72,7 +66,7 @@ public class CBResultSet implements java.sql.ResultSet
         logger.debug("Loaded result set");
     }
     /**
-     * Moves the cursor froward one row from its current position.
+     * Moves the cursor forward one row from its current position.
      * A <code>ResultSet</code> cursor is initially positioned
      * before the first row; the first call to the method
      * <code>next</code> makes the first row the current row; the
@@ -158,6 +152,7 @@ public class CBResultSet implements java.sql.ResultSet
     public boolean wasNull() throws SQLException
     {
         checkClosed();
+        checkIndex();
         return wasNull;
     }
 
@@ -182,8 +177,6 @@ public class CBResultSet implements java.sql.ResultSet
 
         //now find the key of the first value
         Field field  = getField(columnIndex);
-
-
         return getString(field.getName());
     }
 
@@ -376,7 +369,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         Field field  = getField(columnIndex);
 
-        return getBigDecimal(field.getName());
+        return getBigDecimal(field.getName(),scale);
     }
 
     /**
@@ -495,7 +488,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getAsciiStream(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getAsciiStream(field.getName());
     }
 
     /**
@@ -533,7 +531,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getUnicodeStream(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getUnicodeStream(field.getName());
     }
 
     /**
@@ -580,9 +583,15 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getString(String columnLabel) throws SQLException
     {
+        checkClosed();
         checkIndex();
+
         Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         Object object = jsonObject.get(columnLabel);
+        wasNull = (object == null);
+
         if (object instanceof  Map)
         {
             return JsonFactory.toJson(object);
@@ -615,9 +624,22 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean getBoolean(String columnLabel) throws SQLException
     {
+        checkClosed();
         checkIndex();
+
         Map jsonObject = response.getResults().get(index);
-        return  (boolean) jsonObject.get(columnLabel);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        Object object = jsonObject.get(columnLabel);
+
+        if ( object == null )
+        {
+            wasNull=true;
+            return false;
+        }
+
+        wasNull=false;
+        return  (boolean) object;
 
     }
 
@@ -636,7 +658,39 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte getByte(String columnLabel) throws SQLException
     {
-        return 0;
+        byte value;
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        try
+        {
+            Object object = jsonObject.get(columnLabel);
+            if (object == null )
+            {
+                value=0;
+                wasNull=true;
+            }
+            else if ( object instanceof  Integer )
+            {
+                value =  ((Integer)object).byteValue();
+            }
+            else
+            {
+                value = Byte.parseByte(object.toString());
+
+            }
+        }
+
+        catch( Exception ex)
+        {
+            throw new SQLException("value is not a byte");
+        }
+
+        logger.info("value {}", value);
+        return value;
     }
 
     /**
@@ -656,13 +710,30 @@ public class CBResultSet implements java.sql.ResultSet
     {
         short value;
 
+        checkClosed();
         checkIndex();
+
         Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         try
         {
-            value = new Short((String)jsonObject.get(columnLabel));
-        }
+            Object object = jsonObject.get(columnLabel);
 
+            if (object == null)
+            {
+                wasNull = true;
+                value = 0;
+            }
+            else if (object instanceof Integer)
+            {
+                value = new Short((String) jsonObject.get(columnLabel));
+            }
+            else
+            {
+                value = Short.parseShort(object.toString());
+            }
+        }
         catch( Exception ex)
         {
             throw new SQLException("value is not a short");
@@ -687,12 +758,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getInt(String columnLabel) throws SQLException
     {
-        int value = 0;
+        int value;
 
         checkClosed();
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
 
         try
@@ -702,6 +774,7 @@ public class CBResultSet implements java.sql.ResultSet
             if ( object == null )
             {
                 wasNull=true;
+                value =0;
             }
             else if ( object instanceof  Number )
             {
@@ -746,6 +819,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
 
         try
@@ -799,6 +873,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
 
         try
@@ -849,10 +924,12 @@ public class CBResultSet implements java.sql.ResultSet
     public double getDouble(String columnLabel) throws SQLException
     {
         double value=0;
+
         checkClosed();
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
 
         try
@@ -869,7 +946,7 @@ public class CBResultSet implements java.sql.ResultSet
             }
             else if (object instanceof String)
             {
-                value = Double.parseDouble((String)object);
+                value = Double.parseDouble((String) object);
             }
             else
             {
@@ -905,13 +982,16 @@ public class CBResultSet implements java.sql.ResultSet
     {
         BigDecimal value;
 
+        checkClosed();
         checkIndex();
 
         Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
         try
         {
             value = new BigDecimal((double)jsonObject.get(columnLabel));
+            value.setScale(scale);
         }
         catch( Exception ex)
         {
@@ -939,6 +1019,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte[] getBytes(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         return new byte[0];
     }
 
@@ -957,11 +1043,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(String columnLabel) throws SQLException
     {
+        Date date;
+
         checkClosed();
         checkIndex();
 
-        Date date;
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
         try
         {
@@ -991,6 +1079,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(String columnLabel) throws SQLException
     {
+        Date date;
+
+        checkClosed();
+        checkIndex();
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         return null;
     }
 
@@ -1014,6 +1110,7 @@ public class CBResultSet implements java.sql.ResultSet
         Timestamp ts;
 
         Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
         try
         {
@@ -1055,6 +1152,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getAsciiStream(String columnLabel) throws SQLException
     {
+        Date date;
+
+        checkClosed();
+        checkIndex();
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         return null;
     }
 
@@ -1092,6 +1197,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getUnicodeStream(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         return null;
     }
 
@@ -1121,6 +1232,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getBinaryStream(String columnLabel) throws SQLException
     {
+        Date date;
+
+        checkClosed();
+        checkIndex();
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         return null;
     }
 
@@ -1180,7 +1299,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void clearWarnings() throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -1208,7 +1327,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getCursorName() throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(this.getClass(), "getCursorName");
     }
 
     /**
@@ -1266,7 +1385,10 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Object getObject(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
+
+
         Field field = getField(columnIndex);
         String fieldName = field.getName();
         return getObject(fieldName);
@@ -1303,8 +1425,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Object getObject(String columnLabel) throws SQLException
     {
+        checkClosed();
         checkIndex();
         Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         for (Field field:fields)
         {
             if (field.getName().equals(columnLabel))
@@ -1352,6 +1477,8 @@ public class CBResultSet implements java.sql.ResultSet
         checkIndex();
 
         Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
         SQLJSON sqljson = new SqlJsonImplementation(jsonObject);
         return sqljson;
     }
@@ -1397,7 +1524,9 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Reader getCharacterStream(int columnIndex) throws SQLException
     {
-        return null;
+        Field field  = getField(columnIndex);
+
+        return getCharacterStream(field.getName());
     }
 
     /**
@@ -1417,6 +1546,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Reader getCharacterStream(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -1437,7 +1571,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public BigDecimal getBigDecimal(int columnIndex) throws SQLException
     {
-        return null;
+        Field field  = getField(columnIndex);
+        return getBigDecimal(field.getName());
     }
 
     /**
@@ -1457,7 +1592,25 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public BigDecimal getBigDecimal(String columnLabel) throws SQLException
     {
-        return null;
+        BigDecimal value;
+
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        try
+        {
+            value = new BigDecimal((double)jsonObject.get(columnLabel));
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value is not a Big Decimal");
+        }
+
+        logger.info("value {}", value);
+        return value;
     }
 
     /**
@@ -1998,7 +2151,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateNull(int columnIndex) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateNull");
     }
 
     /**
@@ -2021,7 +2174,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateBoolean(int columnIndex, boolean x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateBoolean");
     }
 
     /**
@@ -2044,7 +2197,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateByte(int columnIndex, byte x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateByte");
     }
 
     /**
@@ -2067,7 +2220,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateShort(int columnIndex, short x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateShort");
     }
 
     /**
@@ -2090,7 +2243,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateInt(int columnIndex, int x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateInt");
     }
 
     /**
@@ -2113,7 +2266,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateLong(int columnIndex, long x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBResultSet.class, "updateLong");
     }
 
     /**
@@ -2136,7 +2289,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void updateFloat(int columnIndex, float x) throws SQLException
     {
-        throw CBDriver.notImplemented(CBResultSet.class, "updateFload");
+        throw CBDriver.notImplemented(CBResultSet.class, "updateFloat");
     }
 
     /**
@@ -2455,6 +2608,30 @@ public class CBResultSet implements java.sql.ResultSet
     public void updateNull(String columnLabel) throws SQLException
     {
         throw CBDriver.notImplemented(CBResultSet.class, "updateNull");
+    }
+
+    @Override
+    public void updateObject(int columnIndex, Object x, SQLType targetSqlType, int scaleOrLength) throws SQLException
+    {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
+    }
+
+    @Override
+    public void updateObject(String columnLabel, Object x, SQLType targetSqlType, int scaleOrLength) throws SQLException
+    {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
+    }
+
+    @Override
+    public void updateObject(int columnIndex, Object x, SQLType targetSqlType) throws SQLException
+    {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
+    }
+
+    @Override
+    public void updateObject(String columnLabel, Object x, SQLType targetSqlType) throws SQLException
+    {
+        throw CBDriver.notImplemented(CBResultSet.class, "updateObject");
     }
 
     /**
@@ -3149,7 +3326,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Blob getBlob(int columnIndex) throws SQLException
     {
-        return null;
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+
+        return getBlob(field.getName());
     }
 
     /**
@@ -3170,7 +3352,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Clob getClob(int columnIndex) throws SQLException
     {
-        return null;
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+
+        return getClob(field.getName());
     }
 
     /**
@@ -3263,6 +3450,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Blob getBlob(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -3284,6 +3476,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Clob getClob(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -3305,9 +3502,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Array getArray(String columnLabel) throws SQLException
     {
+        checkClosed();
         checkIndex();
-        Map object = response.getResults().get(index);
-        return new CouchbaseArray((List)object.get(columnLabel));
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+        return new CouchbaseArray((List)jsonObject.get(columnLabel));
     }
 
     /**
@@ -3508,6 +3708,9 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkClosed();
         checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
 
         return null;
     }
@@ -3937,7 +4140,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public NClob getNClob(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Field field =  getField(columnIndex);
+        String fieldName = field.getName();
+
+        return getNClob(fieldName);
     }
 
     /**
@@ -3960,6 +4169,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public NClob getNClob(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -3980,7 +4194,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public SQLXML getSQLXML(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Field field =  getField(columnIndex);
+        String fieldName = field.getName();
+
+        return getSQLXML(fieldName);
     }
 
     /**
@@ -4000,6 +4219,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public SQLXML getSQLXML(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -4086,7 +4310,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getNString(int columnIndex) throws SQLException
     {
-        return null;
+        return getString(columnIndex);
     }
 
     /**
@@ -4110,7 +4334,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getNString(String columnLabel) throws SQLException
     {
-        return null;
+        return getString(columnLabel);
     }
 
     /**
@@ -4135,7 +4359,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Reader getNCharacterStream(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getNCharacterStream(field.getName());
     }
 
     /**
@@ -4160,6 +4389,11 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Reader getNCharacterStream(String columnLabel) throws SQLException
     {
+        checkClosed();
+        checkIndex();
+
+        Map jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
         return null;
     }
 
@@ -5147,6 +5381,10 @@ public class CBResultSet implements java.sql.ResultSet
     void checkClosed() throws SQLException
     {
         if (closed.get() == true) throw new SQLException("ResultSet is closed");
+    }
+    void checkColumnLabel(Map <String,Object> jsonObject, String label)  throws SQLException
+    {
+        if (!jsonObject.containsKey(label) ) throw new SQLException("ResultSet does not contain " + label);
     }
 
 }

@@ -1198,4 +1198,8 @@ public class CBStatement implements java.sql.Statement
     {
         return false;
     }
+    protected void checkClosed() throws SQLException
+    {
+        if (isClosed()) throw new SQLException("Statement is closed");
+    }
 }

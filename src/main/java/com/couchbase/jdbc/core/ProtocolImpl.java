@@ -31,7 +31,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.boon.core.reflection.MapObjectConversion;
-import org.boon.json.JsonException;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
 import org.slf4j.Logger;
@@ -452,7 +451,6 @@ public class ProtocolImpl implements Protocol
         }
         catch (Exception ex)
         {
-            JsonException foo;
             logger.error ("Error executing query [{}] {}", query, ex.getMessage());
             throw new SQLException("Error executing update",ex.getCause());
         }

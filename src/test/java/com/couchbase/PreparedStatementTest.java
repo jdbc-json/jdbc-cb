@@ -19,6 +19,7 @@ import org.junit.Test;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.sql.*;
 
 import static org.junit.Assert.*;
@@ -229,5 +230,228 @@ public class PreparedStatementTest
         }
         */
 
+    }
+
+    @Test
+    public void testSetByte() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"byte1");
+            preparedStatement.setByte(2, (byte)1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"byte2");
+            preparedStatement.setByte(2, (byte)255);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"byte3");
+            preparedStatement.setNull(2, Types.INTEGER, "byte");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals((byte)1, rs.getByte("test1"));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals((byte) 255, rs.getByte("test1"));
+                    assertFalse(rs.wasNull());
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getByte("test"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetShort() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setShort(2, (short)1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val2");
+            preparedStatement.setShort(2, (short)-1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.INTEGER, "integer");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(1, rs.getShort("test1"));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(-1, rs.getShort("test1"));
+                    assertFalse(rs.wasNull());
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getShort("test"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+
+    @Test
+    public void testSetInteger() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setInt(2, 1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val2");
+            preparedStatement.setInt(2, -1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.INTEGER, "integer");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(1, rs.getInt("test1"));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(-1, rs.getInt("test1"));
+                    assertFalse(rs.wasNull());
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getInt("test"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetLong() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setLong(2, 1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val2");
+            preparedStatement.setLong(2, -1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.INTEGER, "long");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+
+                    assertEquals(1, rs.getLong("test1"));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(-1, rs.getLong("test1"));
+                    assertFalse(rs.wasNull());
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getLong("test"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+
+    @Test
+    public void testSetBigDecimal() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setBigDecimal(2, BigDecimal.ONE);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val2");
+            preparedStatement.setBigDecimal(2, BigDecimal.valueOf(-1));
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.DECIMAL, "bigdecimal");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(1, rs.getLong("test1"));
+                    assertEquals(1, rs.getLong(1));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(-1, rs.getLong("test1"));
+                    assertFalse(rs.wasNull());
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getLong("test"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
     }
 }

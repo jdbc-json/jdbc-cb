@@ -3,7 +3,7 @@ package com.couchbase.jdbc;
 import com.couchbase.jdbc.util.Credentials;
 
 import java.io.InputStream;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by davec on 2015-02-22.
@@ -70,6 +70,27 @@ public class TestUtil
         return credentials;
 
     }
+    static String []resultSetGetters = {
+            "getArray","getAsciiStream",
+            "getString","getBigDecimal",
+            "getBinaryStream", "getBlob",
+            "getBoolean", "getByte",
+            "getBytes", "getCharacterStream",
+            "getClob",  "getDate",
+            "getDouble","getInt",
+            "getLong",  "getNCharacterStream",
+            "getNClob", "getNString",
+            "getObject", "getShort",
+            "getString", "getTime",
+            "getTimestamp", "getUnicodeStream",
+            "getURL"
+    };
+    static String []notImplemented = {
 
+    } ;
+    public static List<String> getSuppportedResultSetGetters()
+    {
+        return Arrays.asList(resultSetGetters);
+    }
 
 }

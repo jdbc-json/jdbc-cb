@@ -137,8 +137,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNull(int parameterIndex, int sqlType) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
-        fields[parameterIndex-1]="NULL";
+        fields[parameterIndex-1]="null";
     }
 
     /**
@@ -156,7 +157,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBoolean(int parameterIndex, boolean x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        checkClosed();
+        checkFields(parameterIndex);
+        fields[parameterIndex-1] = Boolean.toString(x);
     }
 
     /**
@@ -173,7 +176,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Byte.toString(x);
     }
 
     /**
@@ -190,7 +193,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Short.toString(x);
     }
 
     /**
@@ -207,7 +210,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Integer.toString(x);
     }
 
     /**
@@ -224,7 +227,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Long.toString(x);
     }
 
     /**
@@ -241,7 +244,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException
     {
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Float.toString(x);
     }
 
     /**
@@ -259,7 +262,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public void setDouble(int parameterIndex, double x) throws SQLException
     {
         checkFields(parameterIndex);
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = Double.toString(x);
     }
 
     /**
@@ -277,7 +280,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
     {
         checkFields(parameterIndex);
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = x.toString();
     }
 
     /**
@@ -577,6 +580,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setObject(int parameterIndex, Object x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
         fields[parameterIndex-1] = x.toString();
     }
 
@@ -881,7 +886,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException
     {
-
+        setNull(parameterIndex, sqlType);
     }
 
     /**
@@ -1455,6 +1460,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
 
     }
+
     private void checkFields(int index) throws SQLException
     {
         if (fields == null) throw new SQLException("fields not initialized");

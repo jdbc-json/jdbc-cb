@@ -20,10 +20,11 @@ import org.junit.rules.ExpectedException;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.*;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by davec on 2015-07-15.
@@ -58,140 +59,1325 @@ public class ResultSetTest
     }
 
     @Test
-    public void testNotImplemented() throws Exception
+    public void testAbsoluteNotImplemented() throws Exception
     {
-        try(Statement statement = con.createStatement())
+        try (Statement statement = con.createStatement())
         {
             assertNotNull(statement);
             try (ResultSet rs = statement.executeQuery("select 1 as foo"))
             {
                 assertTrue(rs.next());
                 expectedException.expect(SQLFeatureNotSupportedException.class);
-
                 rs.absolute(0);
-                rs.first();
-                rs.last();
+            }
+        }
+    }
 
-                rs.afterLast();
+    @Test
+    public void testBeforeFirstNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.beforeFirst();
+            }
+        }
+    }
+    @Test
+    public void testIsAfterLastNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.isAfterLast();
+            }
+        }
+    }
+    @Test
+    public void testIsBeforeFirstNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.isBeforeFirst();
+            }
+        }
+    }
 
+    @Test
+    public void testRefreshRowNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.refreshRow();
+            }
+        }
+    }
+    @Test
+    public void testRelativeNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.relative(1);
-
-                rs.updateArray(1,null);
-                rs.updateArray("foo",null);
-
-                rs.updateAsciiStream(1,null);
-                rs.updateAsciiStream(1,null,(int)0);
-                rs.updateAsciiStream(1, null, (long)0);
-
+            }
+        }
+    }
+    @Test
+    public void testUpdateArrayNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateArray(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateArray2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateArray("foo", null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStreamNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateAsciiStream(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStream1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateAsciiStream(1, null, (int) 0);
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStream2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateAsciiStream(1, null, (long) 0);
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStream3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateAsciiStream("foo", null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStream4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateAsciiStream("foo", null, 0);
-                rs.updateAsciiStream("foo", null, (long)0);
-
+            }
+        }
+    }
+    @Test
+    public void testUpdateAsciiStream5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateAsciiStream("foo", null, (long) 0);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBigDecimalNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateBigDecimal(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBigDecimal1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateBigDecimal("foo", null);
-
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStreamNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateBinaryStream(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBinaryStream(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBinaryStream(1, null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateBinaryStream(1, null, 0);
+
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
                 rs.updateBinaryStream(1, null, (long)0);
-
-                rs.updateBinaryStream("foo",null);
-                rs.updateBinaryStream("foo",null, 0);
-                rs.updateBinaryStream("foo",null, 0);
-
-                rs.updateBlob(1, (Blob)null);
-                rs.updateBlob(1, (InputStream)null);
-                rs.updateBlob(1, null, 0);
-
-                rs.updateBlob("foo", (Blob)null);
-                rs.updateBlob("foo", (InputStream)null);
-                rs.updateBlob("foo", null, 0);
-
-                rs.updateBoolean(1,true);
-                rs.updateBoolean("foo",true);
-
-                rs.updateByte(1,(byte)0);
-                rs.updateByte("foo",(byte)0);
-
-                rs.updateBytes(1, null);
-                rs.updateBytes("foo", null);
-
-                rs.updateCharacterStream(1, null);
-                rs.updateCharacterStream(1, null, 0);
-                rs.updateCharacterStream(1, null, (long)0);
-
-                rs.updateCharacterStream("foo", null);
-                rs.updateCharacterStream("foo", null, 0);
-                rs.updateCharacterStream("foo", null, (long)0);
-
-                rs.updateClob(1, (Clob)null);
-                rs.updateClob(1, null, 0);
-
-                rs.updateClob("foo", (Clob)null);
-                rs.updateClob("foo", null, 0);
-
-                rs.updateNCharacterStream(1, null);
-                rs.updateNCharacterStream(1, null, 0);
-
-                rs.updateNCharacterStream("foo", null);
-                rs.updateNCharacterStream("foo", null, 0);
-
-                rs.updateNClob(1, (NClob)null);
-                rs.updateNClob(1, (Reader)null);
-                rs.updateNClob(1, null, 0);
-
-                rs.updateNClob("foo", (NClob)null);
-                rs.updateNClob("foo", (Reader)null);
-                rs.updateNClob("foo", null, 0);
-
-                rs.updateNString(1, null);
-                rs.updateNString("foo", null);
-
-                rs.updateNull(1);
-                rs.updateNull("foo");
-
-                rs.updateDate(1, null);
-                rs.updateDate("foo", null);
-
-                rs.updateDouble(1, 0);
-                rs.updateDouble("foo", 0);
-
-                rs.updateFloat(1,0);
-                rs.updateFloat("foo",0);
-
-                rs.updateInt(1, 0);
-                rs.updateInt("foo",0);
-
-                rs.updateLong(1, 0);
-                rs.updateLong("foo", 0);
-
-                rs.updateObject(1, null);
-                rs.updateObject(1, null, 0);
-
-                rs.updateObject("foo", null);
-                rs.updateObject("foo", null, 0);
-
-                rs.updateRef(1, null);
-                rs.updateRef("foo", null);
-
-                rs.updateRow();
-
-                rs.updateRowId(1, null);
-                rs.updateRowId("foo", null);
-
-                rs.updateTime(1, null);
-                rs.updateTime("foo", null);
-
-                rs.updateTimestamp(1, null);
-                rs.updateTimestamp("foo", null);
 
 
             }
         }
     }
+    @Test
+    public void testUpdateBinaryStream5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBinaryStream("foo",null);
+
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream6NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBinaryStream("foo",null, 0);
+
+            }
+        }
+    }
+    @Test
+    public void testUpdateBinaryStream7NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBinaryStream("foo", null, 0);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlobNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob(1, (Blob) null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlob1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob(1, (InputStream)null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlob2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob(1, null, 0);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlob3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob("foo", (Blob)null);
+
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlob4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob("foo", (InputStream)null);
+            }
+        }
+    }
+    @Test
+    public void testUpdateBlob5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBlob("foo", null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateBooleanNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBoolean(1,true);
+
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateBoolean1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBoolean("foo", true);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateByteNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateByte(1, (byte)1);
+
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateByte1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateByte("foo", (byte) 1);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateBytesNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBytes(1, "s".getBytes());
+
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateBytes1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateBytes("foo","s".getBytes());
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateCharacterStreamNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream(1, null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateCharacterStream1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream("foo", null, (long)0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCharacterStream2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream(1, null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCharacterStream3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream(1, null, (long)0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCharacterStream4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream("foo", null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCharacterStream5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateCharacterStream("foo", null, 0);
+            }
+        }
+
+    }
+
+
+    @Test
+    public void testUpdateCLobNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateClob(1, (Clob) null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCLob1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateClob(1, (Clob) null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCLob2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateClob(1, null, 0);
+
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCLob3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateClob("foo", (Clob)null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateCLob4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateClob("foo", null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCharacterStreamNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream(1, null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNCharacterStream1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream(1, null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCharacterStream2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream(1, null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCharacterStream3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream("foo", null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCharacterStream4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream("foo", null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCharacterStream5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNCharacterStream("foo", null, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNCLobNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob(1, (NClob) null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNCLob1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob(1, (Reader) null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCLob2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob(1, null, 0);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCLob3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob("foo", (NClob) null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCLob4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob("foo", (Reader) null);
+            }
+        }
+
+    }
+    @Test
+    public void testUpdateNCLob5NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNClob("foo", null, 0);
+            }
+        }
+
+    }
+
+
+    @Test
+    public void testUpdateNStringNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNString(1, null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNString1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNString("foo", null);            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNullNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNull(1);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateNull1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateNull("foo");            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateDateNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateDate(1, null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateDate1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateDate("foo", null);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateDoubleNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateDouble(1, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateDouble1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateDouble("foo", 0);
+            }
+
+        }
+    }
+
+
+    @Test
+    public void testUpdateFloatNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateFloat(1, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateFloat1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateFloat("foo", 0);
+            }
+
+        }
+    }
+
+
+    @Test
+    public void testUpdateIntNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateInt(1, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateInt1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateInt("foo", 0);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateLongNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateLong(1, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateLong1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateLong("foo", 0);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateObjectNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateObject(1, null);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateObject1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateObject("foo", null);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateObject2NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateObject(1, null, 0);
+            }
+        }
+
+    }
+
+    @Test
+    public void testUpdateObject3NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateObject("foo", null, 0);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateObject4NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateObject("foo", null, Types.ARRAY);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateRefNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateRef(1, null);
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateRef1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateRef("foo", null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateRowNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateRow();
+            }
+
+        }
+    }
+
+    @Test
+    public void testUpdateRowIdNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateRowId(1,null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateRowId1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateRowId("foo",null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateTimeNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateTime(1, null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateTime1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateTime("foo", null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateTimestampNotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateTimestamp(1, null);
+            }
+
+        }
+    }
+    @Test
+    public void testUpdateTimestamp1NotImplemented() throws Exception
+    {
+        try (Statement statement = con.createStatement())
+        {
+            assertNotNull(statement);
+            try (ResultSet rs = statement.executeQuery("select 1 as foo"))
+            {
+                assertTrue(rs.next());
+                expectedException.expect(SQLFeatureNotSupportedException.class);
+                rs.updateTimestamp("foo",null);
+            }
+
+        }
+    }
+
+
     @Test
     public void testGetDate() throws Exception
     {
@@ -235,6 +1421,48 @@ public class ResultSetTest
                 assertNotNull(ts);
                 ts=rs.getObject(1, Timestamp.class);
                 assertNotNull(ts);
+            }
+        }
+    }
+
+    Class <?> args[] = {java.lang.String.class};
+    @Test
+    public void testBadColumnName() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1, "byte1");
+            preparedStatement.setByte(2, (byte) 1);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                {
+                    assertTrue(rs.next());
+
+                    for(String methodName:TestUtil.getSuppportedResultSetGetters())
+                    {
+                        try
+                        {
+                            Method m = rs.getClass().getMethod(methodName, args);
+                            m.invoke(rs, "foo");
+                            assertTrue("Foo column does not exist", false);
+                        }
+                        catch (InvocationTargetException ex)
+                        {
+
+                            if ( !(ex.getCause().getMessage().startsWith("ResultSet does not contain") ))
+                            {
+                                assertTrue("Should throw Result does not contain ", false);
+                            }
+                        }
+
+                    }
+
+
+                }
             }
         }
     }

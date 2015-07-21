@@ -11,8 +11,10 @@
 
 package com.couchbase.jdbc.core;
 
-import javax.json.JsonValue;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -39,14 +41,6 @@ public class CouchResponse
         return metrics;
     }
 
-    // there is only one so create the field now
-    // TODO need testcase
-    public void setSignature(String signature)
-    {
-        fields = new ArrayList<Field>(1);
-        fields.add(new Field(signature, JsonValue.ValueType.STRING.name()));
-        fieldsInitialized.set(true);
-    }
 
     // we don't know which will get called first so set the fields in getFields()
 
@@ -71,9 +65,17 @@ public class CouchResponse
                     Map<String,Object> firstRow = (Map<String,Object>)results.get(0);
                     Set <String>keySet = firstRow.keySet();
 
-                    //TODO this is wrong FIXME
-                    for (String key : keySet) {
-                        fields.add(new Field(key, firstRow.get(key).toString()));
+                    for (String key : keySet)
+                    {
+                        Object object =  firstRow.get(key);
+                        if (object == null )
+                        {
+                            fields.add( new Field(key, "null"));
+                        }
+                        else
+                        {
+                            fields.add(new Field(key, firstRow.get(key).toString()));
+                        }
                     }
                 }
             }
