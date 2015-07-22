@@ -1402,7 +1402,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException
     {
-        return null;
+        return new CBArray(typeName, elements);
     }
 
     /**
@@ -1446,7 +1446,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setSchema(String schema) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBConnection.class, "setSchema");
     }
 
     /**

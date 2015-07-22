@@ -18,6 +18,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLTimeoutException;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -27,8 +29,8 @@ public class CBStatement implements java.sql.Statement
 {
     Protocol protocol;
     AtomicBoolean closed = new AtomicBoolean(false);
-    int updateCount=0;
-    CBResultSet resultSet;
+    protected int updateCount=0;
+    protected CBResultSet resultSet;
 
     public CBStatement( Protocol protocol )
     {
@@ -353,7 +355,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setCursorName(String name) throws SQLException
     {
-
+        //todo needs test
+        throw CBDriver.notImplemented(CBStatement.class, "setCursorName");
     }
 
     /**
@@ -392,7 +395,13 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean execute(String sql) throws SQLException
     {
-        return false;
+        checkClosed();
+
+        // todo this needs to be refactored, no reason to store the result in the protocol layer
+        boolean hasResult = protocol.execute(this,sql);
+        resultSet =  protocol.getResultSet();
+        updateCount = (int)protocol.getUpdateCount();
+        return hasResult;
     }
 
     /**
@@ -408,7 +417,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public ResultSet getResultSet() throws SQLException
     {
-        return null;
+        return resultSet;
     }
 
     /**
@@ -425,7 +434,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getUpdateCount() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return updateCount;
     }
 
     /**
@@ -450,6 +460,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean getMoreResults() throws SQLException
     {
+        checkClosed();
         return false;
     }
 
@@ -476,6 +487,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setFetchDirection(int direction) throws SQLException
     {
+        checkClosed();
 
     }
 
@@ -497,6 +509,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getFetchDirection() throws SQLException
     {
+        checkClosed();
         return 0;
     }
 

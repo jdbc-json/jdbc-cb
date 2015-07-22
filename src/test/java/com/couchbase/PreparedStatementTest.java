@@ -12,20 +12,29 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.boon.json.JsonFactory;
+import org.hamcrest.core.IsEqual;
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class PreparedStatementTest
 {
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     Connection con;
 
@@ -231,6 +240,56 @@ public class PreparedStatementTest
         */
 
     }
+    @Test
+    public void testExecute() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"byte1");
+            preparedStatement.setByte(2, (byte)1);
+
+            assertFalse(preparedStatement.execute());
+
+            preparedStatement.setString(1,"byte2");
+            preparedStatement.setByte(2, (byte)255);
+
+            assertFalse(preparedStatement.execute());
+
+            preparedStatement.setString(1,"byte3");
+            preparedStatement.setNull(2, Types.INTEGER, "byte");
+
+            assertFalse(preparedStatement.execute());
+
+            try(PreparedStatement preparedStatement1 = con.prepareStatement("select * from test1 where meta(test1).id='byte1'"))
+            {
+
+                assertTrue(preparedStatement1.execute());
+                try (ResultSet rs = preparedStatement1.getResultSet())
+                {
+                    assertTrue(rs.next());
+                    assertEquals((byte)1, rs.getByte("test1"));
+                }
+
+                assertTrue(preparedStatement1.execute("select * from test1 where meta(test1).id='byte2'"));
+                try (ResultSet rs = preparedStatement1.getResultSet())
+                {
+                    assertTrue(rs.next());
+                    assertEquals((byte) 255, rs.getByte("test1"));
+                    assertFalse(rs.wasNull());
+
+                }
+                assertTrue(preparedStatement1.execute("select * from test1 where meta(test1).id='byte3'"));
+                try (ResultSet rs = preparedStatement1.getResultSet())
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getByte("test1"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+
 
     @Test
     public void testSetByte() throws Exception
@@ -266,16 +325,56 @@ public class PreparedStatementTest
                     assertFalse(rs.wasNull());
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getByte("test"));
+                    assertEquals(0, rs.getByte("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
 
         }
     }
+
+    @Test
+    public void testSetBytes() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"bytes1");
+            preparedStatement.setBytes(2, "Hello World".getBytes());
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"bytes2");
+            preparedStatement.setNull(2, Types.VARCHAR, "bytes");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='bytes1'"))
+                {
+                    assertTrue(rs.next());
+                    byte [] bytes = rs.getBytes(1);
+                    assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
+                    bytes = rs.getBytes("bytes1");
+                    assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
+
+                }
+
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='bytes2'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getBytes("bytes2"));
+                    assertTrue(rs.wasNull());
+                }
+            }
+
+        }
+    }
+
     @Test
     public void testSetShort() throws Exception
     {
@@ -313,7 +412,7 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getShort("test"));
+                    assertEquals(0, rs.getShort("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -358,7 +457,7 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getInt("test"));
+                    assertEquals(0, rs.getInt("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -402,7 +501,7 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getLong("test"));
+                    assertEquals(0, rs.getLong("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -435,23 +534,377 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(1, rs.getLong("test1"));
-                    assertEquals(1, rs.getLong(1));
+                    assertEquals(BigDecimal.ONE, rs.getBigDecimal("test1"));
+                    assertEquals(BigDecimal.ONE, rs.getBigDecimal(1));
                 }
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(-1, rs.getLong("test1"));
+                    assertEquals(BigDecimal.valueOf(-1), rs.getBigDecimal("test1"));
                     assertFalse(rs.wasNull());
                 }
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getLong("test"));
+                    assertNull(rs.getBigDecimal("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
 
         }
     }
+    @Test
+    public void testSetSimpleArray() throws Exception
+    {
+        Object [] values = {"1", "2"};
+        Array array = con.createArrayOf("int", values);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setArray(2, array);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.ARRAY, "array");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    Assert.assertThat(array, IsEqual.equalTo(rs.getArray("test1")));
+                    assertEquals(array, rs.getArray(1));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertNull(rs.getArray("test1").getArray());
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetUserArray() throws Exception
+    {
+        List arrayList = new ArrayList();
+        arrayList.add(new TestUser("dave", "cramer", 54, true));
+        arrayList.add(new TestUser("joe", "shmo", 15, false));
+        arrayList.add(new TestUser("sue", "sandy", 30, true));
+
+        Array array = con.createArrayOf("TestUser", arrayList.toArray());
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setArray(2, array);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.ARRAY, "array");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    List testArray = JsonFactory.fromJsonArray(((CBArray) rs.getArray("test1")).getJsonArray(), TestUser.class);
+
+                    Assert.assertThat(arrayList,IsEqual.equalTo(testArray));
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertNull( rs.getArray("test1").getArray());
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetDate() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+
+        Date date = new Date(cal.getTime().getTime());
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setDate(2, date);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.DATE, "date");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    Date date1 = rs.getDate("test1");
+                    cal2.setTime(date1);
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
+                    date1 = rs.getDate(1);
+                    cal2.setTime(date1);
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertNull( rs.getDate(1));
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetTime() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+
+        Time time = new Time(cal.getTime().getTime());
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setTime(2, time);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.TIME, "time");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    Time time1 = rs.getTime("test1");
+                    cal2.setTime(time1);
+
+                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+                    time1 = rs.getTime(1);
+                    cal2.setTime(time1);
+
+
+                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertNull( rs.getTime(1));
+                }
+            }
+
+        }
+    }
+    @Test
+    public void testSetTimeStamp() throws Exception
+    {
+        Calendar cal = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+
+        Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1,"val1");
+            preparedStatement.setTimestamp(2, timeStamp);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+
+            preparedStatement.setString(1,"val3");
+            preparedStatement.setNull(2, Types.TIMESTAMP, "timeStamp");
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try(Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                {
+                    assertTrue(rs.next());
+                    Timestamp timeStamp1 = rs.getTimestamp("test1");
+                    cal2.setTime(timeStamp1);
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
+                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+                    assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
+
+                    timeStamp1 = rs.getTimestamp(1);
+                    cal2.setTime(timeStamp1);
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
+                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+                    assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
+
+                }
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                {
+                    assertTrue(rs.next());
+                    assertNull( rs.getTimestamp(1));
+                }
+            }
+
+        }
+    }
+    @Test
+    public void clobNotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setClob(1,(Clob)null);
+
+        }
+    }
+    @Test
+    public void clob1NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setClob(1,null, 0);
+
+        }
+    }
+    @Test
+    public void clob2NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setClob(1,(Reader)null);
+
+        }
+    }
+    @Test
+    public void nClobNotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setNClob(1, (NClob) null);
+
+        }
+    }
+    @Test
+    public void nClob1NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setNClob(1, null, 0);
+
+        }
+    }
+    @Test
+    public void nClob2NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setNClob(1, (Reader) null);
+
+        }
+    }
+
+    @Test
+    public void blobNotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setBlob(1,(Blob)null);
+
+        }
+    }
+    @Test
+    public void blob1NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setBlob(1,null,0);
+
+        }
+    }
+    @Test
+    public void blob2NotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setBlob(1,(InputStream)null);
+
+        }
+    }
+
+    @Test
+    public void rowIdNotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setRowId(1,null);
+
+        }
+    }
+    @Test
+    public void refNotImplemented() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        {
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            preparedStatement.setRef(1, null);
+
+        }
+    }
+
+
 }

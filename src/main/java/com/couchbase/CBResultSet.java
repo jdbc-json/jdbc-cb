@@ -16,17 +16,19 @@ import com.couchbase.jdbc.core.CouchError;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.core.Field;
 import com.couchbase.jdbc.core.SqlJsonImplementation;
-import com.couchbase.jdbc.util.CouchbaseArray;
 import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -390,7 +392,9 @@ public class CBResultSet implements java.sql.ResultSet
     {
         checkClosed();
         checkIndex();
-        return new byte[0];
+        //now find the key of the first value
+        Field field  = getField(columnIndex);
+        return getBytes(field.getName());
     }
 
     /**
@@ -433,7 +437,10 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(int columnIndex) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Field field = getField(columnIndex);
+        return getTime(field.getName());
     }
 
     /**
@@ -664,7 +671,6 @@ public class CBResultSet implements java.sql.ResultSet
 
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
-
         try
         {
             Object object = jsonObject.get(columnLabel);
@@ -1019,13 +1025,22 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte[] getBytes(String columnLabel) throws SQLException
     {
+        byte [] bytes;
         checkClosed();
         checkIndex();
 
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
-        return new byte[0];
+        try
+        {
+            return ((String)jsonObject.get(columnLabel)).getBytes();
+
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("Error getting bytes ", ex);
+        }
     }
 
     /**
@@ -1040,6 +1055,7 @@ public class CBResultSet implements java.sql.ResultSet
      *                               if a database access error occurs or this method is
      *                               called on a closed result set
      */
+    private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd") ;
     @Override
     public Date getDate(String columnLabel) throws SQLException
     {
@@ -1050,19 +1066,22 @@ public class CBResultSet implements java.sql.ResultSet
 
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
+        String json = (String)jsonObject.get(columnLabel);
+
+        if ( json == null ) return null;
 
         try
         {
-            java.util.Date jsonDate = (java.util.Date)jsonObject.get(columnLabel);
-            date = new Date( jsonDate.getTime()  );
+            date = new Date(df.parse(json).getTime());
         }
         catch( Exception ex)
         {
-            throw new SQLException("value is not a Date");
+            throw new SQLException("value " + json +" is not a Date");
         }
         return date;
     }
 
+    SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
     /**
      * Retrieves the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
@@ -1079,17 +1098,29 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(String columnLabel) throws SQLException
     {
-        Date date;
+        Time time;
 
         checkClosed();
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
+        String json = (String)jsonObject.get(columnLabel);
 
-        return null;
+        if ( json == null ) return null;
+
+        try
+        {
+            time = new Time(tf.parse(json).getTime());
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value " + json +" is not a Time");
+        }
+        return time;
     }
 
+    SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     /**
      * Retrieves the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
@@ -1112,14 +1143,21 @@ public class CBResultSet implements java.sql.ResultSet
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
+        String json = (String)jsonObject.get(columnLabel);
+        if (json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+
         try
         {
-            java.util.Date jsonDate = (java.util.Date)jsonObject.get(columnLabel);
-            ts = new Timestamp( jsonDate.getTime()  );
+            java.util.Date date = tsf.parse(json);
+            ts = new Timestamp( tsf.parse(json).getTime()  );
         }
         catch( Exception ex)
         {
-            throw new SQLException("value is not a Date");
+            throw new SQLException("value is not a Timestamp");
         }
 
         return ts;
@@ -1152,7 +1190,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getAsciiStream(String columnLabel) throws SQLException
     {
-        Date date;
+        ByteArrayInputStream byteArrayInputStream;
 
         checkClosed();
         checkIndex();
@@ -1160,7 +1198,22 @@ public class CBResultSet implements java.sql.ResultSet
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
-        return null;
+        String json = (String)jsonObject.get(columnLabel);
+        if ( json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+        try
+        {
+            byteArrayInputStream = new ByteArrayInputStream(json.getBytes("ASCII"));
+        }
+        catch( UnsupportedEncodingException ex)
+        {
+            throw new SQLException("data is not ASCII");
+        }
+
+        return byteArrayInputStream;
     }
 
     /**
@@ -1592,7 +1645,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public BigDecimal getBigDecimal(String columnLabel) throws SQLException
     {
-        BigDecimal value;
+        BigDecimal value=null;
 
         checkClosed();
         checkIndex();
@@ -1602,7 +1655,21 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
-            value = new BigDecimal((double)jsonObject.get(columnLabel));
+            Object object =  jsonObject.get(columnLabel);
+            if (object == null )
+            {
+                wasNull=true;
+                return null;
+            }
+
+            else if( object instanceof Number )
+            {
+                value = new BigDecimal(((Number) object).doubleValue());
+            }
+            else if (object instanceof BigDecimal)
+            {
+                value = (BigDecimal) object;
+            }
         }
         catch( Exception ex)
         {
@@ -3507,7 +3574,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
-        return new CouchbaseArray((List)jsonObject.get(columnLabel));
+        return new CBArray((List)jsonObject.get(columnLabel));
     }
 
     /**
@@ -5385,6 +5452,7 @@ public class CBResultSet implements java.sql.ResultSet
     void checkColumnLabel(Map <String,Object> jsonObject, String label)  throws SQLException
     {
         if (!jsonObject.containsKey(label) ) throw new SQLException("ResultSet does not contain " + label);
+        wasNull=false;
     }
 
 }

@@ -614,10 +614,31 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * @see java.sql.Statement#getUpdateCount
      * @see java.sql.Statement#getMoreResults
      */
+
     @Override
     public boolean execute() throws SQLException
     {
-        return false;
+        valuePair.clear();
+
+        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
+        if (fields!=null && fields.length>0)
+        {
+            valuePair.add(getPositionalParameters());
+        }
+
+        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
+
+        updateCount = (int)couchResponse.getMetrics().getMutationCount();
+
+        if ((int)couchResponse.getMetrics().getResultCount() > 0 )
+        {
+            resultSet = new CBResultSet(this, couchResponse);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -632,7 +653,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void addBatch() throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -680,7 +701,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setRef(int parameterIndex, Ref x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class,"setBlob");
     }
 
     /**
@@ -699,7 +720,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBlob(int parameterIndex, Blob x) throws SQLException
     {
-
+      throw CBDriver.notImplemented(CBPreparedStatement.class,"setBlob");
     }
 
     /**
@@ -718,7 +739,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class,"setBlob");
     }
 
     /**
@@ -737,7 +758,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setArray(int parameterIndex, Array x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        fields[parameterIndex-1] = ((CBArray)x).getJsonArray();
     }
 
     /**
@@ -942,7 +966,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setRowId(int parameterIndex, RowId x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setRowId");
     }
 
     /**
@@ -1009,7 +1033,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNClob(int parameterIndex, NClob value) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setNClob");
     }
 
     /**
@@ -1034,7 +1058,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setClob");
     }
 
     /**
@@ -1064,7 +1088,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setBlob");
     }
 
     /**
@@ -1092,7 +1116,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setNClob");
     }
 
     /**
@@ -1400,7 +1424,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setClob(int parameterIndex, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setClob");
     }
 
     /**
@@ -1430,7 +1454,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setBlob");
     }
 
     /**
@@ -1458,7 +1482,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNClob(int parameterIndex, Reader reader) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setNClob");
     }
 
     private void checkFields(int index) throws SQLException
