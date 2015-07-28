@@ -32,6 +32,7 @@ public interface Protocol
     public int executeUpdate( CBStatement statement, String sql ) throws SQLException;
     public boolean execute( CBStatement statement, String sql ) throws SQLException;
     public void addBatch( String sql ) throws SQLException;
+    public void clearBatch() throws SQLException;
     public int [] executeBatch(  ) throws SQLException;
 
     public CouchResponse prepareStatement( String sql ) throws SQLException;

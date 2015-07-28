@@ -604,6 +604,10 @@ public class ProtocolImpl implements Protocol
     {
         batchStatements.add(query);
     }
+    public void clearBatch()
+    {
+        batchStatements.clear();
+    }
     public long getUpdateCount()
     {
         return updateCount;

@@ -359,7 +359,7 @@ public class PreparedStatementTest
                     assertTrue(rs.next());
                     byte [] bytes = rs.getBytes(1);
                     assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
-                    bytes = rs.getBytes("bytes1");
+                    bytes = rs.getBytes("test1");
                     assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
 
                 }
@@ -367,7 +367,7 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='bytes2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getBytes("bytes2"));
+                    assertNull(rs.getBytes("test1"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -498,7 +498,7 @@ public class PreparedStatementTest
                     assertEquals(-1, rs.getLong("test1"));
                     assertFalse(rs.wasNull());
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
                 {
                     assertTrue(rs.next());
                     assertEquals(0, rs.getLong("test1"));

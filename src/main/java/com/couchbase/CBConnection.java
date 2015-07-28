@@ -101,7 +101,7 @@ public class CBConnection implements java.sql.Connection
     public Statement createStatement() throws SQLException
     {
         checkClosed();
-        return new CBStatement(protocol);
+        return new CBStatement(this, protocol);
     }
 
     /**
@@ -140,7 +140,7 @@ public class CBConnection implements java.sql.Connection
     public PreparedStatement prepareStatement(String sql) throws SQLException
     {
         checkClosed();
-        return new CBPreparedStatement(protocol, sql);
+        return new CBPreparedStatement(this, protocol, sql);
     }
 
     /**

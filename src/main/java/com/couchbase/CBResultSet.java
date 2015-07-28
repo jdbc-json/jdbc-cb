@@ -733,7 +733,7 @@ public class CBResultSet implements java.sql.ResultSet
             }
             else if (object instanceof Integer)
             {
-                value = new Short((String) jsonObject.get(columnLabel));
+                value = ((Integer) object).shortValue();
             }
             else
             {
@@ -994,9 +994,17 @@ public class CBResultSet implements java.sql.ResultSet
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
+        Object json = jsonObject.get(columnLabel);
+
+        if ( json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+
         try
         {
-            value = new BigDecimal((double)jsonObject.get(columnLabel));
+            value = new BigDecimal((double)json);
             value.setScale(scale);
         }
         catch( Exception ex)
@@ -1025,16 +1033,25 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public byte[] getBytes(String columnLabel) throws SQLException
     {
-        byte [] bytes;
+
         checkClosed();
         checkIndex();
 
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
+        String json = (String)jsonObject.get(columnLabel);
+
+        if ( json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+
+
         try
         {
-            return ((String)jsonObject.get(columnLabel)).getBytes();
+            return ((String)json).getBytes();
 
         }
         catch( Exception ex)
@@ -1068,7 +1085,11 @@ public class CBResultSet implements java.sql.ResultSet
         checkColumnLabel(jsonObject, columnLabel);
         String json = (String)jsonObject.get(columnLabel);
 
-        if ( json == null ) return null;
+        if ( json == null )
+        {
+            wasNull=true;
+            return null;
+        }
 
         try
         {
@@ -1441,7 +1462,6 @@ public class CBResultSet implements java.sql.ResultSet
         checkClosed();
         checkIndex();
 
-
         Field field = getField(columnIndex);
         String fieldName = field.getName();
         return getObject(fieldName);
@@ -1506,7 +1526,15 @@ public class CBResultSet implements java.sql.ResultSet
                     case Types.ARRAY:
                         return jsonObject.get(columnLabel);
                     case Types.OTHER:
-                        return jsonObject.get(columnLabel);
+                        if ( field.getType().compareTo("json") == 0)
+                        {
+                            return ((Map)jsonObject.get(columnLabel)).get("value");
+                        }
+                        else
+                        {
+                            return jsonObject.get(columnLabel);
+                        }
+
                     case Types.NULL:
                         return null;
                 }

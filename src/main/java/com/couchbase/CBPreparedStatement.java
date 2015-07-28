@@ -18,15 +18,16 @@ import com.couchbase.jdbc.util.SqlParser;
 import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.boon.json.JsonFactory;
 
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * Created by davec on 2015-02-20.
@@ -44,10 +45,13 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     final String []fields;
     List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
 
+    private Calendar defaultCal = new GregorianCalendar();
+    private final TimeZone defaultTz = defaultCal.getTimeZone();
 
-    public CBPreparedStatement(Protocol protocol, String sql) throws SQLException
+
+    public CBPreparedStatement(Connection con, Protocol protocol, String sql) throws SQLException
     {
-        super(protocol);
+        super(con, protocol);
         parser = new SqlParser(sql);
         parser.parse();
         fields = new String[parser.getNumFields()];
@@ -72,6 +76,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ResultSet executeQuery() throws SQLException
     {
+
+        checkClosed();
 
         // get the query identifier TODO: this should be a function call for clarity
         valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
@@ -104,6 +110,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
     public int executeUpdate() throws SQLException
     {
+        checkClosed();
         valuePair.clear();
 
         valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
@@ -176,6 +183,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setByte(int parameterIndex, byte x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Byte.toString(x);
     }
 
@@ -193,6 +203,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setShort(int parameterIndex, short x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Short.toString(x);
     }
 
@@ -210,6 +223,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setInt(int parameterIndex, int x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Integer.toString(x);
     }
 
@@ -227,6 +243,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setLong(int parameterIndex, long x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Long.toString(x);
     }
 
@@ -244,6 +263,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setFloat(int parameterIndex, float x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Float.toString(x);
     }
 
@@ -261,7 +283,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDouble(int parameterIndex, double x) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = Double.toString(x);
     }
 
@@ -279,7 +303,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = x.toString();
     }
 
@@ -300,7 +326,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setString(int parameterIndex, String x) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = QUOTE+x+QUOTE;
     }
 
@@ -319,7 +347,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBytes(int parameterIndex, byte[] x) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = QUOTE+new String(x)+QUOTE;
     }
 
@@ -339,8 +369,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDate(int parameterIndex, Date x) throws SQLException
     {
-        checkFields(parameterIndex);
-        fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
+        setDate(parameterIndex,x, null);
+
     }
 
     /**
@@ -357,8 +387,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTime(int parameterIndex, Time x) throws SQLException
     {
-        checkFields(parameterIndex);
-        fields[parameterIndex-1] = QUOTE +x.toString()+QUOTE;
+        setTime(parameterIndex, x, null);
     }
 
     /**
@@ -376,7 +405,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = QUOTE+x.toString()+QUOTE;
     }
 
@@ -403,7 +434,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        setCharacterStream(parameterIndex, x, length, "ASCII");
     }
 
     /**
@@ -437,7 +471,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        setCharacterStream(parameterIndex, x, length, "UTF-8");
     }
 
     /**
@@ -462,7 +499,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, int length) throws SQLException
     {
-
+        checkClosed();
+        checkFields(parameterIndex);
+        //todo encode this//
+        fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
     }
 
     /**
@@ -479,6 +519,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void clearParameters() throws SQLException
     {
+        checkClosed();
         for (int i = 0;i < fields.length;i++)
         {
             fields[i] = null;
@@ -510,7 +551,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = x.toString();
     }
     /**
@@ -535,7 +578,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      */
     public void setSQLJSON(int parameterIndex,SQLJSON sqljson) throws SQLException
     {
+        checkClosed();
         checkFields(parameterIndex);
+
         fields[parameterIndex-1] = sqljson.getString();
     }
     /**
@@ -582,7 +627,52 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         checkClosed();
         checkFields(parameterIndex);
-        fields[parameterIndex-1] = x.toString();
+
+        if (x == null)
+            setNull(parameterIndex, Types.OTHER);
+        else if (x instanceof String)
+            setString(parameterIndex, (String)x);
+        else if (x instanceof BigDecimal)
+            setBigDecimal(parameterIndex, (BigDecimal)x);
+        else if (x instanceof Short)
+            setShort(parameterIndex, ((Short)x).shortValue());
+        else if (x instanceof Integer)
+            setInt(parameterIndex, ((Integer)x).intValue());
+        else if (x instanceof Long)
+            setLong(parameterIndex, ((Long)x).longValue());
+        else if (x instanceof Float)
+            setFloat(parameterIndex, ((Float)x).floatValue());
+        else if (x instanceof Double)
+            setDouble(parameterIndex, ((Double)x).doubleValue());
+        else if (x instanceof byte[])
+            setBytes(parameterIndex, (byte[])x);
+        else if (x instanceof java.sql.Date)
+            setDate(parameterIndex, (java.sql.Date)x);
+        else if (x instanceof Time)
+            setTime(parameterIndex, (Time)x);
+        else if (x instanceof Timestamp)
+            setTimestamp(parameterIndex, (Timestamp)x);
+        else if (x instanceof Boolean)
+            setBoolean(parameterIndex, ((Boolean)x).booleanValue());
+        else if (x instanceof Byte)
+            setByte(parameterIndex, ((Byte)x).byteValue());
+        else if (x instanceof Blob)
+            setBlob(parameterIndex, (Blob)x);
+        else if (x instanceof Clob)
+            setClob(parameterIndex, (Clob)x);
+        else if (x instanceof Array)
+            setArray(parameterIndex, (Array)x);
+        else if (x instanceof SQLJSON)
+            setSQLJSON(parameterIndex, (SQLJSON) x);
+        else if (x instanceof Character)
+            setString(parameterIndex, ((Character)x).toString());
+        else if (x instanceof Map)
+            setMap(parameterIndex, (Map)x);
+        else
+        {
+            // Can't infer a type.
+            throw new SQLException("Can''t infer the SQL type to use for an instance of {0}. Use setObject() with an explicit Types value to specify the type to use.");
+        }
     }
 
     /**
@@ -681,6 +771,38 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+
+        if (reader == null )
+        {
+            setNull(parameterIndex, Types.VARCHAR);
+            return;
+        }
+        else
+        {
+            char[] l_chars = new char[length];
+            int l_charsRead = 0;
+            try
+            {
+                while (true)
+                {
+                    int n = reader.read(l_chars, l_charsRead, length - l_charsRead);
+                    if (n == -1)
+                        break;
+
+                    l_charsRead += n;
+
+                    if (l_charsRead == length)
+                        break;
+                }
+            }
+            catch (IOException l_ioe)
+            {
+                throw new SQLException("Provided Reader failed.");
+            }
+            setString(parameterIndex, new String(l_chars, 0, l_charsRead));
+        }
 
     }
 
@@ -761,7 +883,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = ((CBArray)x).getJsonArray();
+        if (x == null)
+        {
+            setNull(parameterIndex, Types.ARRAY);
+        }
+        else
+        {
+            fields[parameterIndex - 1] = ((CBArray) x).getJsonArray();
+        }
     }
 
     /**
@@ -793,7 +922,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "getMetaData");
+        //todo need to implement
     }
 
     /**
@@ -818,7 +949,23 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setDate(int parameterIndex, Date x, Calendar cal) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        if (x == null)
+        {
+            setNull(parameterIndex, Types.DATE);
+            return;
+        }
+        else
+        {
+            if (cal != null)
+            {
+                cal = (Calendar) cal.clone();
+            }
+
+            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+        }
     }
 
     /**
@@ -843,7 +990,22 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTime(int parameterIndex, Time x, Calendar cal) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        if (x == null)
+        {
+            setNull(parameterIndex, Types.TIME);
+            return;
+        }
+        {
+            if (cal != null)
+            {
+                cal = (Calendar) cal.clone();
+            }
+
+            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+        }
     }
 
     /**
@@ -868,7 +1030,23 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        if (x == null)
+        {
+            setNull(parameterIndex, Types.TIME);
+            return;
+        }
+        else
+        {
+            if (cal != null)
+            {
+                cal = (Calendar) cal.clone();
+            }
+
+            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+        }
     }
 
     /**
@@ -929,7 +1107,17 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setURL(int parameterIndex, URL x) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
 
+        if ( x == null)
+        {
+            setNull(parameterIndex,Types.VARCHAR);
+        }
+        else
+        {
+            fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
+        }
     }
 
     /**
@@ -947,6 +1135,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ParameterMetaData getParameterMetaData() throws SQLException
     {
+        checkClosed();
+        //todo implement
         return null;
     }
 
@@ -990,6 +1180,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNString(int parameterIndex, String value) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+        if ( value == null)
+        {
+            setNull(parameterIndex,Types.VARCHAR);
+        }
+        else
+        {
+            fields[parameterIndex-1] = QUOTE + value + QUOTE;
+        }
 
     }
 
@@ -1013,7 +1213,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setNCharacterStream");
     }
 
     /**
@@ -1197,11 +1397,303 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * @since 1.6
      */
     @Override
-    public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException
+    public void setObject(int parameterIndex, Object in, int targetSqlType, int scaleOrLength) throws SQLException
     {
 
+        checkClosed();
+
+        if (in == null)
+        {
+            setNull(parameterIndex, targetSqlType);
+            return ;
+        }
+
+        switch (targetSqlType)
+        {
+            case Types.INTEGER:
+                setInt(parameterIndex, castToInt(in));
+                break;
+            case Types.TINYINT:
+            case Types.SMALLINT:
+                setShort(parameterIndex, castToShort(in));
+                break;
+            case Types.BIGINT:
+                setLong(parameterIndex, castToLong(in));
+                break;
+            case Types.REAL:
+                setFloat(parameterIndex, castToFloat(in));
+                break;
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                setDouble(parameterIndex, castToDouble(in));
+                break;
+            case Types.DECIMAL:
+            case Types.NUMERIC:
+                setBigDecimal(parameterIndex, castToBigDecimal(in, scaleOrLength));
+                break;
+            case Types.CHAR:
+                setString(parameterIndex, castToString(in));
+                break;
+            case Types.VARCHAR:
+            case Types.LONGVARCHAR:
+                setString(parameterIndex, castToString(in));
+                break;
+            case Types.DATE:
+                if (in instanceof java.sql.Date)
+                    setDate(parameterIndex, (java.sql.Date)in);
+                else
+                {
+                    java.sql.Date tmpd =null;
+                    if (in instanceof java.util.Date) {
+                        tmpd = new java.sql.Date(((java.util.Date)in).getTime());
+                    }
+                    //todo parse string
+                    setDate(parameterIndex, tmpd);
+                }
+                break;
+            case Types.TIME:
+                if (in instanceof java.sql.Time)
+                    setTime(parameterIndex, (java.sql.Time)in);
+                else
+                {
+                    java.sql.Time tmpt=null;
+                    if (in instanceof java.util.Date) {
+                        tmpt = new java.sql.Time(((java.util.Date)in).getTime());
+                    }
+                    //todo parse string
+                    setTime(parameterIndex, tmpt);
+                }
+                break;
+            case Types.TIMESTAMP:
+                if (in instanceof java.sql.Timestamp)
+                    setTimestamp(parameterIndex , (java.sql.Timestamp)in);
+                else
+                {
+                    java.sql.Timestamp tmpts = null;
+                    if (in instanceof java.util.Date)
+                    {
+                        tmpts = new java.sql.Timestamp(((java.util.Date) in).getTime());
+                    }
+                    //todo parse string
+                    setTimestamp(parameterIndex, tmpts);
+                }
+                break;
+            case Types.BIT:
+                setBoolean(parameterIndex, castToBoolean(in));
+                break;
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                setObject(parameterIndex, in);
+                break;
+            case Types.BLOB:
+                if (in instanceof Blob)
+                {
+                    setBlob(parameterIndex, (Blob)in);
+                }
+                else
+                {
+                    throw new SQLException("Cannot cast an instance of " + in.getClass().getName() + " to type " + Types.BLOB);
+                }
+                break;
+            case Types.CLOB:
+                if (in instanceof Clob)
+                    setClob(parameterIndex, (Clob)in);
+                else
+                    throw new SQLException("Cannot cast an instance of " + in.getClass().getName() + " to type " + Types.CLOB);
+                break;
+            case Types.ARRAY:
+                if (in instanceof Array)
+                    setArray(parameterIndex, (Array)in);
+                else
+                    throw new SQLException("Cannot cast an instance of " + in.getClass().getName() + " to type " + Types.ARRAY);
+                break;
+            case Types.DISTINCT:
+                setString(parameterIndex, in.toString());
+                break;
+            case Types.OTHER:
+                    setString(parameterIndex, in.toString());
+                break;
+            default:
+                throw new SQLException("Unsupported Types value: " +targetSqlType );
+
+        }
+    }
+    private static String asString(final Clob in) throws SQLException {
+        return in.getSubString(1, (int) in.length());
+    }
+    private static int castToInt(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return Integer.parseInt((String) in);
+            if (in instanceof Number)
+                return ((Number) in).intValue();
+            if (in instanceof java.util.Date)
+                return (int) ((java.util.Date) in).getTime();
+            if (in instanceof Boolean)
+                return (Boolean) in ? 1 : 0;
+            if (in instanceof Clob)
+                return Integer.parseInt(asString((Clob) in));
+            if (in instanceof Character)
+                return Integer.parseInt(in.toString());
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "int", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "int");
     }
 
+    private static short castToShort(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return Short.parseShort((String) in);
+            if (in instanceof Number)
+                return ((Number) in).shortValue();
+            if (in instanceof java.util.Date)
+                return (short) ((java.util.Date) in).getTime();
+            if (in instanceof Boolean)
+                return (Boolean) in ? (short) 1 : (short) 0;
+            if (in instanceof Clob)
+                return Short.parseShort(asString((Clob) in));
+            if (in instanceof Character)
+                return Short.parseShort(in.toString());
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "short", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "short");
+    }
+
+    private static long castToLong(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return Long.parseLong((String) in);
+            if (in instanceof Number)
+                return ((Number) in).longValue();
+            if (in instanceof java.util.Date)
+                return ((java.util.Date) in).getTime();
+            if (in instanceof Boolean)
+                return (Boolean) in ? 1L : 0L;
+            if (in instanceof Clob)
+                return Long.parseLong(asString((Clob) in));
+            if (in instanceof Character)
+                return Long.parseLong(in.toString());
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "long", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "long");
+    }
+
+    private static float castToFloat(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return Float.parseFloat((String) in);
+            if (in instanceof Number)
+                return ((Number) in).floatValue();
+            if (in instanceof java.util.Date)
+                return ((java.util.Date) in).getTime();
+            if (in instanceof Boolean)
+                return (Boolean) in ? 1f : 0f;
+            if (in instanceof Clob)
+                return Float.parseFloat(asString((Clob) in));
+            if (in instanceof Character)
+                return Float.parseFloat(in.toString());
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "float", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "float");
+    }
+
+    private static double castToDouble(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return Double.parseDouble((String) in);
+            if (in instanceof Number)
+                return ((Number) in).doubleValue();
+            if (in instanceof java.util.Date)
+                return ((java.util.Date) in).getTime();
+            if (in instanceof Boolean)
+                return (Boolean) in ? 1d : 0d;
+            if (in instanceof Clob)
+                return Double.parseDouble(asString((Clob) in));
+            if (in instanceof Character)
+                return Double.parseDouble(in.toString());
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "double", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "double");
+    }
+
+    private static BigDecimal castToBigDecimal(final Object in, final int scale) throws SQLException {
+        try {
+            if (in instanceof String)
+                return new BigDecimal((String) in).setScale(scale, RoundingMode.HALF_UP);
+            if (in instanceof BigDecimal)
+                return ((BigDecimal) in).setScale(scale, RoundingMode.HALF_UP);
+            if (in instanceof BigInteger)
+                return new BigDecimal((BigInteger) in, scale);
+            if (in instanceof Long || in instanceof Integer || in instanceof Short || in instanceof Byte)
+                return BigDecimal.valueOf(((Number) in).longValue(), scale);
+            if (in instanceof Double || in instanceof Float)
+                return BigDecimal.valueOf(((Number) in).doubleValue()).setScale(scale, RoundingMode.HALF_UP);
+            if (in instanceof java.util.Date)
+                return BigDecimal.valueOf(((java.util.Date) in).getTime(), scale);
+            if (in instanceof Boolean)
+                return (Boolean) in ? BigDecimal.ONE : BigDecimal.ZERO;
+            if (in instanceof Clob)
+                return new BigDecimal(asString((Clob) in));
+            if (in instanceof Character)
+                return new BigDecimal(new char[] {(Character) in}).setScale(scale, RoundingMode.HALF_UP);
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "BigDecimal", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "BigDecimal");
+    }
+
+    private static boolean castToBoolean(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return ((String) in).equalsIgnoreCase("true") || ((String) in).equals("1") || ((String) in).equalsIgnoreCase("t");
+            if (in instanceof BigDecimal)
+                return ((BigDecimal) in).signum() != 0;
+            if (in instanceof Number)
+                return ((Number) in).longValue() != 0L;
+            if (in instanceof java.util.Date)
+                return ((java.util.Date) in).getTime() != 0L;
+            if (in instanceof Boolean)
+                return (Boolean) in;
+            if (in instanceof Clob) {
+                final String asString = asString((Clob) in);
+                return asString.equalsIgnoreCase("true") || asString.equals("1") || asString.equalsIgnoreCase("t");
+            }
+            if (in instanceof Character)
+                return (Character) in == '1' || (Character) in == 't' || (Character) in == 'T';
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "boolean", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "boolean");
+    }
+
+    private static String castToString(final Object in) throws SQLException {
+        try {
+            if (in instanceof String)
+                return (String) in;
+            if (in instanceof Number || in instanceof Boolean || in instanceof Character || in instanceof java.util.Date)
+                return in.toString();
+            if (in instanceof Clob)
+                return asString((Clob) in);
+        } catch (final Exception e) {
+            throw cannotCastException(in.getClass().getName(), "String", e);
+        }
+        throw cannotCastException(in.getClass().getName(), "String");
+    }
+
+    private static SQLException cannotCastException(final String fromType, final String toType) {
+        return cannotCastException(fromType, toType, null);
+    }
+
+    private static SQLException cannotCastException(final String fromType, final String toType, final Exception cause) {
+        return new SQLException("Cannot convert an instance of " + fromType + " to type " + toType,  cause);
+
+    }
     /**
      * Sets the designated parameter to the given input stream, which will have
      * the specified number of bytes.
@@ -1226,6 +1718,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
+        checkClosed();
+        checkFields(parameterIndex);
+        setCharacterStream(parameterIndex,x, (int)length,"ASCII");
 
     }
 
@@ -1252,7 +1747,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
-
+        checkClosed();
+        checkFields(parameterIndex);
+        //todo  need to encode this
+        setCharacterStream(parameterIndex,x, (int)length,"ASCII");
     }
 
     /**
@@ -1280,7 +1778,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setCharacterStream");
     }
 
     /**
@@ -1309,7 +1807,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setAsciiStream");
+        //todo test
     }
 
     /**
@@ -1337,6 +1836,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
     {
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setBinaryStream");
+        //todo test
 
     }
 
@@ -1368,6 +1869,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setCharacterStream");
+        //todo test
 
     }
 
@@ -1397,7 +1900,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException
     {
-
+        throw CBDriver.notImplemented(CBPreparedStatement.class, "setCharacterNStream");
+        //todo test
     }
 
     /**
@@ -1485,6 +1989,52 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         throw CBDriver.notImplemented(CBPreparedStatement.class, "setNClob");
     }
 
+    private void setCharacterStream(int parameterIndex, InputStream x, int length, String encoding) throws SQLException
+    {
+
+        if (x == null)
+        {
+            setNull(parameterIndex, Types.VARCHAR);
+            return;
+        }
+        if (length < 0)
+            throw new SQLException("Invalid stream length " + length);
+
+
+        try
+        {
+            InputStreamReader l_inStream = new InputStreamReader(x, encoding);
+            char[] l_chars = new char[length];
+            int l_charsRead = 0;
+            while (true)
+            {
+                int n = l_inStream.read(l_chars, l_charsRead, length - l_charsRead);
+                if (n == -1)
+                    break;
+
+                l_charsRead += n;
+
+                if (l_charsRead == length)
+                    break;
+            }
+
+            setString(parameterIndex, new String(l_chars, 0, l_charsRead));
+        }
+        catch (UnsupportedEncodingException l_uee)
+        {
+            throw new SQLException("The JVM claims not to support the " + encoding + " encoding.");
+        }
+        catch (IOException l_ioe)
+        {
+            throw new SQLException("Provided InputStream failed.");
+        }
+    }
+    public void setMap(int parameterIndex, Map map ) throws  SQLException
+    {
+        checkClosed();
+        checkFields(parameterIndex);
+        fields[parameterIndex-1] = JsonFactory.toJson(map);
+    }
     private void checkFields(int index) throws SQLException
     {
         if (fields == null) throw new SQLException("fields not initialized");
@@ -1502,5 +2052,142 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
         return new BasicNameValuePair("args",parameters.toString());
 
+    }
+    private StringBuffer sbuf = new StringBuffer();
+
+    public synchronized String toString(Calendar cal, Timestamp x) {
+        if (cal == null)
+            cal = defaultCal;
+
+        cal.setTime(x);
+        sbuf.setLength(0);
+
+        appendDate(sbuf, cal);
+        sbuf.append(' ');
+        appendTime(sbuf, cal, x.getNanos());
+        appendTimeZone(sbuf, cal);
+        appendEra(sbuf, cal);
+
+        return sbuf.toString();
+    }
+
+    public synchronized String toString(Calendar cal, Time x)
+    {
+        if (cal == null)
+            cal = defaultCal;
+
+        cal.setTime(x);
+        sbuf.setLength(0);
+
+        appendTime(sbuf, cal, cal.get(Calendar.MILLISECOND) * 1000000);
+
+        appendTimeZone(sbuf, cal);
+
+        return sbuf.toString();
+    }
+
+    public synchronized String toString(Calendar cal, Date x)
+    {
+        if (cal == null)
+            cal = defaultCal;
+
+        cal.setTime(x);
+        sbuf.setLength(0);
+
+        appendDate(sbuf, cal);
+        appendEra(sbuf, cal);
+        appendTimeZone(sbuf, cal);
+
+        return sbuf.toString();
+    }
+
+    private static void appendDate(StringBuffer sb, Calendar cal)
+    {
+        int l_year = cal.get(Calendar.YEAR);
+        // always use at least four digits for the year so very
+        // early years, like 2, don't get misinterpreted
+        //
+        int l_yearlen = String.valueOf(l_year).length();
+        for (int i = 4; i > l_yearlen; i--)
+        {
+            sb.append("0");
+        }
+
+        sb.append(l_year);
+        sb.append('-');
+        int l_month = cal.get(Calendar.MONTH) + 1;
+        if (l_month < 10)
+            sb.append('0');
+        sb.append(l_month);
+        sb.append('-');
+        int l_day = cal.get(Calendar.DAY_OF_MONTH);
+        if (l_day < 10)
+            sb.append('0');
+        sb.append(l_day);
+    }
+
+    private static void appendTime(StringBuffer sb, Calendar cal, int nanos)
+    {
+        int hours = cal.get(Calendar.HOUR_OF_DAY);
+        if (hours < 10)
+            sb.append('0');
+        sb.append(hours);
+
+        sb.append(':');
+        int minutes = cal.get(Calendar.MINUTE);
+        if (minutes < 10)
+            sb.append('0');
+        sb.append(minutes);
+
+        sb.append(':');
+        int seconds = cal.get(Calendar.SECOND);
+        if (seconds < 10)
+            sb.append('0');
+        sb.append(seconds);
+
+        // Add nanoseconds.
+        // This won't work for server versions < 7.2 which only want
+        // a two digit fractional second, but we don't need to support 7.1
+        // anymore and getting the version number here is difficult.
+        //
+        char[] decimalStr = {'0', '0', '0', '0', '0', '0', '0', '0', '0'};
+        char[] nanoStr = Integer.toString(nanos).toCharArray();
+        System.arraycopy(nanoStr, 0, decimalStr, decimalStr.length - nanoStr.length, nanoStr.length);
+        sb.append('.');
+        sb.append(decimalStr, 0, 6);
+    }
+
+    private void appendTimeZone(StringBuffer sb, java.util.Calendar cal)
+    {
+        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000;
+
+        int absoff = Math.abs(offset);
+        int hours = absoff / 60 / 60;
+        int mins = (absoff - hours * 60 * 60) / 60;
+        int secs = absoff - hours * 60 * 60 - mins * 60;
+
+        sb.append((offset >= 0) ? " +" : " -");
+
+        if (hours < 10)
+            sb.append('0');
+        sb.append(hours);
+
+        sb.append(':');
+
+        if (mins < 10)
+            sb.append('0');
+        sb.append(mins);
+
+        sb.append(':');
+        if (secs < 10)
+            sb.append('0');
+        sb.append(secs);
+    }
+
+    private static void appendEra(StringBuffer sb, Calendar cal)
+    {
+        if (cal.get(Calendar.ERA) == GregorianCalendar.BC) {
+            sb.append(" BC");
+        }
     }
 }

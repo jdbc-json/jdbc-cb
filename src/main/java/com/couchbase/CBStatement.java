@@ -31,9 +31,15 @@ public class CBStatement implements java.sql.Statement
     AtomicBoolean closed = new AtomicBoolean(false);
     protected int updateCount=0;
     protected CBResultSet resultSet;
+    protected Connection connection;
+    protected boolean escapeProcessing = false;
+    protected int maxRows = -1;
+    protected boolean poolable=false;
+    protected boolean closeOnCompletion = false;
 
-    public CBStatement( Protocol protocol )
+    public CBStatement( Connection connection, Protocol protocol )
     {
+        this.connection = connection;
         this.protocol = protocol;
     }
 
@@ -61,6 +67,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public ResultSet executeQuery(String sql) throws SQLException
     {
+        checkClosed();
         return protocol.query(this, sql);
     }
 
@@ -89,6 +96,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql) throws SQLException
     {
+        checkClosed();
         return protocol.executeUpdate(this, sql);
     }
 
@@ -134,6 +142,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getMaxFieldSize() throws SQLException
     {
+        checkClosed();
         return 0;
     }
 
@@ -159,7 +168,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setMaxFieldSize(int max) throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -178,7 +187,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getMaxRows() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return maxRows;
     }
 
     /**
@@ -197,7 +207,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setMaxRows(int max) throws SQLException
     {
-
+        checkClosed();
+        maxRows = max;
     }
 
     /**
@@ -217,6 +228,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setEscapeProcessing(boolean enable) throws SQLException
     {
+        checkClosed();
+        escapeProcessing = true;
 
     }
 
@@ -235,6 +248,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getQueryTimeout() throws SQLException
     {
+        checkClosed();
         return protocol.getQueryTimeout();
     }
 
@@ -267,6 +281,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setQueryTimeout(int seconds) throws SQLException
     {
+        checkClosed();
         protocol.setQueryTimeout(seconds);
     }
 
@@ -284,7 +299,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void cancel() throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -310,7 +325,10 @@ public class CBStatement implements java.sql.Statement
     @Override
     public SQLWarning getWarnings() throws SQLException
     {
+        checkClosed();
+        //todo implement
         return null;
+
     }
 
     /**
@@ -326,7 +344,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void clearWarnings() throws SQLException
     {
-
+        checkClosed();
+        //todo implement
     }
 
     /**
@@ -417,6 +436,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public ResultSet getResultSet() throws SQLException
     {
+        checkClosed();
         return resultSet;
     }
 
@@ -510,7 +530,7 @@ public class CBStatement implements java.sql.Statement
     public int getFetchDirection() throws SQLException
     {
         checkClosed();
-        return 0;
+        return ResultSet.FETCH_FORWARD;
     }
 
     /**
@@ -530,7 +550,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setFetchSize(int rows) throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -551,6 +571,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getFetchSize() throws SQLException
     {
+        checkClosed();
         return 0;
     }
 
@@ -567,7 +588,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getResultSetConcurrency() throws SQLException
     {
-        return 0;
+        checkClosed();
+
+        return ResultSet.CONCUR_READ_ONLY;
     }
 
     /**
@@ -584,7 +607,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getResultSetType() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return resultSet.TYPE_FORWARD_ONLY;
     }
 
     /**
@@ -608,6 +632,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void addBatch(String sql) throws SQLException
     {
+        checkClosed();
         protocol.addBatch(sql);
     }
 
@@ -626,6 +651,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void clearBatch() throws SQLException
     {
+        checkClosed();
+        protocol.clearBatch();
 
     }
 
@@ -686,6 +713,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int[] executeBatch() throws SQLException
     {
+        checkClosed();
         return protocol.executeBatch();
     }
 
@@ -701,6 +729,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public Connection getConnection() throws SQLException
     {
+
         return null;
     }
 
@@ -744,6 +773,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean getMoreResults(int current) throws SQLException
     {
+        checkClosed();
         return false;
     }
 
@@ -766,7 +796,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public ResultSet getGeneratedKeys() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "getGeneratedKeys");
+        //todo needs test
     }
 
     /**
@@ -807,7 +839,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException
     {
-        return 0;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -845,7 +879,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql, int[] columnIndexes) throws SQLException
     {
-        return 0;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -884,7 +920,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int executeUpdate(String sql, String[] columnNames) throws SQLException
     {
-        return 0;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -941,7 +979,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean execute(String sql, int autoGeneratedKeys) throws SQLException
     {
-        return false;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -994,7 +1034,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean execute(String sql, int[] columnIndexes) throws SQLException
     {
-        return false;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -1048,7 +1090,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean execute(String sql, String[] columnNames) throws SQLException
     {
-        return false;
+        checkClosed();
+        throw CBDriver.notImplemented(ResultSet.class, "executeUpdate");
+        //TODO NEEDS TEST
     }
 
     /**
@@ -1064,7 +1108,9 @@ public class CBStatement implements java.sql.Statement
     @Override
     public int getResultSetHoldability() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
+        //todo needs test
     }
 
     /**
@@ -1078,7 +1124,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean isClosed() throws SQLException
     {
-        return false;
+        return closed.get();
     }
 
     /**
@@ -1107,7 +1153,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void setPoolable(boolean poolable) throws SQLException
     {
-
+        checkClosed();
+        this.poolable = poolable;
     }
 
     /**
@@ -1128,7 +1175,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean isPoolable() throws SQLException
     {
-        return false;
+        checkClosed();
+        return poolable;
     }
 
     /**
@@ -1149,7 +1197,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void closeOnCompletion() throws SQLException
     {
-
+        checkClosed();
+        closeOnCompletion = true;
     }
 
     /**
@@ -1165,7 +1214,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean isCloseOnCompletion() throws SQLException
     {
-        return false;
+        checkClosed();
+        return closeOnCompletion;
     }
 
     /**
