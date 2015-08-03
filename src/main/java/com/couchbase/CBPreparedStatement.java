@@ -17,6 +17,7 @@ import com.couchbase.jdbc.CBPreparedResult;
 import com.couchbase.jdbc.Protocol;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
+import com.couchbase.jdbc.util.TimestampUtils;
 import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -46,9 +47,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
     final String []fields;
     List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
-
-    private Calendar defaultCal = new GregorianCalendar();
-    private final TimeZone defaultTz = defaultCal.getTimeZone();
+    TimestampUtils timestampUtils = new TimestampUtils();
 
 
     public CBPreparedStatement(Connection con, Protocol protocol, String sql) throws SQLException
@@ -584,7 +583,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = sqljson.getString();
+        fields[parameterIndex-1] = sqljson.parameterValue();
     }
     /**
      * <p>Sets the value of the designated parameter using the given object.
@@ -674,7 +673,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         else
         {
             // Can't infer a type.
-            throw new SQLException("Can''t infer the SQL type to use for an instance of {0}. Use setObject() with an explicit Types value to specify the type to use.");
+            throw new SQLException("Can''t infer the SQL type to use for an instance of " + x + ". Use setObject() with an explicit Types value to specify the type to use.");
         }
     }
 
@@ -967,7 +966,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
         }
     }
 
@@ -1007,7 +1006,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
         }
     }
 
@@ -1048,7 +1047,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
         }
     }
 
@@ -2078,141 +2077,5 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         return new BasicNameValuePair("args",parameters.toString());
 
     }
-    private StringBuffer sbuf = new StringBuffer();
 
-    public synchronized String toString(Calendar cal, Timestamp x) {
-        if (cal == null)
-            cal = defaultCal;
-
-        cal.setTime(x);
-        sbuf.setLength(0);
-
-        appendDate(sbuf, cal);
-        sbuf.append(' ');
-        appendTime(sbuf, cal, x.getNanos());
-        appendTimeZone(sbuf, cal);
-        appendEra(sbuf, cal);
-
-        return sbuf.toString();
-    }
-
-    public synchronized String toString(Calendar cal, Time x)
-    {
-        if (cal == null)
-            cal = defaultCal;
-
-        cal.setTime(x);
-        sbuf.setLength(0);
-
-        appendTime(sbuf, cal, cal.get(Calendar.MILLISECOND) * 1000000);
-
-        appendTimeZone(sbuf, cal);
-
-        return sbuf.toString();
-    }
-
-    public synchronized String toString(Calendar cal, Date x)
-    {
-        if (cal == null)
-            cal = defaultCal;
-
-        cal.setTime(x);
-        sbuf.setLength(0);
-
-        appendDate(sbuf, cal);
-        appendEra(sbuf, cal);
-        appendTimeZone(sbuf, cal);
-
-        return sbuf.toString();
-    }
-
-    private static void appendDate(StringBuffer sb, Calendar cal)
-    {
-        int l_year = cal.get(Calendar.YEAR);
-        // always use at least four digits for the year so very
-        // early years, like 2, don't get misinterpreted
-        //
-        int l_yearlen = String.valueOf(l_year).length();
-        for (int i = 4; i > l_yearlen; i--)
-        {
-            sb.append("0");
-        }
-
-        sb.append(l_year);
-        sb.append('-');
-        int l_month = cal.get(Calendar.MONTH) + 1;
-        if (l_month < 10)
-            sb.append('0');
-        sb.append(l_month);
-        sb.append('-');
-        int l_day = cal.get(Calendar.DAY_OF_MONTH);
-        if (l_day < 10)
-            sb.append('0');
-        sb.append(l_day);
-    }
-
-    private static void appendTime(StringBuffer sb, Calendar cal, int nanos)
-    {
-        int hours = cal.get(Calendar.HOUR_OF_DAY);
-        if (hours < 10)
-            sb.append('0');
-        sb.append(hours);
-
-        sb.append(':');
-        int minutes = cal.get(Calendar.MINUTE);
-        if (minutes < 10)
-            sb.append('0');
-        sb.append(minutes);
-
-        sb.append(':');
-        int seconds = cal.get(Calendar.SECOND);
-        if (seconds < 10)
-            sb.append('0');
-        sb.append(seconds);
-
-        // Add nanoseconds.
-        // This won't work for server versions < 7.2 which only want
-        // a two digit fractional second, but we don't need to support 7.1
-        // anymore and getting the version number here is difficult.
-        //
-        char[] decimalStr = {'0', '0', '0', '0', '0', '0', '0', '0', '0'};
-        char[] nanoStr = Integer.toString(nanos).toCharArray();
-        System.arraycopy(nanoStr, 0, decimalStr, decimalStr.length - nanoStr.length, nanoStr.length);
-        sb.append('.');
-        sb.append(decimalStr, 0, 6);
-    }
-
-    private void appendTimeZone(StringBuffer sb, java.util.Calendar cal)
-    {
-        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000;
-
-        int absoff = Math.abs(offset);
-        int hours = absoff / 60 / 60;
-        int mins = (absoff - hours * 60 * 60) / 60;
-        int secs = absoff - hours * 60 * 60 - mins * 60;
-
-        sb.append((offset >= 0) ? " +" : " -");
-
-        if (hours < 10)
-            sb.append('0');
-        sb.append(hours);
-
-        sb.append(':');
-
-        if (mins < 10)
-            sb.append('0');
-        sb.append(mins);
-
-        sb.append(':');
-        if (secs < 10)
-            sb.append('0');
-        sb.append(secs);
-    }
-
-    private static void appendEra(StringBuffer sb, Calendar cal)
-    {
-        if (cal.get(Calendar.ERA) == GregorianCalendar.BC) {
-            sb.append(" BC");
-        }
-    }
 }

@@ -1529,6 +1529,7 @@ public class CBResultSet implements java.sql.ResultSet
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
+        // todo why are we doing this ?
         for (Field field:fields)
         {
             if (field.getName().equals(columnLabel))
@@ -3704,6 +3705,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(int columnIndex, Calendar cal) throws SQLException
     {
+        //todo implement
         return null;
     }
 
@@ -5431,7 +5433,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkClosed();
         checkIndex();
 
-
+        // TODO this is not complete
         if ( type.getName().equals("java.sql.Timestamp"))
         {
             return (T) getTimestamp(columnLabel);

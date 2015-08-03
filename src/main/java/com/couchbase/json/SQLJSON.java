@@ -14,8 +14,11 @@ package com.couchbase.json;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -43,11 +46,29 @@ public interface SQLJSON
     public short getShort() throws SQLException;
     public void setShort(short val) throws SQLException;
 
-    public short getInt() throws SQLException;
+    public int getInt() throws SQLException;
     public void setInt(int val) throws SQLException;
 
     public long getLong() throws SQLException;
     public void setLong(long val) throws SQLException;
+
+    public void setFloat(float val)throws SQLException;
+    public float getFloat()throws SQLException;
+
+    public void setDouble( double val )throws SQLException;
+    public double getDouble()throws SQLException;
+
+    public void setBytes( byte[] val)throws SQLException;
+    public byte[] getBytes()throws SQLException;
+
+    public void setDate(Date val, Calendar cal)throws SQLException;
+    public Date getDate()throws SQLException;
+
+    public void setTime( Time val, Calendar cal )throws SQLException;
+    public Time getTime()throws SQLException;
+
+    public void setTimestamp( Timestamp val, Calendar cal)throws SQLException;
+    public Timestamp getTimestamp()throws SQLException;
 
     public BigDecimal getBigDecimal() throws SQLException;
     public void setBigDecimal(BigDecimal val) throws SQLException;
@@ -58,7 +79,10 @@ public interface SQLJSON
     public Object getObject() throws SQLException;
     public void setObject(Object val) throws SQLException;
 
-    public Types getJDBCType();
+    public boolean isNull() throws SQLException;
+
+    public int getJDBCType();
+    public String parameterValue();
 
 
     public Object parse(Class clazz) throws SQLException;

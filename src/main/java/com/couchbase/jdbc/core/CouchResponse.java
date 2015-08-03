@@ -74,7 +74,21 @@ public class CouchResponse
                         }
                         else
                         {
-                            fields.add(new Field(key, firstRow.get(key).toString()));
+                            Object type = firstRow.get(key);
+                            String jsonType="json";
+
+                            if (type instanceof Number)
+                                jsonType = "number";
+                            else if ( type instanceof Boolean)
+                                jsonType = "boolean";
+                            else if ( type instanceof String)
+                                jsonType = "string";
+                            else if (type instanceof Map )
+                                jsonType = "json";
+                            else if ( type instanceof List )
+                                jsonType = "json";
+
+                            fields.add(new Field(key, jsonType));
                         }
                     }
                 }
@@ -96,4 +110,8 @@ public class CouchResponse
     public List <CouchError> getWarnings() {return warnings;}
     public List <CouchError> getErrors(){return errors;}
 
+    public Map getFirstResult()
+    {
+        return (Map)results.get(0);
+    }
 }

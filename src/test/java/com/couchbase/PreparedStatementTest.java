@@ -794,6 +794,11 @@ public class PreparedStatementTest
         }
     }
     @Test
+    public void setObject() throws Exception
+    {
+        //TODO implement, specifically string, map, list,etc
+    }
+    @Test
     public void clobNotImplemented() throws Exception
     {
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
