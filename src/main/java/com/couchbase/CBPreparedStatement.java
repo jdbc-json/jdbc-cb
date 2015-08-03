@@ -12,6 +12,8 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.CBParameterMetaData;
+import com.couchbase.jdbc.CBPreparedResult;
 import com.couchbase.jdbc.Protocol;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
@@ -39,7 +41,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
     final String sql;
 
-    final CouchResponse preparedStatement;
+    final CBPreparedResult preparedStatement;
     final SqlParser parser;
 
     final String []fields;
@@ -56,7 +58,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parser.parse();
         fields = new String[parser.getNumFields()];
         this.sql = sql;
-        preparedStatement = protocol.prepareStatement(parser.toString());
+        CouchResponse ret = protocol.prepareStatement(parser.toString());
+        preparedStatement = new CBPreparedResult(ret.getFirstResult());
     }
 
     /**
@@ -79,8 +82,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
         checkClosed();
 
-        // get the query identifier TODO: this should be a function call for clarity
-        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
+        // get the query identifier
+        valuePair.add(new BasicNameValuePair("prepared", "\""+preparedStatement.getName()+"\""));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
@@ -113,7 +116,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         valuePair.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
+        valuePair.add(new BasicNameValuePair("prepared", "\""+preparedStatement.getName()+"\""));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
@@ -710,7 +713,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         valuePair.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getResults().get(0).get("name")+"\""));
+        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getName()+"\""));
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
@@ -1135,9 +1138,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ParameterMetaData getParameterMetaData() throws SQLException
     {
+        //todo test
         checkClosed();
-        //todo implement
-        return null;
+        return new CBParameterMetaData(preparedStatement);
     }
 
     /**
@@ -1718,8 +1721,15 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
+
+        //todo test
         checkClosed();
         checkFields(parameterIndex);
+        if ( length > Integer.MAX_VALUE )
+        {
+            throw new SQLException("Length greater than " + Integer.MAX_VALUE );
+
+        }
         setCharacterStream(parameterIndex,x, (int)length,"ASCII");
 
     }
@@ -1747,8 +1757,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException
     {
+        //todo test
         checkClosed();
         checkFields(parameterIndex);
+        if ( length > Integer.MAX_VALUE )
+        {
+            throw new SQLException("Length greater than " + Integer.MAX_VALUE );
+
+        }
         //todo  need to encode this
         setCharacterStream(parameterIndex,x, (int)length,"ASCII");
     }
@@ -1778,7 +1794,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
-        throw CBDriver.notImplemented(CBPreparedStatement.class, "setCharacterStream");
+        //todo test
+        checkClosed();
+        checkFields(parameterIndex);
+
+        if ( length > Integer.MAX_VALUE )
+        {
+            throw new SQLException("Length greater than " + Integer.MAX_VALUE );
+
+        }
+        setCharacterStream(parameterIndex,reader, (int)length);
     }
 
     /**

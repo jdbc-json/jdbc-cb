@@ -43,7 +43,7 @@ public class PreparedStatementTest
     {
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from default");
         System.out.print("connection opened");
     }
 
@@ -54,7 +54,7 @@ public class PreparedStatementTest
 
         try(Statement statement = con.createStatement())
         {
-            statement.executeUpdate("delete from test1");
+            statement.executeUpdate("delete from default");
         }
 
         con.close();
@@ -75,7 +75,7 @@ public class PreparedStatementTest
     public void emptyResult() throws Exception
     {
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("select * from test1"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("select * from default"))
         {
             assertNotNull(preparedStatement);
 
@@ -89,7 +89,7 @@ public class PreparedStatementTest
     @Test
     public void testExecuteQuery() throws Exception
     {
-        try (PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO test1  (KEY, VALUE) VALUES ( ?, ?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO default  (KEY, VALUE) VALUES ( ?, ?)"))
         {
             assertNotNull(preparedStatement);
 
@@ -104,7 +104,7 @@ public class PreparedStatementTest
 
         }
 
-        try( PreparedStatement preparedStatement = con.prepareStatement("SELECT COUNT(*) AS test1_count FROM test1"))
+        try( PreparedStatement preparedStatement = con.prepareStatement("SELECT COUNT(*) AS test1_count FROM default"))
         {
             assertNotNull(preparedStatement);
             ResultSet rs = preparedStatement.executeQuery();
@@ -112,7 +112,7 @@ public class PreparedStatementTest
             assertEquals( 100, rs.getInt(1) );
         }
 
-        try ( PreparedStatement preparedStatement = con.prepareStatement( "SELECT test1 FROM test1 WHERE test1 >= ? order by test1"))
+        try ( PreparedStatement preparedStatement = con.prepareStatement( "SELECT default FROM default WHERE default >= ? order by default"))
         {
             assertNotNull(preparedStatement);
             preparedStatement.setInt(1,50);
@@ -141,7 +141,7 @@ public class PreparedStatementTest
                 "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
         JsonObject jsonObject2 = Json.createReader(new StringReader(jsonString2)).readObject();
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1 (key,value) values(?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into default (key,value) values(?,?)"))
         {
             assertNotNull(preparedStatement);
 
@@ -155,7 +155,7 @@ public class PreparedStatementTest
         try (Statement statement = con.createStatement()) {
             assertNotNull(statement);
             ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
-                    "FROM test1 emp\n" +
+                    "FROM default emp\n" +
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
@@ -164,10 +164,10 @@ public class PreparedStatementTest
 
         }
         try(Statement statement = con.createStatement()){
-            statement.executeUpdate("delete from test1");
+            statement.executeUpdate("delete from default");
         }
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1 (key,value) values(?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into default (key,value) values(?,?)"))
         {
             assertNotNull(preparedStatement);
 
@@ -181,14 +181,14 @@ public class PreparedStatementTest
         try (Statement statement = con.createStatement()) {
             assertNotNull(statement);
             ResultSet resultSet = statement.executeQuery("SELECT emp.children[0].fname AS cname\n" +
-                    "FROM test1 emp\n" +
+                    "FROM default emp\n" +
                     "WHERE children is not NULL\n");
 
             assertFalse(resultSet.next());
 
         }
         try(Statement statement = con.createStatement()){
-            statement.executeUpdate("delete from test1");
+            statement.executeUpdate("delete from default");
         }
 
 
@@ -203,7 +203,7 @@ public class PreparedStatementTest
         String name3 = "{\"name\":\"Second Stop\", \"type\": \"city\"}";
         String name4 = "{\"name\":\"Destination\", \"type\": \"city\"}";
 
-        try (PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             JsonObject jsonObject = Json.createReader(new StringReader(name1)).readObject();
             preparedStatement.setString(1,"name");
@@ -233,7 +233,7 @@ public class PreparedStatementTest
         try(Statement statement = con.createStatement())
         {
             ResultSet rs = statement.executeQuery("SELECT r.name as route_name, c as route_cities " +
-                                                    "FROM test1 r NEST travel c ON KEYS r.cities" +
+                                                    "FROM default r NEST travel c ON KEYS r.cities" +
                                                     " WHERE r.name = \"Travel Route1\"");
             assertTrue(rs.next());
         }
@@ -243,7 +243,7 @@ public class PreparedStatementTest
     @Test
     public void testExecute() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"byte1");
             preparedStatement.setByte(2, (byte)1);
@@ -260,29 +260,29 @@ public class PreparedStatementTest
 
             assertFalse(preparedStatement.execute());
 
-            try(PreparedStatement preparedStatement1 = con.prepareStatement("select * from test1 where meta(test1).id='byte1'"))
+            try(PreparedStatement preparedStatement1 = con.prepareStatement("select * from default where meta(default).id='byte1'"))
             {
 
                 assertTrue(preparedStatement1.execute());
                 try (ResultSet rs = preparedStatement1.getResultSet())
                 {
                     assertTrue(rs.next());
-                    assertEquals((byte)1, rs.getByte("test1"));
+                    assertEquals((byte)1, rs.getByte("default"));
                 }
 
-                assertTrue(preparedStatement1.execute("select * from test1 where meta(test1).id='byte2'"));
+                assertTrue(preparedStatement1.execute("select * from default where meta(default).id='byte2'"));
                 try (ResultSet rs = preparedStatement1.getResultSet())
                 {
                     assertTrue(rs.next());
-                    assertEquals((byte) 255, rs.getByte("test1"));
+                    assertEquals((byte) 255, rs.getByte("default"));
                     assertFalse(rs.wasNull());
 
                 }
-                assertTrue(preparedStatement1.execute("select * from test1 where meta(test1).id='byte3'"));
+                assertTrue(preparedStatement1.execute("select * from default where meta(default).id='byte3'"));
                 try (ResultSet rs = preparedStatement1.getResultSet())
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getByte("test1"));
+                    assertEquals(0, rs.getByte("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -294,7 +294,7 @@ public class PreparedStatementTest
     @Test
     public void testSetByte() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"byte1");
             preparedStatement.setByte(2, (byte)1);
@@ -313,22 +313,22 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='byte1'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals((byte)1, rs.getByte("test1"));
+                    assertEquals((byte)1, rs.getByte("default"));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='byte2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals((byte) 255, rs.getByte("test1"));
+                    assertEquals((byte) 255, rs.getByte("default"));
                     assertFalse(rs.wasNull());
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='byte3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getByte("test1"));
+                    assertEquals(0, rs.getByte("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -339,7 +339,7 @@ public class PreparedStatementTest
     @Test
     public void testSetBytes() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"bytes1");
             preparedStatement.setBytes(2, "Hello World".getBytes());
@@ -354,20 +354,20 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='bytes1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='bytes1'"))
                 {
                     assertTrue(rs.next());
                     byte [] bytes = rs.getBytes(1);
                     assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
-                    bytes = rs.getBytes("test1");
+                    bytes = rs.getBytes("default");
                     assertThat("Hello World".getBytes(), IsEqual.equalTo(bytes));
 
                 }
 
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='bytes2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='bytes2'"))
                 {
                     assertTrue(rs.next());
-                    assertNull(rs.getBytes("test1"));
+                    assertNull(rs.getBytes("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -378,7 +378,7 @@ public class PreparedStatementTest
     @Test
     public void testSetShort() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setShort(2, (short)1);
@@ -397,22 +397,22 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(1, rs.getShort("test1"));
+                    assertEquals(1, rs.getShort("default"));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(-1, rs.getShort("test1"));
+                    assertEquals(-1, rs.getShort("default"));
                     assertFalse(rs.wasNull());
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getShort("test1"));
+                    assertEquals(0, rs.getShort("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -423,7 +423,7 @@ public class PreparedStatementTest
     @Test
     public void testSetInteger() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setInt(2, 1);
@@ -442,22 +442,22 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(1, rs.getInt("test1"));
+                    assertEquals(1, rs.getInt("default"));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(-1, rs.getInt("test1"));
+                    assertEquals(-1, rs.getInt("default"));
                     assertFalse(rs.wasNull());
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getInt("test1"));
+                    assertEquals(0, rs.getInt("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -467,7 +467,7 @@ public class PreparedStatementTest
     @Test
     public void testSetLong() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setLong(2, 1);
@@ -486,22 +486,22 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
-                    assertEquals(1, rs.getLong("test1"));
+                    assertEquals(1, rs.getLong("default"));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(-1, rs.getLong("test1"));
+                    assertEquals(-1, rs.getLong("default"));
                     assertFalse(rs.wasNull());
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(0, rs.getLong("test1"));
+                    assertEquals(0, rs.getLong("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -512,7 +512,7 @@ public class PreparedStatementTest
     @Test
     public void testSetBigDecimal() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setBigDecimal(2, BigDecimal.ONE);
@@ -531,22 +531,22 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(BigDecimal.ONE, rs.getBigDecimal("test1"));
+                    assertEquals(BigDecimal.ONE, rs.getBigDecimal("default"));
                     assertEquals(BigDecimal.ONE, rs.getBigDecimal(1));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val2'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val2'"))
                 {
                     assertTrue(rs.next());
-                    assertEquals(BigDecimal.valueOf(-1), rs.getBigDecimal("test1"));
+                    assertEquals(BigDecimal.valueOf(-1), rs.getBigDecimal("default"));
                     assertFalse(rs.wasNull());
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertNull(rs.getBigDecimal("test1"));
+                    assertNull(rs.getBigDecimal("default"));
                     assertTrue(rs.wasNull());
                 }
             }
@@ -559,7 +559,7 @@ public class PreparedStatementTest
         Object [] values = {"1", "2"};
         Array array = con.createArrayOf("int", values);
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setArray(2, array);
@@ -574,16 +574,16 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    Assert.assertThat(array, IsEqual.equalTo(rs.getArray("test1")));
+                    Assert.assertThat(array, IsEqual.equalTo(rs.getArray("default")));
                     assertEquals(array, rs.getArray(1));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertNull(rs.getArray("test1").getArray());
+                    assertNull(rs.getArray("default").getArray());
                 }
             }
 
@@ -599,7 +599,7 @@ public class PreparedStatementTest
 
         Array array = con.createArrayOf("TestUser", arrayList.toArray());
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setArray(2, array);
@@ -614,17 +614,17 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    List testArray = JsonFactory.fromJsonArray(((CBArray) rs.getArray("test1")).getJsonArray(), TestUser.class);
+                    List testArray = JsonFactory.fromJsonArray(((CBArray) rs.getArray("default")).getJsonArray(), TestUser.class);
 
                     Assert.assertThat(arrayList,IsEqual.equalTo(testArray));
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertNull( rs.getArray("test1").getArray());
+                    assertNull( rs.getArray("default").getArray());
                 }
             }
 
@@ -638,7 +638,7 @@ public class PreparedStatementTest
 
         Date date = new Date(cal.getTime().getTime());
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setDate(2, date);
@@ -653,10 +653,10 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    Date date1 = rs.getDate("test1");
+                    Date date1 = rs.getDate("default");
                     cal2.setTime(date1);
 
                     assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
@@ -671,7 +671,7 @@ public class PreparedStatementTest
                     assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
                     assertNull( rs.getDate(1));
@@ -688,7 +688,7 @@ public class PreparedStatementTest
 
         Time time = new Time(cal.getTime().getTime());
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setTime(2, time);
@@ -703,10 +703,10 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    Time time1 = rs.getTime("test1");
+                    Time time1 = rs.getTime("default");
                     cal2.setTime(time1);
 
                     assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
@@ -722,7 +722,7 @@ public class PreparedStatementTest
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
                     assertNull( rs.getTime(1));
@@ -739,7 +739,7 @@ public class PreparedStatementTest
 
         Timestamp timeStamp = new Timestamp(cal.getTime().getTime());
 
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1,"val1");
             preparedStatement.setTimestamp(2, timeStamp);
@@ -754,10 +754,10 @@ public class PreparedStatementTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
-                    Timestamp timeStamp1 = rs.getTimestamp("test1");
+                    Timestamp timeStamp1 = rs.getTimestamp("default");
                     cal2.setTime(timeStamp1);
 
                     assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
@@ -784,7 +784,7 @@ public class PreparedStatementTest
                     assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
 
                 }
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='val3'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
                     assertNull( rs.getTimestamp(1));
@@ -796,7 +796,7 @@ public class PreparedStatementTest
     @Test
     public void clobNotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setClob(1,(Clob)null);
@@ -806,7 +806,7 @@ public class PreparedStatementTest
     @Test
     public void clob1NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setClob(1,null, 0);
@@ -816,7 +816,7 @@ public class PreparedStatementTest
     @Test
     public void clob2NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setClob(1,(Reader)null);
@@ -826,7 +826,7 @@ public class PreparedStatementTest
     @Test
     public void nClobNotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setNClob(1, (NClob) null);
@@ -836,7 +836,7 @@ public class PreparedStatementTest
     @Test
     public void nClob1NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setNClob(1, null, 0);
@@ -846,7 +846,7 @@ public class PreparedStatementTest
     @Test
     public void nClob2NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setNClob(1, (Reader) null);
@@ -857,7 +857,7 @@ public class PreparedStatementTest
     @Test
     public void blobNotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setBlob(1,(Blob)null);
@@ -867,7 +867,7 @@ public class PreparedStatementTest
     @Test
     public void blob1NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setBlob(1,null,0);
@@ -877,7 +877,7 @@ public class PreparedStatementTest
     @Test
     public void blob2NotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setBlob(1,(InputStream)null);
@@ -888,7 +888,7 @@ public class PreparedStatementTest
     @Test
     public void rowIdNotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setRowId(1,null);
@@ -898,7 +898,7 @@ public class PreparedStatementTest
     @Test
     public void refNotImplemented() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
             preparedStatement.setRef(1, null);

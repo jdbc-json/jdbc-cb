@@ -1421,7 +1421,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException
     {
-        return null;
+        throw CBDriver.notImplemented(CBConnection.class, "createStruct");
     }
 
     /**
@@ -1671,6 +1671,7 @@ public class CBConnection implements java.sql.Connection
     {
         if (isClosed() ) throw new SQLException("Connection is closed");
     }
+
     public SQLJSON createSQLJSON()
     {
         return new SqlJsonImplementation();

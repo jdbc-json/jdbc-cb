@@ -452,7 +452,7 @@ public class ProtocolImpl implements Protocol
         catch (Exception ex)
         {
             logger.error ("Error executing query [{}] {}", query, ex.getMessage());
-            throw new SQLException("Error executing update",ex.getCause());
+            throw new SQLException("Error executing update",ex);
         }
     }
 

@@ -28,11 +28,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
+import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -1076,14 +1075,15 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(String columnLabel) throws SQLException
     {
-        Date date;
+        Date date=null;
 
         checkClosed();
         checkIndex();
 
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
-        String json = (String)jsonObject.get(columnLabel);
+
+        Object json = jsonObject.get(columnLabel);
 
         if ( json == null )
         {
@@ -1093,11 +1093,27 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
-            date = new Date(df.parse(json).getTime());
+            if (json instanceof java.util.Date)
+            {
+                return new Date(((java.util.Date) json).getTime());
+            }
+            else if (json instanceof Date)
+            {
+                return (Date)json;
+            }
+            else if ( json instanceof  String)
+            {
+                date = new Date(df.parse((String)json).getTime());
+            }
+            else
+            {
+                throw new SQLException("value " + json +" is not a Date");
+
+            }
         }
-        catch( Exception ex)
+        catch( ParseException ex)
         {
-            throw new SQLException("value " + json +" is not a Date");
+            throw new SQLException("value " + json +" is not a Date",ex);
         }
         return date;
     }
@@ -1164,7 +1180,7 @@ public class CBResultSet implements java.sql.ResultSet
         Map  jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
 
-        String json = (String)jsonObject.get(columnLabel);
+        Object json = jsonObject.get(columnLabel);
         if (json == null )
         {
             wasNull=true;
@@ -1173,12 +1189,22 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
-            java.util.Date date = tsf.parse(json);
-            ts = new Timestamp( tsf.parse(json).getTime()  );
+            if (json instanceof java.util.Date || json instanceof java.sql.Date)
+            {
+                ts = new Timestamp( ((java.util.Date)json).getTime());
+            }
+            else if (json instanceof String)
+            {
+                ts = new Timestamp( tsf.parse((String)json).getTime()  );
+            }
+            else
+            {
+                throw new SQLException("value is not a Timestamp");
+            }
         }
-        catch( Exception ex)
+        catch( ParseException ex)
         {
-            throw new SQLException("value is not a Timestamp");
+            throw new SQLException("value " + json+ "is not a Timestamp", ex);
         }
 
         return ts;
@@ -1559,8 +1585,9 @@ public class CBResultSet implements java.sql.ResultSet
 
         Map jsonObject = response.getResults().get(index);
         checkColumnLabel(jsonObject, columnLabel);
+        int columnIndex = findColumn(columnLabel)-1;
 
-        SQLJSON sqljson = new SqlJsonImplementation(jsonObject);
+        SQLJSON sqljson = new SqlJsonImplementation(jsonObject.get(columnLabel), fields.get(columnIndex));
         return sqljson;
     }
     /**
@@ -5408,6 +5435,10 @@ public class CBResultSet implements java.sql.ResultSet
         if ( type.getName().equals("java.sql.Timestamp"))
         {
             return (T) getTimestamp(columnLabel);
+        }
+        else if ( type.getName().equals("java.sql.Date"))
+        {
+            return (T) getDate((columnLabel));
         }
 
         throw new SQLException("Conversion not supported to {}", type.getName());

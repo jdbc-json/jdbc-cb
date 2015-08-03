@@ -41,7 +41,7 @@ public class ResultSetTest
     {
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from default");
         System.out.print("connection opened");
     }
 
@@ -52,7 +52,7 @@ public class ResultSetTest
 
         try(Statement statement = con.createStatement())
         {
-            statement.executeUpdate("delete from test1");
+            statement.executeUpdate("delete from default");
         }
 
         con.close();
@@ -1398,6 +1398,8 @@ public class ResultSetTest
                 date = (Date)rs.getObject(1);
                 assertNotNull(date);
 
+                date=rs.getObject(1, Date.class);
+                assertNotNull(date);
 
 
             }
@@ -1429,7 +1431,7 @@ public class ResultSetTest
     @Test
     public void testBadColumnName() throws Exception
     {
-        try(PreparedStatement preparedStatement = con.prepareStatement("insert into test1(key,value) values (?,?)"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             preparedStatement.setString(1, "byte1");
             preparedStatement.setByte(2, (byte) 1);
@@ -1438,7 +1440,7 @@ public class ResultSetTest
 
             try(Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from test1 where meta(test1).id='byte1'"))
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='byte1'"))
                 {
                     assertTrue(rs.next());
 

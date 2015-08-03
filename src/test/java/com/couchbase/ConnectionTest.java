@@ -47,7 +47,7 @@ public class ConnectionTest extends TestCase
     public void closeConnection() throws Exception
     {
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from default");
         con.close();
     }
 

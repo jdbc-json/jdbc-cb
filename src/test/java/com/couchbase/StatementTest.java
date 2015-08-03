@@ -45,7 +45,7 @@ public class StatementTest extends TestCase
     public void closeConnection() throws Exception
     {
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from default");
         con.close();
     }
     @Test
@@ -61,7 +61,7 @@ public class StatementTest extends TestCase
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
-        ResultSet rs = statement.executeQuery("select * from test1");
+        ResultSet rs = statement.executeQuery("select * from default");
         assertFalse(rs.next());
 
     }
@@ -88,27 +88,27 @@ public class StatementTest extends TestCase
         for (int i = 0; i++< 100;)
         {
 
-            int inserted = statement.executeUpdate("INSERT INTO test1  (KEY, VALUE) VALUES ( 'K" + i +"'," + i +")");
+            int inserted = statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K" + i +"'," + i +")");
             assertEquals(1, inserted);
         }
 
-        ResultSet resultSet = statement.executeQuery("select count(1) as test_count from test1");
+        ResultSet resultSet = statement.executeQuery("select count(1) as test_count from default");
         assertTrue(resultSet.next());
         assertEquals(100,resultSet.getInt("test_count"));
 
-        resultSet = statement.executeQuery("select * from test1 order by test1");
+        resultSet = statement.executeQuery("select * from default order by default");
         for (int i=0; resultSet.next(); i++)
         {
             assertEquals(i+1, resultSet.getInt(1));
         }
 
-        resultSet = statement.executeQuery("select raw test1 from test1 order by test1");
+        resultSet = statement.executeQuery("select raw default from default order by default");
         for (int i=0; resultSet.next(); i++)
         {
             assertTrue(resultSet.getInt(1)>0);
         }
 
-        boolean hasResultSet = statement.execute("update test1 set test1=0 returning test1");
+        boolean hasResultSet = statement.execute("update default set default=0 returning default");
         if ( hasResultSet )
         {
             resultSet = statement.getResultSet();
@@ -119,9 +119,9 @@ public class StatementTest extends TestCase
 
         }
 
-        statement.executeUpdate("delete from test1");
+        statement.executeUpdate("delete from default");
 
-        resultSet = statement.executeQuery("select count(1) as count from test1");
+        resultSet = statement.executeQuery("select count(1) as count from default");
         assertTrue(resultSet.next());
         assertEquals(0, resultSet.getInt(1));
 
@@ -156,8 +156,10 @@ public class StatementTest extends TestCase
         assertEquals("Hello World!",resultSet.getString(4));
         assertEquals("Hello World!",resultSet.getString("c4"));
 
-        assertEquals(array,resultSet.getArray(5).getArray());
-        assertEquals(array,resultSet.getArray("c5").getArray());
+
+
+        assertTrue(Arrays.equals(foo, (Object[]) resultSet.getArray(5).getArray()));
+        assertTrue(Arrays.equals(foo, (Object[]) resultSet.getArray("c5").getArray()));
 
         Object foo2 = resultSet.getObject(6);
         assertEquals(object, resultSet.getObject(6));
@@ -176,7 +178,7 @@ public class StatementTest extends TestCase
         for (int i = 0; i++ < 2; )
         {
 
-            statement.addBatch("INSERT INTO test1  (KEY, VALUE) VALUES ( 'K" + i + "'," + i + ")");
+            statement.addBatch("INSERT INTO default  (KEY, VALUE) VALUES ( 'K" + i + "'," + i + ")");
         }
         statement.executeBatch();
     }

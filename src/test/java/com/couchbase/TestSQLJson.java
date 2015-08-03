@@ -13,25 +13,23 @@ package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
 import com.couchbase.json.SQLJSON;
+import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by davec on 2015-07-10.
  */
-public class TestSQLJson
+@RunWith(JUnit4.class)
+public class TestSQLJson extends TestCase
 {
-
+    //todo fill in all of these tests
     Connection con;
 
     @Before
@@ -39,7 +37,7 @@ public class TestSQLJson
     {
         con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
         assertNotNull(con);
-        con.createStatement().executeUpdate("delete from test1");
+        con.createStatement().executeUpdate("delete from default");
         System.out.print("connection opened");
     }
 
@@ -50,7 +48,7 @@ public class TestSQLJson
 
         try(Statement statement = con.createStatement())
         {
-            statement.executeUpdate("delete from test1");
+            statement.executeUpdate("delete from default");
         }
 
         con.close();
@@ -95,7 +93,7 @@ public class TestSQLJson
                 "  \"customerId\": \"customer10\"\n" +
                 "}";
 
-        String query = "insert into test1 (key,value) values (?,?)";
+        String query = "insert into default (key,value) values (?,?)";
 
         SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
         sqljson.setString( json );
@@ -105,5 +103,238 @@ public class TestSQLJson
             ((CBPreparedStatement)pstmt).setSQLJSON(2,sqljson);
             assertEquals(1,pstmt.executeUpdate());
         }
+    }
+    @Test
+    public void testFree() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetBinaryStream() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetCharacterStream() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetString() throws Exception
+    {
+        String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, '' as c5, 'some' as c6, [1,2,3,5,8] as c7, [] as c8, { 'a1': 'Object' } as c9, {} as c10";
+
+        try (Statement stmt = con.createStatement())
+        {
+            CBResultSet rs = (CBResultSet) stmt.executeQuery(query);
+            assertNotNull(rs);
+
+            assertTrue(rs.next());
+
+            SQLJSON sqljson = rs.getSQLJSON("c1");
+            assertEquals("true", sqljson.getString());
+
+            sqljson = rs.getSQLJSON("c2");
+            assertEquals("false", sqljson.getString());
+
+
+        }
+    }
+    @Test
+    public void testSetString() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetBinaryStream() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetCharacterStream() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetBoolean() throws Exception
+    {
+        String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, '' as c5, 'some' as c6, [1,2,3,5,8] as c7, [] as c8, { 'a1': 'Object' } as c9, {} as c10";
+
+        try (Statement stmt= con.createStatement())
+        {
+            CBResultSet rs = (CBResultSet)stmt.executeQuery(query);
+            assertNotNull(rs);
+
+            assertTrue(rs.next());
+
+
+            SQLJSON sqljson = rs.getSQLJSON("c1");
+            assertTrue(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c2");
+            assertFalse(sqljson.getBoolean());
+
+             sqljson = rs.getSQLJSON("c3");
+            assertFalse(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c4");
+            assertTrue(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c5");
+            assertFalse(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c6");
+            assertTrue(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c8");
+            assertFalse(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c7");
+            assertTrue(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c10");
+            assertFalse(sqljson.getBoolean());
+
+            sqljson = rs.getSQLJSON("c9");
+            assertTrue(sqljson.getBoolean());
+
+
+
+        }
+    }
+
+    @Test
+    public void testSetBoolean() throws Exception
+    {
+
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+        sqljson.setByte((byte)1);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1, "val1");
+            ((CBPreparedStatement)preparedStatement).setSQLJSON(2, sqljson);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+
+            try (Statement statement = con.createStatement())
+            {
+                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                {
+                    assertTrue(rs.next());
+
+                    SQLJSON sqljson1 = ((CBResultSet)rs).getSQLJSON("default");
+                    assertEquals(1,sqljson1.getByte());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetByte() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetByte() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetShort() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetShort() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetInt() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetInt() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetLong() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetLong() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetBigDecimal() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetBigDecimal() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetMap() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetMap() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetObject() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testSetObject() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testGetJDBCType() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testParse() throws Exception
+    {
+
+    }
+
+    @Test
+    public void testParse1() throws Exception
+    {
+
     }
 }
