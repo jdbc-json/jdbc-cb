@@ -604,7 +604,13 @@ public class CBResultSet implements java.sql.ResultSet
         }
         else
         {
-            return (String)jsonObject.get(columnLabel);
+
+            if (!(object  instanceof String))
+            {
+                return object.toString();
+            }
+            else
+                return (String)object;
         }
     }
 

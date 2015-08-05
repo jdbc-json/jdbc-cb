@@ -1377,7 +1377,28 @@ public class ResultSetTest
         }
     }
 
+    @Test
+    public void testGetString() throws Exception
+    {
+        try (Statement stmt = con.createStatement())
+         {
+             try (ResultSet rs = stmt.executeQuery("select now_str() as cur_time, 1 as one, true as bool" ))
+             {
+                 assertTrue(rs.next());
+                 String string = rs.getString("cur_time");
+                 assertNotNull(string);
 
+                 string = rs.getString("one");
+                 assertEquals("1",string);
+
+                 string = rs.getString("bool");
+                 assertEquals("true", string);
+
+
+
+             }
+         }
+    }
     @Test
     public void testGetDate() throws Exception
     {
