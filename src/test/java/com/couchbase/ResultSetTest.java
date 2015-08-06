@@ -1399,6 +1399,7 @@ public class ResultSetTest
              }
          }
     }
+
     @Test
     public void testGetDate() throws Exception
     {
@@ -1426,6 +1427,8 @@ public class ResultSetTest
             }
         }
     }
+
+
 
     @Test
     public void testGetTimestamp() throws Exception

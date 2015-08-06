@@ -1081,47 +1081,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(String columnLabel) throws SQLException
     {
-        Date date=null;
-
-        checkClosed();
-        checkIndex();
-
-        Map  jsonObject = response.getResults().get(index);
-        checkColumnLabel(jsonObject, columnLabel);
-
-        Object json = jsonObject.get(columnLabel);
-
-        if ( json == null )
-        {
-            wasNull=true;
-            return null;
-        }
-
-        try
-        {
-            if (json instanceof java.util.Date)
-            {
-                return new Date(((java.util.Date) json).getTime());
-            }
-            else if (json instanceof Date)
-            {
-                return (Date)json;
-            }
-            else if ( json instanceof  String)
-            {
-                date = new Date(df.parse((String)json).getTime());
-            }
-            else
-            {
-                throw new SQLException("value " + json +" is not a Date");
-
-            }
-        }
-        catch( ParseException ex)
-        {
-            throw new SQLException("value " + json +" is not a Date",ex);
-        }
-        return date;
+       return getDate(columnLabel,null);
     }
 
     SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
@@ -1141,26 +1101,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(String columnLabel) throws SQLException
     {
-        Time time;
-
-        checkClosed();
-        checkIndex();
-
-        Map  jsonObject = response.getResults().get(index);
-        checkColumnLabel(jsonObject, columnLabel);
-        String json = (String)jsonObject.get(columnLabel);
-
-        if ( json == null ) return null;
-
-        try
-        {
-            time = new Time(tf.parse(json).getTime());
-        }
-        catch( Exception ex)
-        {
-            throw new SQLException("value " + json +" is not a Time");
-        }
-        return time;
+       return getTime(columnLabel,null);
     }
 
     SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -1179,41 +1120,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Timestamp getTimestamp(String columnLabel) throws SQLException
     {
-        checkClosed();
-        checkIndex();
-        Timestamp ts;
-
-        Map  jsonObject = response.getResults().get(index);
-        checkColumnLabel(jsonObject, columnLabel);
-
-        Object json = jsonObject.get(columnLabel);
-        if (json == null )
-        {
-            wasNull=true;
-            return null;
-        }
-
-        try
-        {
-            if (json instanceof java.util.Date || json instanceof java.sql.Date)
-            {
-                ts = new Timestamp( ((java.util.Date)json).getTime());
-            }
-            else if (json instanceof String)
-            {
-                ts = new Timestamp( tsf.parse((String)json).getTime()  );
-            }
-            else
-            {
-                throw new SQLException("value is not a Timestamp");
-            }
-        }
-        catch( ParseException ex)
-        {
-            throw new SQLException("value " + json+ "is not a Timestamp", ex);
-        }
-
-        return ts;
+        return getTimestamp(columnLabel, null);
     }
 
     /**
@@ -3455,6 +3362,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Blob getBlob(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         //now find the key of the first value
@@ -3481,6 +3389,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Clob getClob(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
 
         //now find the key of the first value
@@ -3507,6 +3416,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Array getArray(int columnIndex) throws SQLException
     {
+        checkClosed();
         checkIndex();
         Field field = getField(columnIndex);
         String fieldName = field.getName();
@@ -3661,7 +3571,14 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(int columnIndex, Calendar cal) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Field field = getField(columnIndex);
+        String fieldName = field.getName();
+
+        return getDate(fieldName, cal);
+
     }
 
     /**
@@ -3686,7 +3603,73 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Date getDate(String columnLabel, Calendar cal) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Date date=null;
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        Object json = jsonObject.get(columnLabel);
+
+        if ( json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+
+        try
+        {
+            if (json instanceof java.util.Date)
+            {
+
+                date = new Date(((java.util.Date) json).getTime());
+            }
+            else if (json instanceof Date)
+            {
+                return (Date)json;
+            }
+            else if ( json instanceof  String)
+            {
+                date = new Date(df.parse((String)json).getTime());
+            }
+            else
+            {
+                throw new SQLException("value " + json +" is not a Date");
+
+            }
+        }
+        catch( ParseException ex)
+        {
+            throw new SQLException("value " + json +" is not a Date",ex);
+        }
+
+        if ( cal != null && !cal.getTimeZone().hasSameRules(df.getTimeZone()) )
+        {
+            // check to see if there is a calendar and that it is different than the one used to parse
+            if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+            {
+                Calendar convertCal = Calendar.getInstance();
+                convertCal.setTime(date);
+                TimeZone toTimeZone     = cal.getTimeZone();
+                TimeZone fromTimeZone   = tf.getTimeZone();
+
+                convertCal.setTimeZone(fromTimeZone);
+                convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+                if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                    convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+                }
+
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+                if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                    convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+                }
+
+                date = new Date(convertCal.getTime().getTime());
+            }
+        }
+        return date;
     }
 
     /**
@@ -3711,8 +3694,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(int columnIndex, Calendar cal) throws SQLException
     {
-        //todo implement
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Field field = getField(columnIndex);
+        String fieldName = field.getName();
+
+        return getTime( fieldName, cal );
     }
 
     /**
@@ -3737,7 +3725,48 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(String columnLabel, Calendar cal) throws SQLException
     {
-        return null;
+        Time time;
+        checkClosed();
+        checkIndex();
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        String json = (String)jsonObject.get(columnLabel);
+
+        if ( json == null ) return null;
+
+        try
+        {
+            time = new Time(tf.parse(json).getTime());
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value " + json +" is not a Time", ex);
+        }
+
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(time);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            time = new Time(convertCal.getTime().getTime());
+        }
+        return time;
     }
 
     /**
@@ -3762,7 +3791,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+
+        Field field = getField(columnIndex);
+        String fieldName = field.getName();
+        return  getTimestamp(fieldName, cal);
     }
 
     /**
@@ -3787,7 +3821,62 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException
     {
-        return null;
+        checkClosed();
+        checkIndex();
+        Timestamp ts;
+
+        Map  jsonObject = response.getResults().get(index);
+        checkColumnLabel(jsonObject, columnLabel);
+
+        Object json = jsonObject.get(columnLabel);
+        if (json == null )
+        {
+            wasNull=true;
+            return null;
+        }
+
+        try
+        {
+            if (json instanceof java.util.Date || json instanceof java.sql.Date)
+            {
+                ts = new Timestamp( ((java.util.Date)json).getTime());
+            }
+            else if (json instanceof String)
+            {
+                ts = new Timestamp( tsf.parse((String)json).getTime()  );
+            }
+            else
+            {
+                throw new SQLException("value is not a Timestamp");
+            }
+        }
+        catch( ParseException ex)
+        {
+            throw new SQLException("value " + json+ "is not a Timestamp", ex);
+        }
+
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( cal != null && !cal.getTimeZone().hasSameRules(tsf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(ts);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tsf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            ts = new Timestamp(convertCal.getTime().getTime());
+        }
+        return ts;
     }
 
     /**

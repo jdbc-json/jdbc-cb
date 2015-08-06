@@ -27,6 +27,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -634,6 +635,9 @@ public class PreparedStatementTest
     public void testSetDate() throws Exception
     {
         Calendar cal = Calendar.getInstance();
+
+
+        cal.set(2015,0,31,23,59,59);
         Calendar cal2 = Calendar.getInstance();
 
         Date date = new Date(cal.getTime().getTime());
@@ -670,6 +674,20 @@ public class PreparedStatementTest
                     assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
                     assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
 
+                    Calendar differentTimezone = Calendar.getInstance();
+
+                    differentTimezone.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    date1 = rs.getDate(1, differentTimezone);
+
+                    cal2.setTime(date1);
+
+                    int offset  = cal2.getTimeZone().getRawOffset()/1000/60/60;
+                    cal2.add(Calendar.HOUR, offset);
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
                 }
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
@@ -684,7 +702,9 @@ public class PreparedStatementTest
     public void testSetTime() throws Exception
     {
         Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("America/Toronto"));
         Calendar cal2 = Calendar.getInstance();
+        cal2.setTimeZone(TimeZone.getTimeZone("America/Toronto"));
 
         Time time = new Time(cal.getTime().getTime());
 
@@ -716,8 +736,20 @@ public class PreparedStatementTest
                     time1 = rs.getTime(1);
                     cal2.setTime(time1);
 
-
                     assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+
+                    Calendar differentTimezone = Calendar.getInstance();
+
+                    differentTimezone.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    time1 = rs.getTime(1,differentTimezone);
+
+                    cal2.setTime(time1);
+
+                    int offset  = cal2.getTimeZone().getRawOffset()/1000/60/60;
+                    assertEquals(cal.get(Calendar.HOUR), cal2.get(Calendar.HOUR)+offset);
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
@@ -783,6 +815,26 @@ public class PreparedStatementTest
 
                     assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
 
+                    Calendar differentTimezone = Calendar.getInstance();
+
+                    differentTimezone.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    timeStamp1 = rs.getTimestamp(1, differentTimezone);
+
+                    cal2.setTime(timeStamp1);
+
+                    // there is no timezone information in the timestamp
+                    int offset  = (cal2.getTimeZone().getRawOffset()+cal2.getTimeZone().getDSTSavings())/1000/60/60;
+                    cal2.add(Calendar.HOUR,offset);
+                    assertEquals(cal.get(Calendar.HOUR), cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
+                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
+
+                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
+                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
+                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
+
+                    assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
+
                 }
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
@@ -793,6 +845,7 @@ public class PreparedStatementTest
 
         }
     }
+
     @Test
     public void setObject() throws Exception
     {

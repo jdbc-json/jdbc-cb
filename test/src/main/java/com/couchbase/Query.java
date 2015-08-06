@@ -23,12 +23,12 @@ import java.sql.*;
 
 public class Query {
 
-    static String ConnectionURL = "jdbc:couchbase://54.237.32.30:8093";
+    static String ConnectionURL = "jdbc:couchbase://52.17.179.12:8093";
 
     public static void main(String[] args) throws SQLException
     {
 
-        String query = "SELECT * FROM customer LIMIT 1";
+        String query = "SELECT * FROM simple_table_1 limit 1";
 
         try ( Connection con = DriverManager.getConnection(ConnectionURL) )
         {
