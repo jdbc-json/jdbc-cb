@@ -1238,7 +1238,12 @@ public class CBStatement implements java.sql.Statement
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException
     {
-        return null;
+        checkClosed();
+        if (iface.isAssignableFrom(getClass()))
+        {
+            return iface.cast(this);
+        }
+        throw new SQLException("Cannot unwrap to " + iface.getName());
     }
 
     /**
@@ -1259,7 +1264,8 @@ public class CBStatement implements java.sql.Statement
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
-        return false;
+        checkClosed();
+        return iface.isAssignableFrom(getClass());
     }
     protected void checkClosed() throws SQLException
     {

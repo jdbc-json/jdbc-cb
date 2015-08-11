@@ -59,7 +59,7 @@ public class CouchResponse
                 fields = new ArrayList<Field>(signature.size());
             }
 
-            if (signature.containsKey("*"))
+            if (signature.containsKey("*")  )
             {
                 if (metrics.getResultSize() > 0) {
                     Map<String,Object> firstRow = (Map<String,Object>)results.get(0);

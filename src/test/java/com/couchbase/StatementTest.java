@@ -167,6 +167,7 @@ public class StatementTest extends TestCase
 
 
     }
+
     /*
     @Test
     public void batchInsert() throws Exception

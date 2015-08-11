@@ -53,4 +53,8 @@ public interface Protocol
     public int getQueryTimeout() throws SQLException;
     public SQLWarning getWarnings() throws SQLException;
     public void clearWarning() throws SQLException;
+    public void setSchema(String schema) throws SQLException;
+    public String getSchema() throws SQLException;
+    public boolean isValid(int timeout) throws SQLException;
+
 }

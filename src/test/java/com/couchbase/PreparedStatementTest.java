@@ -24,10 +24,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.sql.Date;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -160,8 +158,8 @@ public class PreparedStatementTest
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
-            String jsonString1 = (String)resultSet.getObject(1);
-            assertEquals("Abama",jsonString1);
+            Map json = (Map)resultSet.getObject(1);
+            assertEquals("Abama",json.get("value"));
 
         }
         try(Statement statement = con.createStatement()){
@@ -729,14 +727,14 @@ public class PreparedStatementTest
                     Time time1 = rs.getTime("default");
                     cal2.setTime(time1);
 
-                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.HOUR_OF_DAY),cal2.get(Calendar.HOUR_OF_DAY));
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
                     time1 = rs.getTime(1);
                     cal2.setTime(time1);
 
-                    assertEquals(cal.get(Calendar.HOUR),cal2.get(Calendar.HOUR));
+                    assertEquals(cal.get(Calendar.HOUR_OF_DAY),cal2.get(Calendar.HOUR_OF_DAY));
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
@@ -749,7 +747,7 @@ public class PreparedStatementTest
                     cal2.setTime(time1);
 
                     int offset  = cal2.getTimeZone().getRawOffset()/1000/60/60;
-                    assertEquals(cal.get(Calendar.HOUR), cal2.get(Calendar.HOUR)+offset);
+                    assertEquals(cal.get(Calendar.HOUR_OF_DAY), cal2.get(Calendar.HOUR_OF_DAY)+offset);
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
@@ -964,5 +962,25 @@ public class PreparedStatementTest
         }
     }
 
+   @Test
+    public void getPreparedMetaData() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
 
+            ParameterMetaData pmd = preparedStatement.getParameterMetaData();
+            assertNotNull(pmd);
+
+        }
+    }
+    @Test
+    public void getResultMetaData() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+
+            ResultSetMetaData rsmd = preparedStatement.getMetaData();
+
+        }
+    }
 }

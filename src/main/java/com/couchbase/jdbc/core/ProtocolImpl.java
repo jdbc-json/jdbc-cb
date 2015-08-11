@@ -75,6 +75,7 @@ public class ProtocolImpl implements Protocol
         statusStrings.put( "fatal", N1QL_FATAL );
     }
 
+    String schema;
     String url;
     String user;
     String password;
@@ -208,6 +209,7 @@ public class ProtocolImpl implements Protocol
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
         valuePair.add(new BasicNameValuePair("encoding","UTF-8"));
+        addSchema(valuePair);
         valuePair.add(scanConstistency);
 
         if ( queryTimeout != 0 )
@@ -290,13 +292,34 @@ public class ProtocolImpl implements Protocol
         couchResponse.status    = (String)rootAsMap.get("status");
         couchResponse.requestId = (String)rootAsMap.get("requestID");
         Object signature = (Object)rootAsMap.get("signature");
+
         if ( signature instanceof Map )
         {
             couchResponse.signature = (Map)signature;
+            couchResponse.results   = (List)rootAsMap.get("results");
         }
-        //couchResponse.signature = (Map <String, String> )rootAsMap.get("signature");
-        couchResponse.results   = (List)rootAsMap.get("results");
+        else if ( signature instanceof String )
+        {
+            couchResponse.signature =  new HashMap<String, String>();
+            couchResponse.signature.put("$1",(String)signature);
 
+            Iterator iterator = ((List)rootAsMap.get("results")).iterator();
+
+            couchResponse.results=new ArrayList<>();
+            while ( iterator.hasNext() )
+            {
+                Object object = iterator.next();
+
+                HashMap entry = new HashMap();
+                entry.put("$1", object );
+                couchResponse.results.add(entry) ;
+            }
+
+        }
+        else if (signature != null)
+        {
+            throw new SQLException("Error reading signature" + signature );
+        }
         couchResponse.metrics   = MapObjectConversion.fromMap((Map)rootAsMap.get("metrics"), CouchMetrics.class);
         List errorList = (List)rootAsMap.get("errors");
         if ( errorList != null )
@@ -435,7 +458,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             logger.trace("do query {}",httpPost.toString());
-
+            addSchema(nameValuePairs);
             nameValuePairs.add(scanConstistency);
             if (credentials != null)
             {
@@ -463,6 +486,7 @@ public class ProtocolImpl implements Protocol
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
 //            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
+            addSchema(nameValuePairs);
             nameValuePairs.add(new BasicNameValuePair("statement", query));
             if ( queryTimeout != 0 )
             {
@@ -506,7 +530,7 @@ public class ProtocolImpl implements Protocol
         {
             nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
         }
-
+        addSchema(nameValuePairs);
         return doQuery(sql, nameValuePairs);
     }
 
@@ -518,7 +542,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
+            addSchema(nameValuePairs);
             for (String query:batchStatements)
             {
                 nameValuePairs.add(new BasicNameValuePair("statement", query));
@@ -653,5 +677,34 @@ public class ProtocolImpl implements Protocol
     {
        sqlWarning=null;
     }
+
+    @Override
+    public void setSchema(String schema) throws SQLException
+    {
+        this.schema = schema;
+
+    }
+
+    @Override
+    public String getSchema() throws SQLException
+    {
+        return schema;
+    }
+    private static NameValuePair schemaValuePair= new BasicNameValuePair("namespace","default");
+
+    private void addSchema(List<NameValuePair> valuePair )
+    {
+
+        if ( schema != null )
+        {
+            valuePair.add(schemaValuePair);
+        }
+    }
+    public boolean isValid(int timeout)
+    {
+        //todo implement
+        return false;
+    }
 }
+
 

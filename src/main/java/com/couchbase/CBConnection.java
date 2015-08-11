@@ -67,16 +67,19 @@ public class CBConnection implements java.sql.Connection
         }
     }
 
-    public String getURL()
+    public String getURL() throws SQLException
     {
+        checkClosed();
         return protocol.getURL();
     }
-    public String getUserName()
+    public String getUserName() throws SQLException
     {
+        checkClosed();
         return protocol.getUserName();
     }
-    public String getPassword()
+    public String getPassword() throws SQLException
     {
+        checkClosed();
         return protocol.getPassword();
     }
     /**
@@ -176,7 +179,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public CallableStatement prepareCall(String sql) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepreCall");
     }
 
     /**
@@ -194,7 +198,9 @@ public class CBConnection implements java.sql.Connection
     @Override
     public String nativeSQL(String sql) throws SQLException
     {
-        return null;
+        checkClosed();
+        //todo after we implement escape we should escape this
+        return sql;
     }
 
     /**
@@ -235,7 +241,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException
     {
-
+        checkClosed();
+        // this is a no-op
     }
 
     /**
@@ -251,6 +258,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public boolean getAutoCommit() throws SQLException
     {
+        checkClosed();
         return false;
     }
 
@@ -270,7 +278,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void commit() throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -288,7 +296,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void rollback() throws SQLException
     {
-
+        checkClosed();
     }
 
     /**
@@ -309,15 +317,18 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void close() throws SQLException
     {
-        try
+        if (!isClosed())
         {
-            protocol.close();
-            connected.set(false);
-        }
-        catch (Exception ex)
-        {
-            logger.debug( "Error closing connection", ex);
-            throw new SQLException(ex.getCause());
+            try
+            {
+                protocol.close();
+                connected.set(false);
+            }
+            catch (Exception ex)
+            {
+                logger.debug( "Error closing connection", ex);
+                throw new SQLException(ex.getCause());
+            }
         }
     }
 
@@ -360,6 +371,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public DatabaseMetaData getMetaData() throws SQLException
     {
+        checkClosed();
         return new CBDatabaseMetaData(this);
     }
 
@@ -422,6 +434,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setCatalog(String catalog) throws SQLException
     {
+        checkClosed();
+        protocol.setSchema(catalog);
 
     }
 
@@ -436,7 +450,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public String getCatalog() throws SQLException
     {
-        return null;
+        checkClosed();
+        return protocol.getSchema();
     }
 
     /**
@@ -466,6 +481,20 @@ public class CBConnection implements java.sql.Connection
     public void setTransactionIsolation(int level) throws SQLException
     {
 
+        //todo this needs research
+        checkClosed();
+        switch (level)
+        {
+            case Connection.TRANSACTION_NONE:
+            case Connection.TRANSACTION_READ_UNCOMMITTED:
+            case Connection.TRANSACTION_READ_COMMITTED:
+            case Connection.TRANSACTION_REPEATABLE_READ:
+            case Connection.TRANSACTION_SERIALIZABLE:
+            break;
+            default:
+                throw new SQLException("transaction level " + level + " not allowed ");
+        }
+
     }
 
     /**
@@ -486,7 +515,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public int getTransactionIsolation() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return Connection.TRANSACTION_NONE;
     }
 
     /**
@@ -513,7 +543,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public SQLWarning getWarnings() throws SQLException
     {
-        return null;
+        checkClosed();
+        return protocol.getWarnings();
     }
 
     /**
@@ -528,7 +559,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void clearWarnings() throws SQLException
     {
-
+        checkClosed();
+        protocol.clearWarning();
     }
 
     /**
@@ -562,7 +594,12 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException
     {
-        return null;
+        checkClosed();
+        if (resultSetType == ResultSet.TYPE_FORWARD_ONLY && resultSetConcurrency == ResultSet.CONCUR_READ_ONLY)
+            return createStatement();
+        else
+        throw CBDriver.notImplemented(CBConnection.class, "createStatement");
+
     }
 
     /**
@@ -599,7 +636,11 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException
     {
-        return null;
+        checkClosed();
+        if (resultSetType == ResultSet.TYPE_FORWARD_ONLY && resultSetConcurrency == ResultSet.CONCUR_READ_ONLY)
+            return prepareStatement(sql);
+        else
+            throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -635,7 +676,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareCall");
     }
 
     /**
@@ -667,7 +709,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Map<String, Class<?>> getTypeMap() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "getTypeMap");
     }
 
     /**
@@ -700,6 +743,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setTypeMap(Map<String, Class<?>> map) throws SQLException
     {
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "setTypeMap");
 
     }
 
@@ -725,7 +770,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setHoldability(int holdability) throws SQLException
     {
-
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "getHoldability");
     }
 
     /**
@@ -745,7 +791,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public int getHoldability() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return ResultSet.CLOSE_CURSORS_AT_COMMIT;
     }
 
     /**
@@ -769,7 +816,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Savepoint setSavepoint() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "setSavepoint");
     }
 
     /**
@@ -794,7 +842,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Savepoint setSavepoint(String name) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "setSavePoint");
     }
 
     /**
@@ -819,7 +868,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void rollback(Savepoint savepoint) throws SQLException
     {
-
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "rollback");
     }
 
     /**
@@ -839,7 +889,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void releaseSavepoint(Savepoint savepoint) throws SQLException
     {
-
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "releaseSavepoint");
     }
 
     /**
@@ -879,7 +930,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "createStatement");
     }
 
     /**
@@ -924,7 +976,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -966,7 +1019,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareCall");
     }
 
     /**
@@ -1014,7 +1068,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -1064,7 +1119,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -1114,7 +1170,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException
     {
-        return null;
+        checkClosed();
+        return new CBPreparedStatement(this, protocol, sql, columnNames);
     }
 
     /**
@@ -1134,7 +1191,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Clob createClob() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -1174,7 +1232,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public NClob createNClob() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
     }
 
     /**
@@ -1223,7 +1282,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public boolean isValid(int timeout) throws SQLException
     {
-        return false;
+        if (isClosed()) return false;
+        return protocol.isValid(timeout);
     }
 
     /**
@@ -1402,6 +1462,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Array createArrayOf(String typeName, Object[] elements) throws SQLException
     {
+        checkClosed();
         return new CBArray(typeName, elements);
     }
 
@@ -1421,6 +1482,7 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException
     {
+        checkClosed();
         throw CBDriver.notImplemented(CBConnection.class, "createStruct");
     }
 
@@ -1446,7 +1508,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setSchema(String schema) throws SQLException
     {
-        throw CBDriver.notImplemented(CBConnection.class, "setSchema");
+        checkClosed();
+        protocol.setSchema(schema);
     }
 
     /**
@@ -1461,7 +1524,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public String getSchema() throws SQLException
     {
-        return null;
+        checkClosed();
+        return protocol.getSchema();
     }
 
     /**
@@ -1504,7 +1568,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void abort(Executor executor) throws SQLException
     {
-
+        if ( executor == null) throw new SQLException("Executor is null");
+        close();
     }
 
     /**
@@ -1599,7 +1664,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException
     {
-
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "setNetworkTimeout");
     }
 
     /**
@@ -1620,7 +1686,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public int getNetworkTimeout() throws SQLException
     {
-        return 0;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "getNetworkTimeout");
     }
 
     /**
@@ -1643,7 +1710,12 @@ public class CBConnection implements java.sql.Connection
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException
     {
-        return null;
+        checkClosed();
+        if (iface.isAssignableFrom(getClass()))
+        {
+            return iface.cast(this);
+        }
+        throw new SQLException("Cannot unwrap to " + iface.getName());
     }
 
     /**
@@ -1664,7 +1736,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
-        return false;
+        checkClosed();
+        return iface.isAssignableFrom(getClass());
     }
 
     void checkClosed() throws SQLException

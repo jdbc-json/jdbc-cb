@@ -12,7 +12,6 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,7 +152,7 @@ public class ResultSetMetaDataTest
     public void testGetColumnType() throws Exception
     {
 
-        int [] types = {Types.BOOLEAN, Types.NUMERIC,Types.NUMERIC, Types.VARCHAR, Types.ARRAY, Types.OTHER};
+        int [] types = {Types.BOOLEAN, Types.NUMERIC,Types.NUMERIC, Types.VARCHAR, Types.ARRAY, Types.JAVA_OBJECT};
         for (int i=1;i<=6;i++)
         {
             assertEquals(types[i-1],resultSetMetaData.getColumnType(i));

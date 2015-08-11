@@ -1465,15 +1465,9 @@ public class CBResultSet implements java.sql.ResultSet
                         }
                     case Types.ARRAY:
                         return jsonObject.get(columnLabel);
-                    case Types.OTHER:
-                        if ( field.getType().compareTo("json") == 0)
-                        {
-                            return ((Map)jsonObject.get(columnLabel)).get("value");
-                        }
-                        else
-                        {
-                            return jsonObject.get(columnLabel);
-                        }
+
+                    case Types.JAVA_OBJECT:
+                        return jsonObject.get(columnLabel);
 
                     case Types.NULL:
                         return null;
@@ -5561,7 +5555,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException
     {
-        return null;
+        checkClosed();
+        if (iface.isAssignableFrom(getClass()))
+        {
+            return iface.cast(this);
+        }
+        throw new SQLException("Cannot unwrap to " + iface.getName());
     }
 
     /**
@@ -5582,7 +5581,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
-        return false;
+        checkClosed();
+        return iface.isAssignableFrom(getClass());
     }
     /*
 

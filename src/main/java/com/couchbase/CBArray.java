@@ -112,7 +112,7 @@ public class CBArray implements Array
         String jsonType = typeMap.get(baseType);
         if (jsonType == null )
         {
-            return Types.OTHER;
+            return Types.JAVA_OBJECT;
         }
         else if (jsonType.compareTo("number") == 0)
         {
@@ -126,7 +126,7 @@ public class CBArray implements Array
         {
             return Types.VARCHAR;
         }
-        else return Types.OTHER;
+        else return Types.JAVA_OBJECT;
     }
     /**
      * Retrieves the contents of the SQL <code>ARRAY</code> value designated

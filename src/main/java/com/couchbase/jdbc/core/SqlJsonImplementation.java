@@ -555,7 +555,7 @@ public class SqlJsonImplementation implements SQLJSON
                     return object;
                 }
             case Types.ARRAY:
-            case Types.OTHER:
+            case Types.JAVA_OBJECT:
                 return jsonObject;
 
             case Types.NULL:
