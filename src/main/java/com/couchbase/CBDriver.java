@@ -12,18 +12,11 @@
 
 package com.couchbase;
 
-import org.slf4j.LoggerFactory;
-
-import java.lang.String;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.DriverPropertyInfo;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.sql.*;
+import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class CBDriver implements java.sql.Driver
@@ -186,10 +179,11 @@ public class CBDriver implements java.sql.Driver
         return false;
     }
 
+    private static final MessageFormat mf = new MessageFormat("Method {0}.{1} is not yet implemented.");
     public static java.sql.SQLFeatureNotSupportedException notImplemented(Class callClass, String functionName)
     {
-        return new java.sql.SQLFeatureNotSupportedException("Method {0} is not yet implemented.",
-                callClass.getName() + "." + functionName,null);
+
+        return new java.sql.SQLFeatureNotSupportedException(mf.format(new Object [] {callClass.getName(),functionName}));
     }
 
     public static void setLogLevel(int logLevel)

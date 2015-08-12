@@ -771,7 +771,7 @@ public class CBConnection implements java.sql.Connection
     public void setHoldability(int holdability) throws SQLException
     {
         checkClosed();
-        throw CBDriver.notImplemented(CBConnection.class, "getHoldability");
+        throw CBDriver.notImplemented(CBConnection.class, "setHoldability");
     }
 
     /**
@@ -1742,7 +1742,9 @@ public class CBConnection implements java.sql.Connection
 
     void checkClosed() throws SQLException
     {
-        if (isClosed() ) throw new SQLException("Connection is closed");
+        if (isClosed() ) {
+            throw new SQLException("Connection is closed");
+        }
     }
 
     public SQLJSON createSQLJSON()

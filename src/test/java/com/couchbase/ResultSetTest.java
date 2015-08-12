@@ -1478,10 +1478,18 @@ public class ResultSetTest
                         }
                         catch (InvocationTargetException ex)
                         {
-
-                            if ( !(ex.getCause().getMessage().startsWith("ResultSet does not contain") ))
+                            Throwable cause = ex.getCause();
+                            if (cause.getMessage() == null )
                             {
-                                assertTrue("Should throw Result does not contain ", false);
+                                fail(ex.getMessage());
+                            }
+                            if ( cause != null && cause.getMessage().startsWith("ResultSet does not contain"))
+                            {
+                                assertTrue("Should throw Result does not contain ", true);
+                            }
+                            else
+                            {
+                                fail(ex.getMessage());
                             }
                         }
 
