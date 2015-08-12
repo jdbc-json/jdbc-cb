@@ -406,36 +406,84 @@ public class ConnectionTest extends TestCase
     @Test
     public void testCreateStatement2() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createStatement");
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
     }
 
     @Test
     public void testPrepareStatement2() throws Exception
     {
+        String sql="select 1";
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
     }
 
     @Test
     public void testPrepareCall2() throws Exception
     {
+        String sql="select 1";
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
     }
 
     @Test
     public void testPrepareStatement3() throws Exception
     {
+        String sql="select 1";
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
     }
 
     @Test
     public void testPrepareStatement4() throws Exception
     {
+        String sql="select 1";
+        int columns[] = {1,2};
+
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        con.prepareStatement(sql, columns);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareStatement(sql,columns );
 
     }
 
     @Test
     public void testPrepareStatement5() throws Exception
     {
+        String sql="insert into default (key,value) values(?,?)";
+        String columns[] = {"default"};
+
+        assertNotNull(con.prepareStatement(sql, columns));
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareStatement(sql,columns );
 
     }
 

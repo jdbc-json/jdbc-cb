@@ -43,6 +43,7 @@ public class SqlJsonImplementation implements SQLJSON
         jsonTypes.put("array",JSON_ARRAY);
         jsonTypes.put("map",JSON_MAP);
         jsonTypes.put("object",JSON_OBJECT);
+        jsonTypes.put("json",JSON_OBJECT);
         jsonTypes.put("null",JSON_NULL);
     }
 
@@ -55,6 +56,7 @@ public class SqlJsonImplementation implements SQLJSON
         jdbcTypes.put("array", Types.ARRAY);
         jdbcTypes.put("map", Types.JAVA_OBJECT); //??
         jdbcTypes.put("object", Types.JAVA_OBJECT);
+        jdbcTypes.put("json", Types.JAVA_OBJECT);
         jdbcTypes.put("null", Types.NULL);
 
     }

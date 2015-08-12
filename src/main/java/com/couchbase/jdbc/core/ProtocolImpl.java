@@ -521,16 +521,33 @@ public class ProtocolImpl implements Protocol
         }
     }
 
-    public CouchResponse prepareStatement( String sql ) throws SQLException
+    public CouchResponse prepareStatement( String sql, String []returning ) throws SQLException
     {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+        // append returning clause
+        if (returning != null )
+        {
+            sql += " RETURNING ";
+
+            // loop through column names
+            for (int i=0; i< returning.length;)
+            {
+                // add the column
+                sql+=returning[i++];
+                // add the , if not the last one
+                if (i < returning.length) sql += ',';
+            }
+        }
 
         nameValuePairs.add(new BasicNameValuePair("statement", "prepare " + sql));
         if ( queryTimeout != 0 )
         {
             nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
         }
+
         addSchema(nameValuePairs);
+
         return doQuery(sql, nameValuePairs);
     }
 

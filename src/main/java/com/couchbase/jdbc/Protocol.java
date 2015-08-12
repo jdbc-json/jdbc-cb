@@ -35,7 +35,7 @@ public interface Protocol
     public void clearBatch() throws SQLException;
     public int [] executeBatch(  ) throws SQLException;
 
-    public CouchResponse prepareStatement( String sql ) throws SQLException;
+    public CouchResponse prepareStatement( String sql, String []returning ) throws SQLException;
     public CouchResponse doQuery(String query, List<NameValuePair> nameValuePairs ) throws SQLException;
 
     public long getUpdateCount();

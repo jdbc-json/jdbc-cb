@@ -58,7 +58,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parser.parse();
         fields = new String[parser.getNumFields()];
         this.sql = sql;
-        CouchResponse ret = protocol.prepareStatement(parser.toString());
+        CouchResponse ret = protocol.prepareStatement(parser.toString(),returning);
 
         // we have to put the result into $1 for raw results
         preparedStatement = new CBPreparedResult((Map)ret.getFirstResult().get("$1"));
@@ -72,7 +72,8 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         fields = new String[parser.getNumFields()];
         this.sql = sql;
         this.returning = returning;
-        CouchResponse ret = protocol.prepareStatement(parser.toString());
+
+        CouchResponse ret = protocol.prepareStatement(parser.toString(), returning);
 
         // we have to put the result into $1 for raw results
         preparedStatement = new CBPreparedResult((Map)ret.getFirstResult().get("$1"));

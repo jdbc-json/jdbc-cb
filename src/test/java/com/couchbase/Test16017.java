@@ -9,8 +9,9 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase.jdbc;
+package com.couchbase;
 
+import com.couchbase.jdbc.TestUtil;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;

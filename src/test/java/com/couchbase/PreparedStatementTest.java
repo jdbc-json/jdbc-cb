@@ -12,6 +12,7 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
+import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
 import org.hamcrest.core.IsEqual;
 import org.junit.*;
@@ -133,12 +134,11 @@ public class PreparedStatementTest
          "{ \"age\": 21, \"fname\": \"Bebama\", \"gender\": \"m\" } ]," +
          "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
 
-
-        JsonObject jsonObject = Json.createReader(new StringReader(jsonString)).readObject();
+        Object jsonObject = JsonFactory.fromJson(new StringReader(jsonString));
 
         String jsonString2 = "{ \"age\": 56," +
                 "\"email\": \"ian@gmail.com\", \"fname\": \"Ian\" }";
-        JsonObject jsonObject2 = Json.createReader(new StringReader(jsonString2)).readObject();
+        Object jsonObject2 = JsonFactory.fromJson(new StringReader(jsonString2));
 
         try (PreparedStatement preparedStatement = con.prepareStatement("insert into default (key,value) values(?,?)"))
         {
@@ -158,8 +158,8 @@ public class PreparedStatementTest
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
-            Map json = (Map)resultSet.getObject(1);
-            assertEquals("Abama",json.get("value"));
+            ;
+            assertEquals("Abama",resultSet.getString(1));
 
         }
         try(Statement statement = con.createStatement()){
@@ -289,7 +289,46 @@ public class PreparedStatementTest
         }
     }
 
+    @Test
+    public void testPreparedReturning() throws Exception
+    {
+        String jsonString = "{\"name\":\"Alex Baldwin\", \"type\":\"contact\"}";
+        Map jsonObject = new HashMap();
+        jsonObject.put("name", "Alex Baldwin");
+        jsonObject.put("type", "contact");
 
+        String []columns = {"default"};
+    /*
+        [2015-08-11, 1:57:10 PM] Colm McHugh:INSERT INTO contacts (KEY, VALUE)
+        VALUES ("baldwin", {"name":"Alex Baldwin", "type":"contact"})
+        RETURNING contacts
+        [2015-08-11, 1:57:37 PM] Colm McHugh: UPDATE contacts
+        USE KEYS "baldwin"
+        SET children = ARRAY_APPEND(children, { "name": "Julie", "age": 3 } )
+        RETURNING contacts
+        [2015-08-11, 1:57:54 PM] Colm McHugh: DELETE FROM contacts c
+        USE KEYS "baldwin"
+        RETURNING contacts
+
+        */
+        try (PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)",columns))
+        {
+            preparedStatement.setString(1,"baldwin");
+            preparedStatement.setObject(2,jsonObject);
+
+            boolean hasResults = preparedStatement.execute();
+            if ( hasResults )
+            {
+                try (ResultSet rs = preparedStatement.getResultSet() )
+                {
+                    assertTrue(rs.next());
+                    SQLJSON sqljson = ((CBResultSet)rs).getSQLJSON(1);
+                    String result = sqljson.getString();
+                    assertNotNull(result);
+                }
+            }
+        }
+    }
     @Test
     public void testSetByte() throws Exception
     {
