@@ -18,8 +18,6 @@ import org.hamcrest.core.IsEqual;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -204,27 +202,27 @@ public class PreparedStatementTest
 
         try (PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
-            JsonObject jsonObject = Json.createReader(new StringReader(name1)).readObject();
+            Map <String, String> jsonObject = (Map <String, String>)JsonFactory.fromJson(new StringReader(name1));
             preparedStatement.setString(1,"name");
-            preparedStatement.setString(2, jsonObject.getString("name"));
+            preparedStatement.setString(2, jsonObject.get("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
 
-            jsonObject = Json.createReader(new StringReader(name2)).readObject();
+            jsonObject = (Map <String, String>)JsonFactory.fromJson(new StringReader(name2));
             preparedStatement.setString(1,"name1");
-            preparedStatement.setString(2, jsonObject.getString("name"));
+            preparedStatement.setString(2, jsonObject.get("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
 
-            jsonObject = Json.createReader(new StringReader(name3)).readObject();
+            jsonObject = (Map <String, String>)JsonFactory.fromJson(new StringReader(name3));
             preparedStatement.setString(1,"name2");
-            preparedStatement.setString(2, jsonObject.getString("name"));
+            preparedStatement.setString(2, jsonObject.get("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
 
-            jsonObject = Json.createReader(new StringReader(name4)).readObject();
+            jsonObject = (Map <String, String>)JsonFactory.fromJson(new StringReader(name4));
             preparedStatement.setString(1,"name3");
-            preparedStatement.setString(2, jsonObject.getString("name"));
+            preparedStatement.setString(2, jsonObject.get("name"));
 
             assertEquals(1, preparedStatement.executeUpdate());
         }
