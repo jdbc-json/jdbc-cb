@@ -538,6 +538,38 @@ public class SqlJsonImplementation implements SQLJSON
 
     }
 
+    @Override
+    public List getArray() throws SQLException
+    {
+        if (jsonObject == null )
+        {
+            isNull = true;
+            return null;
+        }
+
+        if ( jsonObject instanceof List )
+            return (List) jsonObject;
+
+        throw new SQLException("Value " +jsonObject + " is not a list" );
+
+    }
+
+    @Override
+    public void setArray(List array) throws SQLException
+    {
+        if (array == null)
+        {
+            field = new Field(null,"null");
+            isNull = true;
+        }
+        else
+        {
+            field = new Field(null, "array");
+        }
+        jsonObject = array;
+
+    }
+
     public Object getObject() throws SQLException
     {
         switch (field.getSqlType())

@@ -892,6 +892,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
             preparedStatement.setClob(1,(Clob)null);
 
         }
@@ -902,6 +903,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
             preparedStatement.setClob(1,null, 0);
 
         }
@@ -912,6 +914,8 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
+
             preparedStatement.setClob(1,(Reader)null);
 
         }
@@ -922,6 +926,8 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
+
             preparedStatement.setNClob(1, (NClob) null);
 
         }
@@ -932,6 +938,8 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
+
             preparedStatement.setNClob(1, null, 0);
 
         }
@@ -942,6 +950,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
             preparedStatement.setNClob(1, (Reader) null);
 
         }
@@ -953,6 +962,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
             preparedStatement.setBlob(1,(Blob)null);
 
         }
@@ -963,6 +973,8 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
+
             preparedStatement.setBlob(1,null,0);
 
         }
@@ -973,6 +985,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
             preparedStatement.setBlob(1,(InputStream)null);
 
         }
@@ -984,6 +997,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setRowId");
             preparedStatement.setRowId(1,null);
 
         }
@@ -994,6 +1008,7 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setRef");
             preparedStatement.setRef(1, null);
 
         }
@@ -1016,6 +1031,8 @@ public class PreparedStatementTest
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
 
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.getMetaData");
             ResultSetMetaData rsmd = preparedStatement.getMetaData();
 
         }

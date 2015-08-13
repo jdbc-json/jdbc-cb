@@ -843,7 +843,7 @@ public class CBConnection implements java.sql.Connection
     public Savepoint setSavepoint(String name) throws SQLException
     {
         checkClosed();
-        throw CBDriver.notImplemented(CBConnection.class, "setSavePoint");
+        throw CBDriver.notImplemented(CBConnection.class, "setSavepoint");
     }
 
     /**
@@ -1192,7 +1192,7 @@ public class CBConnection implements java.sql.Connection
     public Clob createClob() throws SQLException
     {
         checkClosed();
-        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
+        throw CBDriver.notImplemented(CBConnection.class, "createClob");
     }
 
     /**
@@ -1212,7 +1212,10 @@ public class CBConnection implements java.sql.Connection
     @Override
     public Blob createBlob() throws SQLException
     {
-        return null;
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "createBlob");
+        //todo implement
+        //return null;
     }
 
     /**
@@ -1233,7 +1236,7 @@ public class CBConnection implements java.sql.Connection
     public NClob createNClob() throws SQLException
     {
         checkClosed();
-        throw CBDriver.notImplemented(CBConnection.class, "prepareStatement");
+        throw CBDriver.notImplemented(CBConnection.class, "createNClob");
     }
 
     /**
@@ -1253,7 +1256,9 @@ public class CBConnection implements java.sql.Connection
     @Override
     public SQLXML createSQLXML() throws SQLException
     {
-        return null;
+
+        checkClosed();
+        throw CBDriver.notImplemented(CBConnection.class, "createSQLXML");
     }
 
     /**

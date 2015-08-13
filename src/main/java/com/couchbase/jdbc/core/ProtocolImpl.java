@@ -694,12 +694,13 @@ public class ProtocolImpl implements Protocol
     {
        sqlWarning=null;
     }
+    private static NameValuePair schemaValuePair= new BasicNameValuePair("namespace","default");
 
     @Override
     public void setSchema(String schema) throws SQLException
     {
         this.schema = schema;
-
+        schemaValuePair = new BasicNameValuePair("namespace",schema);
     }
 
     @Override
@@ -707,7 +708,6 @@ public class ProtocolImpl implements Protocol
     {
         return schema;
     }
-    private static NameValuePair schemaValuePair= new BasicNameValuePair("namespace","default");
 
     private void addSchema(List<NameValuePair> valuePair )
     {
@@ -720,7 +720,36 @@ public class ProtocolImpl implements Protocol
     public boolean isValid(int timeout)
     {
         //todo implement
-        return false;
+
+        String query = "select 1";
+
+        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+
+//            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
+        addSchema(nameValuePairs);
+        nameValuePairs.add(new BasicNameValuePair("statement", query));
+        if ( queryTimeout != 0 )
+        {
+            nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+        }
+
+        if (credentials != null)
+        {
+            nameValuePairs.add(new BasicNameValuePair("creds",credentials));
+        }
+
+        // do the query
+
+        try
+        {
+            CouchResponse response = doQuery(query, nameValuePairs);
+            return response.getMetrics().getResultCount() == 1;
+        }
+        catch (Exception ex)
+        {
+            return false;
+
+        }
     }
 }
 

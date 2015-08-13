@@ -23,6 +23,9 @@ import org.junit.runners.JUnit4;
 
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by davec on 2015-07-21.
@@ -312,21 +315,41 @@ public class ConnectionTest extends TestCase
     public void testPrepareCall1() throws Exception
     {
         String sql = "select 1 as one";
+
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
         con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+
     }
 
     @Test
     public void testGetTypeMap() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.getTypeMap");
+        con.getTypeMap();
+
+        con.close();
+        expectedException.expect(SQLException.class);
         con.getTypeMap();
     }
+
 
     @Test
     public void testSetTypeMap() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.setTypeMap");
         con.setTypeMap(new HashMap<String, Class<?>>());
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.setTypeMap(new HashMap<String, Class<?>>());
+
     }
 
     @Test
@@ -345,7 +368,7 @@ public class ConnectionTest extends TestCase
     @Test
     public void testGetHoldability() throws Exception
     {
-        assertEquals(ResultSet.CLOSE_CURSORS_AT_COMMIT,con.getHoldability());
+        assertEquals(con.getHoldability(), ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
         con.close();
         expectedException.expect(SQLException.class);
@@ -490,31 +513,44 @@ public class ConnectionTest extends TestCase
     @Test
     public void testCreateClob() throws Exception
     {
-
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createClob");
+        con.createClob();
     }
 
     @Test
     public void testCreateBlob() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createBlob");
+        con.createBlob();
 
     }
 
     @Test
     public void testCreateNClob() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createNClob");
+        con.createNClob();
 
     }
 
     @Test
     public void testCreateSQLXML() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createSQLXML");
+        con.createSQLXML();
 
     }
 
     @Test
     public void testIsValid() throws Exception
     {
-
+        assertTrue(con.isValid(0));
+        con.close();
+        assertFalse(con.isValid(0));
     }
 
     @Test
@@ -541,34 +577,62 @@ public class ConnectionTest extends TestCase
 
     }
 
-    @Test
-    public void testCreateArrayOf() throws Exception
-    {
-
-    }
 
     @Test
     public void testCreateStruct() throws Exception
     {
+        expectedException.expect(SQLFeatureNotSupportedException.class);
+        expectedException.expectMessage("com.couchbase.CBConnection.createStruct");
+        con.createStruct(null, null);
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.createStruct(null, null);
 
     }
 
     @Test
     public void testSetSchema() throws Exception
     {
+        con.setSchema("SYSTEM");
 
+        try (Statement statement=con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from keyspaces where name ='default'"))
+            {
+                assertTrue(rs.next());
+                Map map = (Map)rs.getObject("keyspaces");
+                assertEquals(map.get("name"),"default");
+            }
+        }
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.setSchema("SYSTEM");
     }
 
     @Test
     public void testGetSchema() throws Exception
     {
+        con.setSchema("SYSTEM");
+
+        assertEquals("SYSTEM",con.getSchema());
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.getSchema();
 
     }
 
     @Test
     public void testAbort() throws Exception
     {
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        con.abort(executor);
 
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("Executor is null");
+        con.abort(null);
     }
 
     @Test

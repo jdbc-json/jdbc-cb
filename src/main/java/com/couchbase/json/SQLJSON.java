@@ -14,11 +14,9 @@ package com.couchbase.json;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,6 +73,9 @@ public interface SQLJSON
 
     public Map getMap() throws SQLException;
     public void setMap(Map map) throws SQLException;
+
+    public List getArray() throws SQLException;
+    public void setArray(List array) throws SQLException;
 
     public Object getObject() throws SQLException;
     public void setObject(Object val) throws SQLException;

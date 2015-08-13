@@ -842,7 +842,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setRef(int parameterIndex, Ref x) throws SQLException
     {
-        throw CBDriver.notImplemented(CBPreparedStatement.class,"setBlob");
+        throw CBDriver.notImplemented(CBPreparedStatement.class,"setRef");
     }
 
     /**
@@ -880,7 +880,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public void setClob(int parameterIndex, Clob x) throws SQLException
     {
-        throw CBDriver.notImplemented(CBPreparedStatement.class,"setBlob");
+        throw CBDriver.notImplemented(CBPreparedStatement.class,"setClob");
     }
 
     /**

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.*;
 
 import static org.junit.Assert.*;
@@ -1428,7 +1429,72 @@ public class ResultSetTest
         }
     }
 
+    @Test
+    public void testWasMissing() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1, "byte1");
+            preparedStatement.setByte(2, (byte) 1);
 
+            assertEquals(1, preparedStatement.executeUpdate());
+            try (Statement stmt = con.createStatement())
+            {
+                try (CBResultSet rs = (CBResultSet) stmt.executeQuery("select name, phone, state, default from default where meta(default).id='byte1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0, rs.getByte("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getByte("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertEquals(0, rs.getShort("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getShort("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertEquals(0, rs.getInt("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getInt("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertEquals(0, rs.getLong("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getLong("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertEquals(0, rs.getDouble("name"),0);
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getDouble("default"),0);
+                    assertFalse(rs.wasMissing());
+
+                    assertEquals(null, rs.getBigDecimal("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals(BigDecimal.ONE,rs.getBigDecimal("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertNull(rs.getString("name"));
+                    assertTrue(rs.wasMissing());
+                    assertEquals("1",rs.getString("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertNull( rs.getObject("name") );
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getObject("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertNull( rs.getSQLJSON("name") );
+                    assertTrue(rs.wasMissing());
+                    assertEquals(1,rs.getObject("default"));
+                    assertFalse(rs.wasMissing());
+
+
+
+
+                }
+            }
+        }
+    }
 
     @Test
     public void testGetTimestamp() throws Exception

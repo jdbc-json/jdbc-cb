@@ -26,8 +26,7 @@ import org.junit.runners.JUnit4;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by davec on 2015-07-10.
@@ -153,6 +152,11 @@ public class TestSQLJson extends TestCase
             sqljson = rs.getSQLJSON("c2");
             assertEquals("false", sqljson.getString());
 
+            sqljson = rs.getSQLJSON("c7");
+            List list = sqljson.getArray();
+
+            assertNotNull(list);
+
 
         }
     }
@@ -197,15 +201,47 @@ public class TestSQLJson extends TestCase
     }
 
     @Test
+    public void testSetArray()  throws Exception
+    {
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+        List list = new ArrayList();
+
+        for (int i=0; i<6;i++)
+            list.add(i,i+1);
+
+        sqljson.setArray(list);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1, "val1");
+            ((CBPreparedStatement) preparedStatement).setSQLJSON(2, sqljson);
+            preparedStatement.execute();
+
+        }
+
+        try (Statement statement = con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+            {
+                assertTrue(rs.next());
+
+                SQLJSON sqljson1 = ((CBResultSet) rs).getSQLJSON("default");
+                List returned = sqljson1.getArray();
+                for (int i=0; i<6;i++)
+                    assertEquals(i+1,returned.get(i));
+            }
+        }
+    }
+    @Test
     public void testSetBinaryStream() throws Exception
     {
-
+        //todo implement
     }
 
     @Test
     public void testSetCharacterStream() throws Exception
     {
-
+        //todo implement
     }
 
     @Test
