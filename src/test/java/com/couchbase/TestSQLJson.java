@@ -26,6 +26,7 @@ import org.junit.runners.JUnit4;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 /**
@@ -915,49 +916,160 @@ public class TestSQLJson extends TestCase
     @Test
     public void testSetBytes() throws Exception
     {
-
+      // not sure setBytes makes sense
     }
 
     @Test
     public void testGetBytes() throws Exception
     {
-
+        // not sure bytes make sense
     }
 
     @Test
     public void testSetDate() throws Exception
     {
+        Calendar calendar= Calendar.getInstance();
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+
+        java.sql.Date date = new java.sql.Date(calendar.getTime().getTime());
+        sqljson.setDate( date, null);
+
+        Date val = sqljson.getDate(null);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(val);
+
+        assertEquals(calendar.get(Calendar.MONTH), calendar1.get(Calendar.MONTH));
+        assertEquals(calendar.get(Calendar.DAY_OF_MONTH), calendar1.get(Calendar.DAY_OF_MONTH));
+        assertEquals(calendar.get(Calendar.YEAR), calendar1.get(Calendar.YEAR));
+
 
     }
 
     @Test
     public void testGetDate() throws Exception
     {
+        Calendar calendar= Calendar.getInstance(),
+                 calendar1=Calendar.getInstance();
 
+        try (Statement stmt = con.createStatement())
+        {
+            try (ResultSet rs = stmt.executeQuery("select now_str() as cur_time" ))
+            {
+                assertTrue(rs.next());
+                SQLJSON sqljson = ((CBResultSet)rs).getSQLJSON("cur_time");
+                assertNotNull(sqljson);
+
+                Date date = sqljson.getDate(null);
+                calendar1.setTime(date);
+
+                //this may fail if run at midnight
+                assertEquals(calendar.get(Calendar.MONTH), calendar1.get(Calendar.MONTH));
+                assertEquals(calendar.get(Calendar.DAY_OF_MONTH), calendar1.get(Calendar.DAY_OF_MONTH));
+                assertEquals(calendar.get(Calendar.YEAR), calendar1.get(Calendar.YEAR));
+
+            }
+        }
     }
 
     @Test
     public void testSetTime() throws Exception
     {
 
+        Calendar calendar= Calendar.getInstance();
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+
+        java.sql.Time time = new java.sql.Time(calendar.getTime().getTime());
+        sqljson.setTime(time, null);
+
+        Time val = sqljson.getTime(null);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(val);
+
+        assertEquals(calendar.get(Calendar.HOUR_OF_DAY), calendar1.get(Calendar.HOUR_OF_DAY));
+        assertEquals(calendar.get(Calendar.MINUTE), calendar1.get(Calendar.MINUTE));
+        assertEquals(calendar.get(Calendar.SECOND), calendar1.get(Calendar.SECOND));
     }
 
     @Test
     public void testGetTime() throws Exception
     {
+        Calendar calendar1=Calendar.getInstance();
 
+        try (Statement stmt = con.createStatement())
+        {
+            try (ResultSet rs = stmt.executeQuery("select '09:54:00' as cur_time" ))
+            {
+                assertTrue(rs.next());
+                SQLJSON sqljson = ((CBResultSet)rs).getSQLJSON("cur_time");
+                assertNotNull(sqljson);
+
+                Time time = sqljson.getTime(null);
+                calendar1.setTime(time);
+
+
+                assertEquals(9, calendar1.get(Calendar.HOUR_OF_DAY));
+                assertEquals(54, calendar1.get(Calendar.MINUTE));
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+            }
+        }
     }
 
     @Test
     public void testSetTimestamp() throws Exception
     {
+        Calendar calendar= Calendar.getInstance();
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
 
+        Timestamp timestamp = new Timestamp(calendar.getTime().getTime());
+        sqljson.setTimestamp(timestamp, null);
+
+        Timestamp val = sqljson.getTimestamp(null);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(val);
+
+        assertEquals(calendar.get(Calendar.MONTH), calendar1.get(Calendar.MONTH));
+        assertEquals(calendar.get(Calendar.DAY_OF_MONTH), calendar1.get(Calendar.DAY_OF_MONTH));
+        assertEquals(calendar.get(Calendar.YEAR), calendar1.get(Calendar.YEAR));
+
+        assertEquals(calendar.get(Calendar.HOUR_OF_DAY), calendar1.get(Calendar.HOUR_OF_DAY));
+        assertEquals(calendar.get(Calendar.MINUTE), calendar1.get(Calendar.MINUTE));
+        assertEquals(calendar.get(Calendar.SECOND), calendar1.get(Calendar.SECOND));
+
+        assertEquals(calendar.get(Calendar.MILLISECOND),calendar.get(Calendar.MILLISECOND));
     }
 
     @Test
     public void testGetTimestamp() throws Exception
     {
+        Calendar calendar1=Calendar.getInstance();
 
+        try (Statement stmt = con.createStatement())
+        {
+            try (ResultSet rs = stmt.executeQuery("select '2015-09-14 09:54:00.12345' as cur_time" ))
+            {
+                assertTrue(rs.next());
+                SQLJSON sqljson = ((CBResultSet)rs).getSQLJSON("cur_time");
+                assertNotNull(sqljson);
+
+                Timestamp timestamp = sqljson.getTimestamp(null);
+                calendar1.setTime(timestamp);
+
+                // month is 0 based
+                assertEquals(8, calendar1.get(Calendar.MONTH));
+                assertEquals(14, calendar1.get(Calendar.DAY_OF_MONTH));
+                assertEquals(2015, calendar1.get(Calendar.YEAR));
+
+                assertEquals(9, calendar1.get(Calendar.HOUR_OF_DAY));
+                assertEquals(54, calendar1.get(Calendar.MINUTE));
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(12345, timestamp.getNanos());
+
+            }
+        }
     }
     @Test
     public void testGetMap() throws Exception
@@ -1029,23 +1141,203 @@ public class TestSQLJson extends TestCase
             }
         }
     }
+    //@Test
+    public void testCompareTo() throws Exception
+    {
+        String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, '' as c5, 'some' as c6, [1,2,3,5,8] as c7, [] as c8, { 'a1': 'Object' } as c9, {} as c10";
 
+        try (Statement stmt= con.createStatement())
+        {
+            CBResultSet rs = (CBResultSet) stmt.executeQuery(query);
+            assertNotNull(rs);
+
+            assertTrue(rs.next());
+
+            SQLJSON sqljson = rs.getSQLJSON("c1");
+            SQLJSON sqljson1 = rs.getSQLJSON("c1");
+
+            sqljson.compareTo(sqljson1);
+        }
+
+    }
     @Test
     public void testGetObject() throws Exception
     {
+        String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, '' as c5, " +
+                "'some' as c6, [1,2,3,4,5,6] as c7, [] as c8, { 'a1': 'Object' } as c9, " +
+                "{} as c10, '09:54:00' as time, '2015-09-14' as date, '2015-09-14 09:54:00.12345' as timestamp";
 
+        try (Statement stmt= con.createStatement())
+        {
+            CBResultSet rs = (CBResultSet) stmt.executeQuery(query);
+            assertNotNull(rs);
+
+            assertTrue(rs.next());
+
+            SQLJSON sqljson = rs.getSQLJSON("c1");
+            assertTrue((boolean)sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c2");
+            assertFalse((boolean) sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c3");
+            assertEquals(0, sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c4");
+            assertEquals(1, sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c5");
+            assertEquals( "", sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c6");
+            assertEquals( "some", sqljson.getObject());
+
+            sqljson = rs.getSQLJSON("c7");
+            List returned = (List)sqljson.getObject();
+            for (int i=0; i<6;i++)
+                assertEquals(i+1,returned.get(i));
+
+            sqljson = rs.getSQLJSON("c8");
+            returned = (List)sqljson.getObject();
+
+            assertTrue(returned.isEmpty());
+
+            sqljson = rs.getSQLJSON("c9");
+            Map map = (Map)sqljson.getObject();
+
+            assertTrue(map.containsKey("a1"));
+            assertEquals("Object", map.get("a1"));
+
+            sqljson = rs.getSQLJSON("time");
+            Time time = sqljson.getTime(null);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(time);
+
+            assertEquals(9, calendar.get(Calendar.HOUR_OF_DAY));
+            assertEquals(54, calendar.get(Calendar.MINUTE));
+            assertEquals(0, calendar.get(Calendar.SECOND));
+
+            sqljson = rs.getSQLJSON("date");
+            Date date = sqljson.getDate(null);
+
+            calendar = Calendar.getInstance();
+            calendar.setTime(date);
+
+            assertEquals(2015, calendar.get(Calendar.YEAR));
+            assertEquals(8, calendar.get(Calendar.MONTH));
+            assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+
+            sqljson = rs.getSQLJSON("timestamp");
+            Timestamp timestamp = sqljson.getTimestamp(null);
+
+            calendar = Calendar.getInstance();
+            calendar.setTime(timestamp);
+
+            assertEquals(9, calendar.get(Calendar.HOUR_OF_DAY));
+            assertEquals(54, calendar.get(Calendar.MINUTE));
+            assertEquals(0, calendar.get(Calendar.SECOND));
+
+            assertEquals(2015, calendar.get(Calendar.YEAR));
+            assertEquals(8, calendar.get(Calendar.MONTH));
+            assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
+
+            assertEquals(12345,timestamp.getNanos());
+        }
     }
 
     @Test
     public void testSetObject() throws Exception
     {
+        SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
+
+        sqljson.setObject(Boolean.TRUE);
+        assertTrue((Boolean) sqljson.getObject());
+        assertTrue(sqljson.getBoolean());
+        assertEquals(sqljson.getJDBCType(),Types.BOOLEAN);
+
+        sqljson.setObject(1);
+        assertEquals(1, (long)sqljson.getObject());
+        assertEquals(1, sqljson.getInt());
+        assertEquals(sqljson.getJDBCType(),Types.NUMERIC);
+
+        sqljson.setObject(1.0);
+        assertEquals(1.0, (double)sqljson.getObject(),0);
+        assertEquals(1.0, sqljson.getDouble(),0);
+        assertEquals(sqljson.getJDBCType(),Types.NUMERIC);
+
+        sqljson.setObject("string");
+        assertEquals("string", (String)sqljson.getObject());
+        assertEquals("string", sqljson.getString());
+        assertEquals(Types.VARCHAR,sqljson.getJDBCType());
+
+        int [] array = {1,2,3,4,5,6};
+        sqljson.setObject(array);
+
+        List <Integer>list =  (List <Integer>)sqljson.getObject() ;
+        List <Integer>list1 =  (List <Integer>)sqljson.getArray()  ;
+
+        for( int i=0; i< 6; i++)
+        {
+            assertEquals(i + 1, (int)list.get(i));
+            assertEquals(i+1, (int)list1.get(i));
+        }
+        assertEquals(Types.ARRAY,sqljson.getJDBCType());
+
 
     }
 
     @Test
     public void testGetJDBCType() throws Exception
     {
+        String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, null as c5, " +
+                "'some' as c6, [1,2,3,4,5,6] as c7, [] as c8, { 'a1': 'Object' } as c9, " +
+                "{} as c10, '09:54:00' as time, '2015-09-14 09:54:00' as date, '2015-09-14 09:54:00.12345' as timestamp";
 
+        try (Statement stmt= con.createStatement())
+        {
+            CBResultSet rs = (CBResultSet) stmt.executeQuery(query);
+            assertNotNull(rs);
+
+            assertTrue(rs.next());
+
+            SQLJSON sqljson = rs.getSQLJSON("c1");
+            assertEquals(sqljson.getJDBCType(), Types.BOOLEAN);
+
+            sqljson = rs.getSQLJSON("c2");
+            assertEquals(sqljson.getJDBCType(), Types.BOOLEAN);
+
+            sqljson = rs.getSQLJSON("c3");
+            assertEquals(sqljson.getJDBCType(), Types.NUMERIC);
+
+            sqljson = rs.getSQLJSON("c4");
+            assertEquals(sqljson.getJDBCType(), Types.NUMERIC);
+
+            sqljson = rs.getSQLJSON("c5");
+            assertEquals(sqljson.getJDBCType(), Types.NULL);
+
+            sqljson = rs.getSQLJSON("c6");
+            assertEquals(sqljson.getJDBCType(), Types.VARCHAR);
+
+            sqljson = rs.getSQLJSON("c7");
+            assertEquals(sqljson.getJDBCType(), Types.ARRAY);
+
+            sqljson = rs.getSQLJSON("c8");
+            assertEquals(sqljson.getJDBCType(), Types.ARRAY);
+
+            sqljson = rs.getSQLJSON("c9");
+            assertEquals(sqljson.getJDBCType(), Types.JAVA_OBJECT);
+
+            sqljson = rs.getSQLJSON("time");
+            assertEquals(sqljson.getJDBCType(), Types.VARCHAR);
+
+            sqljson = rs.getSQLJSON("date");
+            assertEquals(sqljson.getJDBCType(), Types.VARCHAR);
+
+            sqljson = rs.getSQLJSON("timestamp");
+            assertEquals(sqljson.getJDBCType(), Types.VARCHAR);
+
+        }
     }
 
     @Test

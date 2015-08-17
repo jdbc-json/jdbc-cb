@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
@@ -1501,18 +1502,49 @@ public class ResultSetTest
     {
         try (Statement stmt = con.createStatement())
         {
-            try (ResultSet rs = stmt.executeQuery("select now_str() as cur_time"))
+            try (ResultSet rs = stmt.executeQuery("select '2015-09-14 09:54:00.12345' as cur_time"))
             {
                 assertTrue(rs.next());
                 Timestamp ts = rs.getTimestamp("cur_time");
                 assertNotNull(ts);
-                ts=rs.getTimestamp(1);
-                assertNotNull(ts);
+
+                Calendar calendar1 = Calendar.getInstance();
+                calendar1.setTime(ts);
+
+                // month is 0 based
+                assertEquals(8, calendar1.get(Calendar.MONTH));
+                assertEquals(14, calendar1.get(Calendar.DAY_OF_MONTH));
+                assertEquals(2015, calendar1.get(Calendar.YEAR));
+
+                assertEquals(9, calendar1.get(Calendar.HOUR_OF_DAY));
+                assertEquals(54, calendar1.get(Calendar.MINUTE));
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(12345, ts.getNanos());
 
                 ts=rs.getObject("cur_time", Timestamp.class);
                 assertNotNull(ts);
                 ts=rs.getObject(1, Timestamp.class);
                 assertNotNull(ts);
+
+                calendar1 = Calendar.getInstance();
+                calendar1.setTime(ts);
+
+                // month is 0 based
+                assertEquals(8, calendar1.get(Calendar.MONTH));
+                assertEquals(14, calendar1.get(Calendar.DAY_OF_MONTH));
+                assertEquals(2015, calendar1.get(Calendar.YEAR));
+
+                assertEquals(9, calendar1.get(Calendar.HOUR_OF_DAY));
+                assertEquals(54, calendar1.get(Calendar.MINUTE));
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(0, calendar1.get(Calendar.SECOND));
+
+                assertEquals(12345, ts.getNanos());
+
             }
         }
     }

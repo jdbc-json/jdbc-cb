@@ -5,20 +5,21 @@ import com.couchbase.json.SQLJSON;
 import org.boon.core.reflection.Mapper;
 import org.boon.core.reflection.MapperSimple;
 import org.boon.json.JsonFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.*;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by davec on 15-07-02.
  */
 public class SqlJsonImplementation implements SQLJSON
 {
+    private static final Logger logger = LoggerFactory.getLogger(SqlJsonImplementation.class);
     Field field;
     Object jsonObject;
     String sqlJson;
@@ -448,10 +449,64 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
     @Override
-    public Date getDate() throws SQLException
+    public Date getDate(Calendar cal) throws SQLException
     {
-        return null;
+        Date date = null;
+
+        if (jsonObject == null )
+        {
+            isNull = true;
+            return null;
+        }
+
+        try
+        {
+            if ( jsonObject instanceof String)
+            {
+                date = timestampUtils.parse((String)jsonObject);
+            }
+            if (jsonObject instanceof Date)
+            {
+                date = (Date)jsonObject;
+            }
+            if (jsonObject instanceof java.util.Date)
+            {
+                date = new Date(((java.util.Date)jsonObject).getTime());
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new SQLException("value " + jsonObject + " is not a date");
+        }
+        /*
+        if ( cal != null && !cal.getTimeZone().hasSameRules(df.getTimeZone()) )
+        {
+            // check to see if there is a calendar and that it is different than the one used to parse
+            if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+            {
+                Calendar convertCal = Calendar.getInstance();
+                convertCal.setTime(date);
+                TimeZone toTimeZone     = cal.getTimeZone();
+                TimeZone fromTimeZone   = tf.getTimeZone();
+
+                convertCal.setTimeZone(fromTimeZone);
+                convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+                if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                    convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+                }
+
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+                if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                    convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+                }
+
+                date = new Date(convertCal.getTime().getTime());
+            }
+        }
+        */
+        return date;
     }
+
 
     @Override
     public void setTime(Time val, Calendar cal) throws SQLException
@@ -476,9 +531,45 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
     @Override
-    public Time getTime() throws SQLException
+    public Time getTime(Calendar cal) throws SQLException
     {
-        return null;
+        Time time;
+
+        if ( jsonObject == null ) return null;
+
+        try
+        {
+            time = timestampUtils.parseTime((String)jsonObject);
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value " + jsonObject +" is not a Time", ex);
+        }
+
+        /*
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(time);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            time = new Time(convertCal.getTime().getTime());
+        }
+        */
+        return time;
     }
 
     @Override
@@ -504,9 +595,60 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
     @Override
-    public Timestamp getTimestamp() throws SQLException
+    public Timestamp getTimestamp( Calendar cal ) throws SQLException
     {
-        return null;
+        Timestamp ts;
+
+        if (jsonObject == null )
+        {
+            isNull=true;
+            return null;
+        }
+
+        try
+        {
+            if (jsonObject instanceof java.util.Date || jsonObject instanceof java.sql.Date)
+            {
+                ts = new Timestamp( ((java.util.Date)jsonObject).getTime());
+            }
+            else if (jsonObject instanceof String)
+            {
+                ts = timestampUtils.parseTimestamp((String)jsonObject);
+            }
+            else
+            {
+                throw new SQLException("value " + jsonObject + " is not a Timestamp");
+            }
+        }
+        catch( Exception ex)
+        {
+            throw new SQLException("value " + jsonObject+ "is not a Timestamp", ex);
+        }
+
+        /*
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( cal != null && !cal.getTimeZone().hasSameRules(tsf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(ts);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tsf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            ts = new Timestamp(convertCal.getTime().getTime());
+        }
+        */
+        return ts;
     }
 
     public Map getMap() throws SQLException
@@ -570,14 +712,29 @@ public class SqlJsonImplementation implements SQLJSON
 
     }
 
+    @Override
+    public void setArray(Object []array) throws SQLException
+    {
+        if (array == null)
+        {
+            field = new Field(null,"null");
+            isNull = true;
+        }
+        else
+        {
+            field = new Field(null, "array");
+        }
+        jsonObject = array;
+
+    }
+
     public Object getObject() throws SQLException
     {
         switch (field.getSqlType())
         {
             case Types.NUMERIC:
-                return new Double((String)jsonObject);
             case Types.BOOLEAN:
-                return new Boolean((String)jsonObject);
+                    return jsonObject;
             case Types.VARCHAR:
                 Object object = jsonObject;
                 if (object instanceof java.util.Date)
@@ -633,6 +790,16 @@ public class SqlJsonImplementation implements SQLJSON
             setByte(((Byte)x).byteValue());
         else if (x instanceof Character)
             setString(((Character) x).toString());
+        else if ( x instanceof List)
+            setArray((List)x);
+        else if ( x instanceof Object [] )
+            setArray((Object [])x);
+        else if (x.getClass().isArray())
+        {
+            List list = asList(x);
+            setArray(list);
+
+        }
         else if (x instanceof Map)
             setMap((Map) x);
         else
@@ -646,6 +813,22 @@ public class SqlJsonImplementation implements SQLJSON
         return isNull;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> asList(final Object array) {
+        if (!array.getClass().isArray())
+            throw new IllegalArgumentException("Not an array");
+        return new AbstractList<T>() {
+            @Override
+            public T get(int index) {
+                return (T) java.lang.reflect.Array.get(array, index);
+            }
+
+            @Override
+            public int size() {
+                return java.lang.reflect.Array.getLength(array);
+            }
+        };
+    }
     public int getJDBCType()
     {
         return jdbcTypes.get(field.getType());
@@ -685,5 +868,82 @@ public class SqlJsonImplementation implements SQLJSON
             return  JsonFactory.toJson(jsonObject);
         else
             return jsonObject.toString();
+    }
+    public int getLength()
+    {
+        return sqlJson.length();
+    }
+    public int compareTo(SQLJSON obj)
+    {
+
+        SqlJsonImplementation sqljson = (SqlJsonImplementation)obj;
+
+        int deltaLength = this.getLength() - sqljson.getLength();
+        if ( deltaLength != 0 ) return deltaLength;
+
+        // if not do name by name comparison
+        if (jsonObject instanceof Map && sqljson.jsonObject instanceof Map)
+        {
+            Set<String> combinedKeys = ((Map)jsonObject).keySet();
+            combinedKeys.addAll(((Map) sqljson.jsonObject).keySet());
+            List <String> sorted = new ArrayList<String>(combinedKeys);
+            Collections.sort(sorted);
+
+            for(String name:sorted)
+            {
+                // this did not have the value so it is larger
+                if ( !((Map)jsonObject).containsKey(name) ) return 1;
+
+                // this did not have the value so it is larger
+                if ( !((Map)sqljson.jsonObject).containsKey(name) ) return -1;
+
+                Object obj1 = ((Map)jsonObject).get(name);
+                Object obj2 = ((Map)sqljson.jsonObject).get(name);
+
+                return compare(obj1, obj2);
+
+            }
+            return 0;
+        }
+
+        if (jsonObject instanceof List && sqljson.jsonObject instanceof List)
+        {
+            //assume they are the same length from the test above
+            for (int i =0; i< ((List) jsonObject).size();i++)
+            {
+                Object obj1 = ((List)jsonObject).get(i);
+                Object obj2 = ((List)sqljson.jsonObject).get(i);
+                return compare(obj1, obj2);
+            }
+
+
+        }
+        return 0;
+    }
+    private int compare(Object obj1, Object obj2)
+    {
+        if (obj1 == null && obj2 == null ) return 0;
+
+        if ( obj1.getClass().isInstance(obj2))
+        {
+            if (obj1 instanceof String) return ((String) obj1).compareTo((String)obj2);
+            if (obj1 instanceof Boolean)
+            {
+                if (obj1 == obj2) return 0;
+                if (obj1 == Boolean.TRUE) return 1;
+                return -1;
+            }
+            if (obj1 instanceof java.util.Date ) return ((java.util.Date) obj1).compareTo((Date)obj2);
+            if (obj1 instanceof Number)
+            {
+                double number1 = ((Number)obj1).doubleValue();
+                double number2 = ((Number)obj2).doubleValue();
+
+                if (number1 == number2) return 0;
+                return (number1>number2?1:-1);
+            }
+        }
+        logger.debug("should not get here");
+        return 0;
     }
 }

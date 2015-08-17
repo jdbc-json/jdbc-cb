@@ -60,13 +60,13 @@ public interface SQLJSON
     public byte[] getBytes()throws SQLException;
 
     public void setDate(Date val, Calendar cal)throws SQLException;
-    public Date getDate()throws SQLException;
+    public Date getDate(Calendar cal)throws SQLException;
 
     public void setTime( Time val, Calendar cal )throws SQLException;
-    public Time getTime()throws SQLException;
+    public Time getTime(Calendar cal)throws SQLException;
 
     public void setTimestamp( Timestamp val, Calendar cal)throws SQLException;
-    public Timestamp getTimestamp()throws SQLException;
+    public Timestamp getTimestamp(Calendar cal)throws SQLException;
 
     public BigDecimal getBigDecimal() throws SQLException;
     public void setBigDecimal(BigDecimal val) throws SQLException;
@@ -75,6 +75,7 @@ public interface SQLJSON
     public void setMap(Map map) throws SQLException;
 
     public List getArray() throws SQLException;
+    public void setArray(Object []array) throws SQLException;
     public void setArray(List array) throws SQLException;
 
     public Object getObject() throws SQLException;
@@ -88,4 +89,6 @@ public interface SQLJSON
 
     public Object parse(Class clazz) throws SQLException;
     public Map parse() throws SQLException;
+
+    public int compareTo(SQLJSON sqljson);
 }

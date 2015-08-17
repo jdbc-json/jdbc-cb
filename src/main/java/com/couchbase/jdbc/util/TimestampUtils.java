@@ -14,6 +14,7 @@ package com.couchbase.jdbc.util;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -71,6 +72,42 @@ public class TimestampUtils
         appendTimeZone(sbuf, cal);
 
         return sbuf.toString();
+    }
+    private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd") ;
+
+    public synchronized Date parse(String string) throws Exception
+    {
+        Date date = new Date(df.parse(string).getTime());
+        return date;
+    }
+
+    private static final SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
+
+    public synchronized Time parseTime(String string) throws Exception
+    {
+        Time time = new Time(tf.parse(string).getTime());
+        return time;
+    }
+
+    private static final SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public synchronized Timestamp parseTimestamp(String json) throws Exception
+    {
+        // parse the date part
+        Timestamp ts = new Timestamp( tsf.parse((String)json).getTime()  );
+
+
+        // now find the nanos
+        String [] parts = json.split("(\\.)|( )");
+
+        // parts may or may not have timezone information if timezone then it will be 4, otherwise 3
+        if (parts.length >2 )
+        {
+            int nanos = Integer.parseInt(parts[2]);
+            ts.setNanos(nanos);
+        }
+
+        return ts;
     }
 
     private static void appendDate(StringBuffer sb, Calendar cal)
@@ -162,4 +199,5 @@ public class TimestampUtils
             sb.append(" BC");
         }
     }
+
 }

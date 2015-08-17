@@ -16,6 +16,7 @@ import com.couchbase.jdbc.core.CouchError;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.core.Field;
 import com.couchbase.jdbc.core.SqlJsonImplementation;
+import com.couchbase.jdbc.util.TimestampUtils;
 import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
@@ -51,6 +52,8 @@ public class CBResultSet implements java.sql.ResultSet
 
     int index=-1;
     List <Field> fields = new ArrayList<Field>();
+
+    private final TimestampUtils timestampUtils = new TimestampUtils();
 
     public CBResultSet(Statement statement, CouchResponse response)
     {
@@ -1162,7 +1165,7 @@ public class CBResultSet implements java.sql.ResultSet
         return getTimeChecked(columnLabel, null);
     }
 
-    SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /**
      * Retrieves the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
@@ -4006,14 +4009,14 @@ public class CBResultSet implements java.sql.ResultSet
             }
             else if (json instanceof String)
             {
-                ts = new Timestamp( tsf.parse((String)json).getTime()  );
+                ts = timestampUtils.parseTimestamp((String)json);
             }
             else
             {
-                throw new SQLException("value is not a Timestamp");
+                throw new SQLException("value " + json + " is not a Timestamp");
             }
         }
-        catch( ParseException ex)
+        catch( Exception ex)
         {
             throw new SQLException("value " + json+ "is not a Timestamp", ex);
         }
