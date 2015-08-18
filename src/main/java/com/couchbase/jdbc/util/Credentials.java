@@ -11,9 +11,8 @@
 
 package com.couchbase.jdbc.util;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import org.boon.json.JsonFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +47,6 @@ public class Credentials
     }
     public String toString()
     {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        JsonObjectBuilder objectBuilder;
-
-        for (Credential credential : credentials)
-        {
-            objectBuilder = Json.createObjectBuilder();
-            arrayBuilder.add(objectBuilder.add("user",credential.user).add("pass", credential.password).build());
-        }
-        return arrayBuilder.build().toString();
+        return JsonFactory.toJson(credentials);
     }
 }

@@ -12,16 +12,19 @@
 
 package com.couchbase;
 
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class CBDriver implements java.sql.Driver
 {
-    public static final Logger logger = Logger.getLogger(CBDriver.class.getName());
+    public static final org.slf4j.Logger logger = LoggerFactory.getLogger(CBDriver.class.getName());
 
     public static final int MAJOR_VERSION = 0;
 
@@ -40,7 +43,7 @@ public class CBDriver implements java.sql.Driver
         }
         catch (SQLException e)
         {
-            logger.log(Level.SEVERE, "Error registering driver", e);
+            logger.error("Error registering driver", e);
         }
 
 
@@ -48,7 +51,7 @@ public class CBDriver implements java.sql.Driver
 
     public CBDriver() throws SQLException
     {
-        logger.log(Level.INFO,"called");
+        logger.info("Constructor called");
     }
     /**
      * Attempts to make a database connection to the given URL.
@@ -180,29 +183,30 @@ public class CBDriver implements java.sql.Driver
     }
 
     private static final MessageFormat mf = new MessageFormat("Method {0}.{1} is not yet implemented.");
+
     public static java.sql.SQLFeatureNotSupportedException notImplemented(Class callClass, String functionName)
     {
 
         return new java.sql.SQLFeatureNotSupportedException(mf.format(new Object [] {callClass.getName(),functionName}));
     }
 
-    public static void setLogLevel(int logLevel)
+    public static void setLogLevel(Level logLevel)
     {
         synchronized (CBDriver.class)
         {
-
-            //logger.setLogLevel(logLevel);
+            Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.couchbase");
+            logger.setLevel(logLevel);
             //logLevelSet = true;
         }
     }
 
-    public static int getLogLevel()
+    public static Level getLogLevel()
     {
         synchronized (CBDriver.class)
         {
-            //return logger.getLogLevel();
+            Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.couchbase");
+            return logger.getLevel();
         }
-        return 0;
     }
 
     /**
@@ -217,9 +221,9 @@ public class CBDriver implements java.sql.Driver
      * @since 1.7
      */
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException
     {
-        return Logger.getLogger(CBDriver.class.getPackage().getName());
+        throw notImplemented(CBDriver.class, "getParentLogger");
     }
 
     public static void cleanup()
@@ -232,7 +236,7 @@ public class CBDriver implements java.sql.Driver
             }
             catch (SQLException e)
             {
-                logger.log(Level.WARNING, "Error deregistering driver", e);
+                logger.warn("Error deregistering driver", e);
             }
         }
     }

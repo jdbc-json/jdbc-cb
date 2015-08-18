@@ -478,32 +478,12 @@ public class SqlJsonImplementation implements SQLJSON
         {
             throw new SQLException("value " + jsonObject + " is not a date");
         }
-        /*
-        if ( cal != null && !cal.getTimeZone().hasSameRules(df.getTimeZone()) )
+
+        if ( cal!= null )
         {
-            // check to see if there is a calendar and that it is different than the one used to parse
-            if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
-            {
-                Calendar convertCal = Calendar.getInstance();
-                convertCal.setTime(date);
-                TimeZone toTimeZone     = cal.getTimeZone();
-                TimeZone fromTimeZone   = tf.getTimeZone();
-
-                convertCal.setTimeZone(fromTimeZone);
-                convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
-                if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
-                    convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
-                }
-
-                convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
-                if (toTimeZone.inDaylightTime(convertCal.getTime())) {
-                    convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
-                }
-
-                date = new Date(convertCal.getTime().getTime());
-            }
+            date = timestampUtils.applyCalendar(cal, date);
         }
-        */
+
         return date;
     }
 
@@ -546,29 +526,10 @@ public class SqlJsonImplementation implements SQLJSON
             throw new SQLException("value " + jsonObject +" is not a Time", ex);
         }
 
-        /*
-        // check to see if there is a calendar and that it is different than the one used to parse
-        if ( cal != null && !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+        if ( cal != null )
         {
-            Calendar convertCal = Calendar.getInstance();
-            convertCal.setTime(time);
-            TimeZone toTimeZone     = cal.getTimeZone();
-            TimeZone fromTimeZone   = tf.getTimeZone();
-
-            convertCal.setTimeZone(fromTimeZone);
-            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
-            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
-                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
-            }
-
-            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
-            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
-                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
-            }
-
-            time = new Time(convertCal.getTime().getTime());
+            time = timestampUtils.applyCalendar(cal, time);
         }
-        */
         return time;
     }
 
@@ -625,28 +586,12 @@ public class SqlJsonImplementation implements SQLJSON
             throw new SQLException("value " + jsonObject+ "is not a Timestamp", ex);
         }
 
+        if ( cal != null)
+        {
+            ts = timestampUtils.applyCalendar(cal,ts);
+        }
         /*
         // check to see if there is a calendar and that it is different than the one used to parse
-        if ( cal != null && !cal.getTimeZone().hasSameRules(tsf.getTimeZone()))
-        {
-            Calendar convertCal = Calendar.getInstance();
-            convertCal.setTime(ts);
-            TimeZone toTimeZone     = cal.getTimeZone();
-            TimeZone fromTimeZone   = tsf.getTimeZone();
-
-            convertCal.setTimeZone(fromTimeZone);
-            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
-            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
-                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
-            }
-
-            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
-            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
-                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
-            }
-
-            ts = new Timestamp(convertCal.getTime().getTime());
-        }
         */
         return ts;
     }
@@ -849,7 +794,13 @@ public class SqlJsonImplementation implements SQLJSON
                 //if the signature is *-> * then guess using {
                 || field.getType().startsWith("{"))
         {
-            return (Map)jsonObject;
+            if (jsonObject instanceof String)
+            {
+                logger.debug("json object is string " + jsonObject);
+                return null;
+            }
+            else
+                return (Map)jsonObject;
         }
         else return null;
     }

@@ -77,8 +77,8 @@ public class TestSQLJson extends TestCase
             while (rs.next())
             {
                 SQLJSON sqljson = rs.getSQLJSON(1);
-                Map map = sqljson.parse();
-                assertNotNull(map);
+                Object obj = sqljson.getObject();
+                assertNotNull(obj);
             }
         }
     }
@@ -1066,7 +1066,7 @@ public class TestSQLJson extends TestCase
 
                 assertEquals(0, calendar1.get(Calendar.SECOND));
 
-                assertEquals(12345, timestamp.getNanos());
+                assertEquals(123450000, timestamp.getNanos());
 
             }
         }
@@ -1242,7 +1242,7 @@ public class TestSQLJson extends TestCase
             assertEquals(8, calendar.get(Calendar.MONTH));
             assertEquals(14, calendar.get(Calendar.DAY_OF_MONTH));
 
-            assertEquals(12345,timestamp.getNanos());
+            assertEquals(123450000,timestamp.getNanos());
         }
     }
 

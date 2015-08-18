@@ -12,11 +12,11 @@
 
 package com.couchbase;
 
+import ch.qos.logback.classic.Level;
 import com.couchbase.jdbc.TestUtil;
-
 import junit.framework.TestCase;
-
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -24,10 +24,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for CouchBase JDBC Driver
@@ -89,6 +85,10 @@ public class DriverTest extends TestCase
         assertEquals(4,databaseMetaData.getJDBCMajorVersion());
         assertEquals(1,databaseMetaData.getJDBCMinorVersion());
     }
-
+    @Test
+    public void setLogLevel()
+    {
+        CBDriver.setLogLevel(Level.DEBUG);
+    }
 
 }

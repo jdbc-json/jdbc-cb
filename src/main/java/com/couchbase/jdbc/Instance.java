@@ -11,7 +11,7 @@
 
 package com.couchbase.jdbc;
 
-import javax.json.JsonObject;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-05-22.
@@ -24,13 +24,13 @@ public class Instance
            adminEndPoint;
     String options;
 
-    public Instance( JsonObject jsonObject )
+    public Instance( Map <String, String> jsonObject )
     {
-        this.cluster        = jsonObject.getString("cluster");
-        this.name           = jsonObject.getString("name");
+        this.cluster        = jsonObject.get("cluster");
+        this.name           = jsonObject.get("name");
 
-        this.adminEndPoint  = jsonObject.getString("adminEndpoint");
-        this.queryEndPoint  = jsonObject.getString("queryEndpoint");
+        this.adminEndPoint  = jsonObject.get("adminEndpoint");
+        this.queryEndPoint  = jsonObject.get("queryEndpoint");
     }
     public String getCluster()
     {

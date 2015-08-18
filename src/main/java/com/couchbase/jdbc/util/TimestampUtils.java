@@ -104,12 +104,92 @@ public class TimestampUtils
         if (parts.length >2 )
         {
             int nanos = Integer.parseInt(parts[2]);
+
+
+            for (int numlength = parts[2].length(); numlength < 9; ++numlength)
+                nanos *= 10;
             ts.setNanos(nanos);
         }
 
         return ts;
     }
 
+    public Time applyCalendar( Calendar cal, Time time)
+    {
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( !cal.getTimeZone().hasSameRules(tf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(time);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            return new Time(convertCal.getTime().getTime());
+        }
+        return time;
+    }
+
+    public Date applyCalendar(Calendar cal, Date date)
+    {
+        // check to see if there is a calendar and that it is different than the one used to parse
+        if ( !cal.getTimeZone().hasSameRules(df.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(date);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = df.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            return new Date(convertCal.getTime().getTime());
+        }
+        return date;
+    }
+
+    public Timestamp applyCalendar(Calendar cal, Timestamp timestamp)
+    {
+        if ( !cal.getTimeZone().hasSameRules(tsf.getTimeZone()))
+        {
+            Calendar convertCal = Calendar.getInstance();
+            convertCal.setTime(timestamp);
+            TimeZone toTimeZone     = cal.getTimeZone();
+            TimeZone fromTimeZone   = tsf.getTimeZone();
+
+            convertCal.setTimeZone(fromTimeZone);
+            convertCal.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+            if (fromTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, convertCal.getTimeZone().getDSTSavings() * -1);
+            }
+
+            convertCal.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+            if (toTimeZone.inDaylightTime(convertCal.getTime())) {
+                convertCal.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+            }
+
+            return new Timestamp(convertCal.getTime().getTime());
+        }
+        return timestamp;
+    }
     private static void appendDate(StringBuffer sb, Calendar cal)
     {
         int l_year = cal.get(Calendar.YEAR);

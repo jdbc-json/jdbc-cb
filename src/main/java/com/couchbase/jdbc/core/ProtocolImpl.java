@@ -36,12 +36,7 @@ import org.boon.json.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -163,9 +158,10 @@ public class ProtocolImpl implements Protocol
         HttpEntity entity = response.getEntity();
         String string = EntityUtils.toString(entity);
         logger.trace ("Cluster response {}", string);
-        JsonReader jsonReader = Json.createReader(new StringReader(string));
 
-        JsonArray jsonArray = jsonReader.readArray();
+        ObjectMapper mapper = JsonFactory.create();
+        List jsonArray = (List)mapper.fromJson(string);
+
         String message="";
 
         switch (status)
@@ -575,23 +571,23 @@ public class ProtocolImpl implements Protocol
             if ( status >= 200 && status < 300 )
             {
                 HttpEntity entity = response.getEntity();
-                JsonReader jsonReader = Json.createReader(new StringReader(EntityUtils.toString(entity)));
+                ObjectMapper mapper = JsonFactory.create();
+                Map <String,Object> jsonObject = (Map)mapper.fromJson(EntityUtils.toString(entity));
 
-                JsonObject jsonObject = jsonReader.readObject();
-                String statusString = jsonObject.getString("status");
+                String statusString = (String)jsonObject.get("status");
 
                 if (statusString.equals("errors"))
                 {
-                    JsonArray errors= jsonObject.getJsonArray("errors");
-                    JsonObject error = errors.getJsonObject(0);
-                    throw new SQLException(error.getString("msg"));
+                    List errors= (List)jsonObject.get("errors");
+                    Map error = (Map)errors.get(0);
+                    throw new SQLException((String)error.get("msg"));
                 }
                 else if (statusString.equals("success"))
                 {
-                    JsonObject metrics = jsonObject.getJsonObject("metrics");
+                    Map  metrics = (Map)jsonObject.get("metrics");
                     if ( metrics.containsKey("mutationCount") )
                     {
-                        updateCount = metrics.getInt("mutationCount");
+                        updateCount = (int)metrics.get("mutationCount");
                         return new int [0];
                     }
                     if ( metrics.containsKey("resultCount") )

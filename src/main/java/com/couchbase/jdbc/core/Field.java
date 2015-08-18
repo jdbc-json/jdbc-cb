@@ -11,7 +11,6 @@
 
 package com.couchbase.jdbc.core;
 
-import javax.json.JsonValue;
 import java.sql.Types;
 
 /**
@@ -35,11 +34,11 @@ public class Field
 
     public void setType(String type)
     {
-        if (type.equalsIgnoreCase(JsonValue.TRUE.toString()) || type.equalsIgnoreCase(JsonValue.FALSE.toString()) )
+        if (type.equalsIgnoreCase("true") || type.equalsIgnoreCase("false") )
         {
             this.type="boolean";
         }
-        else if (type.equalsIgnoreCase(JsonValue.NULL.toString()))
+        else if (type.equalsIgnoreCase("null"))
         {
             this.type="unknown";
         }
