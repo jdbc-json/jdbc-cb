@@ -835,7 +835,7 @@ public class PreparedStatementTest
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
-                    assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
+                    assertEquals(timeStamp.getNanos(), timeStamp1.getNanos());
 
                     timeStamp1 = rs.getTimestamp(1);
                     cal2.setTime(timeStamp1);
