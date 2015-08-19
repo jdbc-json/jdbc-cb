@@ -391,7 +391,7 @@ public class CBConnection implements java.sql.Connection
     public void setReadOnly(boolean readOnly) throws SQLException
     {
         checkClosed();
-        this.readOnly=readOnly;
+        protocol.setReadOnly(readOnly);
     }
 
     /**
@@ -407,7 +407,7 @@ public class CBConnection implements java.sql.Connection
     public boolean isReadOnly() throws SQLException
     {
         checkClosed();
-        return readOnly;
+        return protocol.getReadOnly();
     }
 
     /**

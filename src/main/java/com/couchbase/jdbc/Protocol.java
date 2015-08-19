@@ -48,6 +48,7 @@ public interface Protocol
     public void setConnectionTimeout(String timeout);
     public void setConnectionTimeout(int timeout);
     public void setReadOnly(boolean readOnly);
+    public boolean getReadOnly();
 
     public void setQueryTimeout(int seconds) throws SQLException;
     public int getQueryTimeout() throws SQLException;

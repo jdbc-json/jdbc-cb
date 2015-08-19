@@ -183,9 +183,32 @@ public class ConnectionTest extends TestCase
     @Test
     public void testSetReadOnly() throws Exception
     {
-        con.close();
-        expectedException.expect(SQLException.class);
         con.setReadOnly(true);
+
+        Statement statement = con.createStatement();
+        try
+        {
+            int inserted = statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K1', 1)");
+        }
+        catch (SQLException ex)
+        {
+            assertTrue(ex.getCause().getMessage().startsWith("The server or request is read-only"));
+        }
+        finally
+        {
+            con.setReadOnly(true);
+        }
+
+        con.close();
+        try
+        {
+            con.setReadOnly(true);
+        }
+        catch (SQLException ex)
+        {
+            assertTrue(ex.getMessage().startsWith("Connection is closed"));
+        }
+
     }
 
     @Test

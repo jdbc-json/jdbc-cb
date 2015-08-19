@@ -108,6 +108,8 @@ public class ProtocolImpl implements Protocol
         this.readOnly = readOnly;
     }
 
+    public boolean getReadOnly( ) { return this.readOnly; }
+
     private static final Logger logger = LoggerFactory.getLogger(ProtocolImpl.class);
 
     CloseableHttpClient httpClient;
@@ -205,7 +207,7 @@ public class ProtocolImpl implements Protocol
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
         valuePair.add(new BasicNameValuePair("encoding","UTF-8"));
-        addSchema(valuePair);
+        addOptions(valuePair);
         valuePair.add(scanConstistency);
 
         if ( queryTimeout != 0 )
@@ -454,12 +456,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             logger.trace("do query {}",httpPost.toString());
-            addSchema(nameValuePairs);
-            nameValuePairs.add(scanConstistency);
-            if (credentials != null)
-            {
-                nameValuePairs.add(new BasicNameValuePair("creds",credentials));
-            }
+            addOptions(nameValuePairs);
 
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"));
 
@@ -482,17 +479,7 @@ public class ProtocolImpl implements Protocol
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
 //            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
-            addSchema(nameValuePairs);
             nameValuePairs.add(new BasicNameValuePair("statement", query));
-            if ( queryTimeout != 0 )
-            {
-                nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
-            }
-
-            if (credentials != null)
-            {
-                nameValuePairs.add(new BasicNameValuePair("creds",credentials));
-            }
 
             // do the query
             CouchResponse response = doQuery(query, nameValuePairs );
@@ -537,12 +524,8 @@ public class ProtocolImpl implements Protocol
         }
 
         nameValuePairs.add(new BasicNameValuePair("statement", "prepare " + sql));
-        if ( queryTimeout != 0 )
-        {
-            nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
-        }
 
-        addSchema(nameValuePairs);
+        addOptions(nameValuePairs);
 
         return doQuery(sql, nameValuePairs);
     }
@@ -555,7 +538,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            addSchema(nameValuePairs);
+            addOptions(nameValuePairs);
             for (String query:batchStatements)
             {
                 nameValuePairs.add(new BasicNameValuePair("statement", query));
@@ -705,14 +688,32 @@ public class ProtocolImpl implements Protocol
         return schema;
     }
 
-    private void addSchema(List<NameValuePair> valuePair )
+    private static final NameValuePair readOnlyValuePair = new BasicNameValuePair("readonly","true");
+    private void addOptions(List<NameValuePair> valuePair)
     {
 
         if ( schema != null )
         {
             valuePair.add(schemaValuePair);
         }
+        if( readOnly )
+        {
+            valuePair.add(readOnlyValuePair);
+        }
+        if ( queryTimeout != 0 )
+        {
+            valuePair.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+        }
+
+        if (credentials != null)
+        {
+            valuePair.add(new BasicNameValuePair("creds",credentials));
+        }
+
+        valuePair.add(scanConstistency);
+
     }
+
     public boolean isValid(int timeout)
     {
         //todo implement
@@ -722,7 +723,7 @@ public class ProtocolImpl implements Protocol
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
 //            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
-        addSchema(nameValuePairs);
+        addOptions(nameValuePairs);
         nameValuePairs.add(new BasicNameValuePair("statement", query));
         if ( queryTimeout != 0 )
         {

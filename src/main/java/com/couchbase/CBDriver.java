@@ -178,7 +178,6 @@ public class CBDriver implements java.sql.Driver
     @Override
     public boolean jdbcCompliant()
     {
-
         return false;
     }
 
