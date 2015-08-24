@@ -14,9 +14,9 @@ package com.couchbase.jdbc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.JsonArray;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-05-22.
@@ -36,18 +36,17 @@ public class Cluster
     {"cluster":"default","name":"10.30.210.238","queryEndpoint":"http://10.30.210.238:8093/query/service","adminEndpoint":"http://10.30.210.238:8093/admin","options":null}]
      */
 
-    public Cluster( JsonArray jsonArray )
+    public Cluster( List <Map> jsonArray )
     {
         numInstances = jsonArray.size();
         for(int i=0; i < numInstances ;i++)
         {
-            endpoints.add(new Instance(jsonArray.getJsonObject(i)));
+            endpoints.add(new Instance(jsonArray.get(i)));
         }
     }
     public String getNextEndpoint()
     {
-        //return "http://54.237.32.30:8093/query/service";
-
+//        return "http://54.237.32.30:8093/query/service";
 
         int i;
         synchronized (instanceIndex)
@@ -63,7 +62,6 @@ public class Cluster
 
         logger.trace( "Endpoint {} of {}",i,numInstances);
         return endpoints.get(i).getQueryEndPoint();
-
 
     }
 }
