@@ -206,20 +206,7 @@ public class ProtocolImpl implements Protocol
     {
         List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
         valuePair.add(new BasicNameValuePair("statement", sql));
-        valuePair.add(new BasicNameValuePair("encoding","UTF-8"));
         addOptions(valuePair);
-        valuePair.add(scanConstistency);
-
-        if ( queryTimeout != 0 )
-        {
-            valuePair.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
-        }
-        if (credentials != null)
-        {
-            valuePair.add(new BasicNameValuePair("creds",credentials));
-        }
-
-       
 
 
         String endpoint = cluster.getNextEndpoint();
@@ -525,8 +512,6 @@ public class ProtocolImpl implements Protocol
 
         nameValuePairs.add(new BasicNameValuePair("statement", "prepare " + sql));
 
-        addOptions(nameValuePairs);
-
         return doQuery(sql, nameValuePairs);
     }
 
@@ -689,8 +674,12 @@ public class ProtocolImpl implements Protocol
     }
 
     private static final NameValuePair readOnlyValuePair = new BasicNameValuePair("readonly","true");
+    private static final NameValuePair encodingValuePair = new BasicNameValuePair("encoding","UTF-8");
+
     private void addOptions(List<NameValuePair> valuePair)
     {
+
+        valuePair.add(encodingValuePair);
 
         if ( schema != null )
         {

@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLTimeoutException;
+import java.sql.SQLFeatureNotSupportedException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -143,7 +144,8 @@ public class CBStatement implements java.sql.Statement
     public int getMaxFieldSize() throws SQLException
     {
         checkClosed();
-        return 0;
+        // 20MB
+        return 20*1024*1024;
     }
 
     /**
@@ -283,6 +285,7 @@ public class CBStatement implements java.sql.Statement
     {
         checkClosed();
         protocol.setQueryTimeout(seconds);
+        //todo test
     }
 
     /**
@@ -300,6 +303,8 @@ public class CBStatement implements java.sql.Statement
     public void cancel() throws SQLException
     {
         checkClosed();
+        throw CBDriver.notImplemented(CBStatement.class, "cancel");
+        //todo test
     }
 
     /**
@@ -572,7 +577,7 @@ public class CBStatement implements java.sql.Statement
     public int getFetchSize() throws SQLException
     {
         checkClosed();
-        return 0;
+        return Short.MAX_VALUE;
     }
 
     /**
@@ -589,7 +594,6 @@ public class CBStatement implements java.sql.Statement
     public int getResultSetConcurrency() throws SQLException
     {
         checkClosed();
-
         return ResultSet.CONCUR_READ_ONLY;
     }
 
@@ -730,7 +734,8 @@ public class CBStatement implements java.sql.Statement
     public Connection getConnection() throws SQLException
     {
 
-        return null;
+        checkClosed();
+        return connection;
     }
 
     /**
@@ -774,7 +779,8 @@ public class CBStatement implements java.sql.Statement
     public boolean getMoreResults(int current) throws SQLException
     {
         checkClosed();
-        return false;
+        throw CBDriver.notImplemented(CBStatement.class, "getMoreResults");
+        //todo need to test
     }
 
     /**

@@ -1522,7 +1522,7 @@ public class ResultSetTest
 
                 assertEquals(0, calendar1.get(Calendar.SECOND));
 
-                assertEquals(12345, ts.getNanos());
+                assertEquals(123450000, ts.getNanos());
 
                 ts=rs.getObject("cur_time", Timestamp.class);
                 assertNotNull(ts);
@@ -1543,7 +1543,7 @@ public class ResultSetTest
 
                 assertEquals(0, calendar1.get(Calendar.SECOND));
 
-                assertEquals(12345, ts.getNanos());
+                assertEquals(123450000, ts.getNanos());
 
             }
         }
@@ -1572,6 +1572,7 @@ public class ResultSetTest
                         {
                             Method m = rs.getClass().getMethod(methodName, args);
                             m.invoke(rs, "foo");
+
                             assertTrue("Foo column does not exist", false);
                         }
                         catch (InvocationTargetException ex)
