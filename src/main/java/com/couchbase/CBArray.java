@@ -212,10 +212,17 @@ public class CBArray implements Array
     @Override
     public Object getArray(long index, int count) throws SQLException
     {
-        throw CBDriver.notImplemented(CBArray.class,"getArray");
+        Object []newArray = new Object[count];
+
+        // todo this may be an issue if index is greater than Integer.Max_Value ??
+        for (int i=(int)index, j=0; j < count;j++)
+        {
+            newArray[j] = array[i++];
+        }
+        return newArray;
     }
     /**
-     * Retreives a slice of the SQL <code>ARRAY</code> value
+     * Retrieves a slice of the SQL <code>ARRAY</code> value
      * designated by this <code>Array</code> object, beginning with the specified
      * <code>index</code> and containing up to <code>count</code>
      * successive elements of the SQL array.

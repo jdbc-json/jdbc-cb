@@ -1892,10 +1892,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void afterLast() throws SQLException
     {
-        if (isClosed() )
-        {
-            throw new SQLException("ResultSet is closed");
-        }
+        checkClosed();
 
         index = (int)response.getMetrics().getResultCount();
 
@@ -1917,10 +1914,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean first() throws SQLException
     {
-        if (isClosed() )
-        {
-            throw new SQLException("ResultSet is closed");
-        }
+        checkClosed();
         index =0;
 
         // if there are results
@@ -1944,10 +1938,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean last() throws SQLException
     {
-        if (isClosed() )
-        {
-            throw new SQLException("ResultSet is closed");
-        }
+        checkClosed();
         index = response.getResults().size();
 
         // if there are results
@@ -1972,10 +1963,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getRow() throws SQLException
     {
-        if (isClosed() )
-        {
-           throw new SQLException("ResultSet is closed");
-        }
+        checkClosed();
         return index + 1;
     }
 
@@ -2084,17 +2072,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean previous() throws SQLException
     {
-        if (isClosed() )
-        {
-           throw new SQLException("ResultSet is closed");
-        }
-        if (index > 0)
-        {
-            index--;
-            return true;
-        }
-        return false;
-
+        checkClosed();
+        throw new SQLException("Result set is Type Forward only");
     }
 
     /**
@@ -2120,7 +2099,12 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void setFetchDirection(int direction) throws SQLException
     {
-
+        checkClosed();
+        if (ResultSet.FETCH_REVERSE == direction )
+        {
+            //todo needs test
+            throw new SQLException("Cannot change fetch direction");
+        }
     }
 
     /**
@@ -2136,7 +2120,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getFetchDirection() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return FETCH_FORWARD;
     }
 
     /**
@@ -2159,7 +2144,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public void setFetchSize(int rows) throws SQLException
     {
-
+        checkClosed();
+        // ignore value
     }
 
     /**
@@ -2175,6 +2161,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getFetchSize() throws SQLException
     {
+        checkClosed();
         return 0;
     }
 
@@ -2193,7 +2180,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getType() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return TYPE_FORWARD_ONLY;
     }
 
     /**
@@ -2211,7 +2199,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public int getConcurrency() throws SQLException
     {
-        return 0;
+        checkClosed();
+        return ResultSet.CONCUR_READ_ONLY;
     }
 
     /**
@@ -2233,7 +2222,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean rowUpdated() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented(ResultSet.class, "rowUpdated");
     }
 
     /**
@@ -2256,7 +2245,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean rowInserted() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented(ResultSet.class, "rowInserted");
     }
 
     /**
@@ -2280,7 +2269,8 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public boolean rowDeleted() throws SQLException
     {
-        return false;
+        throw CBDriver.notImplemented(ResultSet.class, "rowDeleted");
+
     }
 
     /**
@@ -3436,6 +3426,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException
     {
+        //todo this can be implemented
         return null;
     }
 
@@ -3478,13 +3469,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Blob getBlob(int columnIndex) throws SQLException
     {
-        checkClosed();
-        checkIndex();
-
-        //now find the key of the first value
-        Field field  = getField(columnIndex);
-
-        return getBlobChecked(field.getName());
+        throw CBDriver.notImplemented(ResultSet.class, "getBlob");
     }
 
     /**
@@ -3505,13 +3490,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Clob getClob(int columnIndex) throws SQLException
     {
-        checkClosed();
-        checkIndex();
-
-        //now find the key of the first value
-        Field field  = getField(columnIndex);
-
-        return getClobChecked(field.getName());
+        throw CBDriver.notImplemented(ResultSet.class, "getClob");
     }
 
     /**
@@ -3563,6 +3542,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException
     {
+        //todo this can be implemented
         return null;
     }
 
@@ -3605,20 +3585,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Blob getBlob(String columnLabel) throws SQLException
     {
-        checkClosed();
-        checkIndex();
-        return getBlobChecked(columnLabel);
-    }
-    public Blob getBlobChecked(String columnLabel) throws SQLException
-    {
-        Map jsonObject = response.getResults().get(index);
-        if (checkColumnLabelMissing(jsonObject, columnLabel))
-        {
-            return null;
-        }
-
-        //todo implement
-        return null;
+        throw CBDriver.notImplemented(ResultSet.class, "getBlob");
     }
 
     /**
@@ -3639,20 +3606,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Clob getClob(String columnLabel) throws SQLException
     {
-        checkClosed();
-        checkIndex();
-        return getClobChecked(columnLabel);
-    }
-    private Clob getClobChecked(String columnLabel) throws SQLException
-    {
-        Map jsonObject = response.getResults().get(index);
-        if (checkColumnLabelMissing(jsonObject, columnLabel))
-        {
-            return null;
-        }
-
-        // implement
-        return null;
+        throw CBDriver.notImplemented(ResultSet.class, "getClob");
     }
 
     /**
@@ -3854,7 +3808,6 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public Time getTime(String columnLabel, Calendar cal) throws SQLException
     {
-        Time time;
         checkClosed();
         checkIndex();
         return getTimeChecked(columnLabel, cal);
