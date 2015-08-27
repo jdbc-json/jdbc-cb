@@ -11,6 +11,9 @@
 
 package com.couchbase.jdbc;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -24,13 +27,16 @@ public class Instance
            adminEndPoint;
     String options;
 
-    public Instance( Map <String, String> jsonObject )
+    public Instance( Map <String, String> jsonObject )  throws SQLException
     {
         this.cluster        = jsonObject.get("cluster");
         this.name           = jsonObject.get("name");
 
         this.adminEndPoint  = jsonObject.get("adminEndpoint");
+        isValidURI( adminEndPoint );
+
         this.queryEndPoint  = jsonObject.get("queryEndpoint");
+        isValidURI(queryEndPoint);
     }
     public String getCluster()
     {
@@ -80,5 +86,18 @@ public class Instance
     public void setOptions(String options)
     {
         this.options = options;
+    }
+
+    private boolean isValidURI(String uriStr) throws SQLException
+    {
+        try
+        {
+          URI uri = new URI(uriStr);
+          return true;
+        }
+        catch (URISyntaxException e)
+        {
+            throw new SQLException("Endpoint " + uriStr + " is invalid", e);
+        }
     }
 }

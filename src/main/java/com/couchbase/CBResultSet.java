@@ -22,10 +22,7 @@ import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
@@ -613,7 +610,11 @@ public class CBResultSet implements java.sql.ResultSet
         }
 
         Object object = jsonObject.get(columnLabel);
-        wasNull = (object == null);
+
+        if (wasNull = (object == null))
+        {
+            return null;
+        }
 
         if (object instanceof  Map)
         {
@@ -665,13 +666,11 @@ public class CBResultSet implements java.sql.ResultSet
 
         Object object = jsonObject.get(columnLabel);
 
-        if ( object == null )
+        if ( wasNull = (object == null) )
         {
-            wasNull=true;
             return false;
         }
 
-        wasNull=false;
         return  (boolean) object;
 
     }
@@ -704,10 +703,9 @@ public class CBResultSet implements java.sql.ResultSet
         try
         {
             Object object = jsonObject.get(columnLabel);
-            if (object == null )
+            if ( wasNull = (object == null) )
             {
                 value=0;
-                wasNull=true;
             }
             else if ( object instanceof  Integer )
             {
@@ -761,9 +759,8 @@ public class CBResultSet implements java.sql.ResultSet
         {
             Object object = jsonObject.get(columnLabel);
 
-            if (object == null)
+            if ( wasNull = (object == null) )
             {
-                wasNull = true;
                 value = 0;
             }
             else if (object instanceof Integer)
@@ -820,9 +817,8 @@ public class CBResultSet implements java.sql.ResultSet
         {
             Object object = jsonObject.get(columnLabel);
 
-            if ( object == null )
+            if ( wasNull = (object == null) )
             {
-                wasNull=true;
                 value =0;
             }
             else if ( object instanceof  Number )
@@ -1056,9 +1052,8 @@ public class CBResultSet implements java.sql.ResultSet
 
         Object json = jsonObject.get(columnLabel);
 
-        if ( json == null )
+        if ( wasNull = (json == null) )
         {
-            wasNull=true;
             return null;
         }
 
@@ -1106,9 +1101,8 @@ public class CBResultSet implements java.sql.ResultSet
 
         String json = (String)jsonObject.get(columnLabel);
 
-        if ( json == null )
+        if ( wasNull = (json == null) )
         {
-            wasNull=true;
             return null;
         }
 
@@ -1227,11 +1221,11 @@ public class CBResultSet implements java.sql.ResultSet
         String json = null;
 
 
-        if (checkColumnLabelMissing(jsonObject, columnLabel) ||
-                (json = (String)jsonObject.get(columnLabel) ) == null  )
+        checkColumnLabelMissing(jsonObject, columnLabel);
 
+        json = (String)jsonObject.get(columnLabel);
+        if ( wasNull = (json == null) )
         {
-            wasNull=true;
             return null;
         }
         try
@@ -1291,8 +1285,14 @@ public class CBResultSet implements java.sql.ResultSet
         if (checkColumnLabelMissing(jsonObject, columnLabel))
             return null;
 
-        //todo implement
-        return null;
+        try
+        {
+            return new ByteArrayInputStream(getString(columnLabel).getBytes("UTF-8"));
+        }
+        catch (UnsupportedEncodingException l_uee)
+        {
+            throw new SQLException("The JVM claims not to support the encoding: {0}","UTF-8", l_uee);
+        }
     }
 
     /**
@@ -1424,7 +1424,6 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public String getCursorName() throws SQLException
     {
-        checkClosed();
         throw CBDriver.notImplemented(this.getClass(), "getCursorName");
     }
 
@@ -1439,7 +1438,6 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
     {
-        checkClosed();
         return new CBResultSetMetaData(this);
     }
 
@@ -1680,7 +1678,7 @@ public class CBResultSet implements java.sql.ResultSet
         {
             return null;
         }
-        return null;
+        return new CharArrayReader(getStringChecked(columnLabel).toCharArray());
     }
 
     /**
@@ -1741,9 +1739,8 @@ public class CBResultSet implements java.sql.ResultSet
         try
         {
             Object object =  jsonObject.get(columnLabel);
-            if (object == null )
+            if ( wasNull = (object == null) )
             {
-                wasNull=true;
                 return null;
             }
 
@@ -3716,9 +3713,8 @@ public class CBResultSet implements java.sql.ResultSet
 
         Object json = jsonObject.get(columnLabel);
 
-        if ( json == null )
+        if ( wasNull = (json == null) )
         {
-            wasNull=true;
             return null;
         }
 
@@ -3912,9 +3908,8 @@ public class CBResultSet implements java.sql.ResultSet
         }
 
         Object json = jsonObject.get(columnLabel);
-        if (json == null )
+        if ( wasNull = (json == null) )
         {
-            wasNull=true;
             return null;
         }
 
