@@ -14,6 +14,7 @@ package com.couchbase.jdbc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class Cluster
     private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
     Integer instanceIndex = new Integer(0);
-    int numInstances;
+    int numInstances = 0;
     List<Instance> endpoints = new ArrayList<Instance>();
 
     /*
@@ -38,17 +39,26 @@ public class Cluster
 
     public Cluster( List <Map> jsonArray )
     {
-        numInstances = jsonArray.size();
-        for(int i=0; i < numInstances ;i++)
+        int num = jsonArray.size();
+        for(int i=0; i < num ;i++)
         {
-            endpoints.add(new Instance(jsonArray.get(i)));
+            try
+            {
+                endpoints.add(new Instance(jsonArray.get(i)));
+                numInstances++;
+            }
+            catch( SQLException ex)
+            {
+                logger.debug("Invalid endpoint ", ex.getCause().getMessage());
+            }
         }
     }
     public String getNextEndpoint()
     {
-//        return "http://54.237.32.30:8093/query/service";
+        //return "http://54.237.32.30:8093/query/service";
 
-        int i;
+
+       int i;
         synchronized (instanceIndex)
         {
             i = instanceIndex++;
