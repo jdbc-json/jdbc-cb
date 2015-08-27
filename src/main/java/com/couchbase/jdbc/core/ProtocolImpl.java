@@ -258,11 +258,9 @@ public class ProtocolImpl implements Protocol
 
     }
 
-    public CouchResponse handleResponse(String sql, CloseableHttpResponse response) throws SQLException,IOException
-    {
+    public CouchResponse handleResponse(String sql, CloseableHttpResponse response) throws SQLException,IOException {
         int status = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
-
 
 
         ObjectMapper mapper = JsonFactory.create();
@@ -272,8 +270,16 @@ public class ProtocolImpl implements Protocol
         String strResponse = EntityUtils.toString(entity);
 //        logger.trace( "Response to query {} {}", sql, strResponse );
 
-        Map <String,Object> rootAsMap = mapper.readValue(strResponse, Map.class);
-
+        Object foo = mapper.readValue(strResponse, Map.class);
+        Map<String, Object> rootAsMap = null;
+        if (foo instanceof Map)
+        {
+            rootAsMap = (Map <String,Object>) foo;
+        }
+        else
+        {
+            logger.debug("error");
+        }
         couchResponse.status    = (String)rootAsMap.get("status");
         couchResponse.requestId = (String)rootAsMap.get("requestID");
         Object signature = (Object)rootAsMap.get("signature");

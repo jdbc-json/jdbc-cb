@@ -941,7 +941,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
     {
-        checkClosed();
+
         throw CBDriver.notImplemented(CBPreparedStatement.class, "getMetaData");
     }
 
@@ -1877,8 +1877,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException
     {
         throw CBDriver.notImplemented(CBPreparedStatement.class, "setBinaryStream");
-        //todo test
-
     }
 
     /**
@@ -1910,7 +1908,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException
     {
         throw CBDriver.notImplemented(CBPreparedStatement.class, "setCharacterStream");
-        //todo test
 
     }
 

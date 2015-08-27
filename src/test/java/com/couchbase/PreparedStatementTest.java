@@ -18,10 +18,9 @@ import org.hamcrest.core.IsEqual;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -1037,4 +1036,170 @@ public class PreparedStatementTest
 
         }
     }
+
+    @Test
+    public void testSetAsciiStream() throws Exception
+    {
+        String testString = "hello world";
+        byte []bytes = testString.getBytes(StandardCharsets.US_ASCII);
+        InputStream stream = new ByteArrayInputStream(bytes);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)")) {
+            preparedStatement.setString(1, "val1");
+            preparedStatement.setAsciiStream(2, stream,bytes.length);
+            assertEquals(1, preparedStatement.executeUpdate());
+
+        }
+
+        try (Statement statement = con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+            {
+                assertTrue(rs.next());
+                InputStream is = rs.getAsciiStream(1);
+                char []buffer = new char[256]; // plenty big enough
+                final StringBuilder out = new StringBuilder();
+                try (Reader in = new InputStreamReader(is, StandardCharsets.US_ASCII)) {
+                    for (;;) {
+                        int rsz = in.read(buffer, 0, buffer.length);
+                        if (rsz < 0)
+                            break;
+                        out.append(buffer, 0, rsz);
+                    }
+                }
+                catch (UnsupportedEncodingException ex) {
+                    /* ... */
+                }
+                catch (IOException ex) {
+                    /* ... */
+                }
+                assertTrue(out.toString().equals(testString));
+            }
+        }
+
+    }
+
+    @Test
+    public void testSetUnicodeStream() throws Exception
+    {
+        String testString = "hello world";
+        byte []bytes = testString.getBytes(StandardCharsets.UTF_8);
+        InputStream stream = new ByteArrayInputStream(bytes);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)")) {
+            preparedStatement.setString(1, "val1");
+            preparedStatement.setUnicodeStream(2, stream, bytes.length);
+            assertEquals(1, preparedStatement.executeUpdate());
+
+        }
+
+        try (Statement statement = con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+            {
+                assertTrue(rs.next());
+                InputStream is = rs.getAsciiStream(1);
+                char []buffer = new char[256]; // plenty big enough
+                final StringBuilder out = new StringBuilder();
+                try (Reader in = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                    for (;;) {
+                        int rsz = in.read(buffer, 0, buffer.length);
+                        if (rsz < 0)
+                            break;
+                        out.append(buffer, 0, rsz);
+                    }
+                }
+                catch (UnsupportedEncodingException ex) {
+                   /* ... */
+                }
+                catch (IOException ex) {
+                   /* ... */
+                }
+                assertTrue(out.toString().equals(testString));
+            }
+        }
+
+    }
+
+    @Test
+    public void testSetCharacterStream() throws Exception
+    {
+
+        String testString = "hello world";
+
+        byte []bytes = testString.getBytes(StandardCharsets.UTF_8);
+        InputStream stream = new ByteArrayInputStream(bytes);
+
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)")) {
+            preparedStatement.setString(1, "val1");
+            preparedStatement.setCharacterStream(2, new StringReader(testString),testString.length());
+            assertEquals(1, preparedStatement.executeUpdate());
+
+        }
+
+        try (Statement statement = con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+            {
+                assertTrue(rs.next());
+                Reader in = rs.getCharacterStream(1);
+                char []buffer = new char[256]; // plenty big enough
+                final StringBuilder out = new StringBuilder();
+                for (;;) {
+                    int rsz = in.read(buffer, 0, buffer.length);
+                    if (rsz < 0)
+                        break;
+                    out.append(buffer, 0, rsz);
+                }
+                assertTrue(out.toString().equals(testString));
+            }
+        }
+
+    }
+
+    @Test
+    public void testSetBinaryStream() throws Exception
+    {
+        byte [] bytes = new byte[10];
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBinaryStream");
+            preparedStatement.setBinaryStream(2, new ByteArrayInputStream(bytes));
+
+        }
+    }
+
+    @Test
+    public void testSetCharacterStream1() throws Exception
+    {
+        String foo="blah";
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setCharacterStream");
+            preparedStatement.setCharacterStream(2, new StringReader(foo));
+
+        }
+
+    }
+
+    @Test
+    public void testSetAsciiStream1() throws Exception
+    {
+        byte [] bytes = new byte[10];
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+
+            expectedException.expect(SQLFeatureNotSupportedException.class);
+            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setAsciiStream");
+            preparedStatement.setAsciiStream(2, new ByteArrayInputStream(bytes));
+
+        }
+
+    }
+
+
 }
