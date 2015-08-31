@@ -4,6 +4,7 @@ import com.couchbase.jdbc.util.TimestampUtils;
 import com.couchbase.json.SQLJSON;
 import org.boon.core.reflection.Mapper;
 import org.boon.core.reflection.MapperSimple;
+import org.boon.core.value.ValueList;
 import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -636,8 +637,9 @@ public class SqlJsonImplementation implements SQLJSON
 
         if ( jsonObject instanceof List )
             return (List) jsonObject;
+        else
+            return null;
 
-        throw new SQLException("Value " +jsonObject + " is not a list" );
 
     }
 
@@ -753,6 +755,93 @@ public class SqlJsonImplementation implements SQLJSON
             throw new SQLException("Can''t infer the SQL type to use for an instance of " + x +". Use setObject() with an explicit Types value to specify the type to use.");
         }
     }
+
+    /**
+     * @param columnName
+     * @return if the SQLJSON object is a JSON object.
+     * Get the given object with the given fieldName,
+     * @throws java.sql.SQLException Throw not valid exception if the SQLJSON object is not a JSON object.
+     */
+    @Override
+    public Object getObject(String columnName) throws SQLException
+    {
+        if (!(jsonObject instanceof Map))
+        {
+            throw new SQLException("Object is not a json object");
+        }
+        else
+        {
+            return ((Map)jsonObject).get(columnName);
+        }
+
+    }
+
+
+    /**
+     * Set the given object with the given fieldName, if the SQLJSON object is a JSON object.
+     *
+     * @param columnName
+     * @param val
+     * @throws java.sql.SQLException Throw not valid exception if the SQLJSON object is not a JSON object.
+     */
+    @Override
+    public void setObject(String columnName, Object val) throws SQLException
+    {
+        if (!(jsonObject instanceof Map))
+        {
+            throw new SQLException("Object is not a json object");
+        }
+        else
+        {
+            ((Map)jsonObject).put(columnName, val);
+        }
+
+    }
+
+
+    /**
+     * Return the object at the given index, if the SQLJSON object is a JSON array.
+     * Return NULL if the SQLJSON object is not a JSON array
+     * or if the SQLJSON object is a JSON array and does not have an element at the given index.
+     *
+     * @param index
+     * @return
+     */
+    @Override
+    public Object get(int index)
+    {
+        if (!(jsonObject instanceof List))
+        {
+            return null;
+        }
+        else
+        {
+            return ((List)jsonObject).get(index);
+        }
+    }
+
+    /**
+     * Set the given index with the given element, if the SQLJSON object is a JSON array.
+     *
+     * @param index
+     * @param object
+     * @return
+     */
+    @Override
+    public void set(int index, Object object) throws SQLException
+    {
+        if (!(jsonObject instanceof List))
+        {
+            throw new SQLException("SQLJSON object is not a list");
+        }
+        else
+        {
+            // this is a hack
+            List backingList = ((ValueList) jsonObject).list();
+            backingList.set(index,object);
+        }
+    }
+
     public boolean isNull() throws SQLException
     {
         return isNull;

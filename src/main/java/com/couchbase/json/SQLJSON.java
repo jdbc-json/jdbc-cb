@@ -81,6 +81,43 @@ public interface SQLJSON
     public Object getObject() throws SQLException;
     public void setObject(Object val) throws SQLException;
 
+    /**
+     *
+     * @param columnName
+     * @return  if the SQLJSON object is a JSON object.
+             Get the given object with the given fieldName,
+     * @throws SQLException   Throw not valid exception if the SQLJSON object is not a JSON object.
+     */
+    public Object getObject(String columnName) throws SQLException;
+
+
+    /**
+     *
+     * Set the given object with the given fieldName, if the SQLJSON object is a JSON object.
+     * @param columnName
+     * @param val
+     * @throws SQLException  Throw not valid exception if the SQLJSON object is not a JSON object.
+     */
+    public void setObject(String columnName, Object val) throws SQLException;
+
+
+    /**
+     * Return the object at the given index, if the SQLJSON object is a JSON array.
+     * Return NULL if the SQLJSON object is not a JSON array
+     * or if the SQLJSON object is a JSON array and does not have an element at the given index.
+     *
+     * @param index
+     * @return
+     */
+    public Object get(int index) ;
+
+    /**
+     * Set the given index with the given element, if the SQLJSON object is a JSON array.
+     *
+     * @param index
+     * @return
+     */
+    public void set(int index, Object object) throws SQLException;
     public boolean isNull() throws SQLException;
 
     public int getJDBCType();
