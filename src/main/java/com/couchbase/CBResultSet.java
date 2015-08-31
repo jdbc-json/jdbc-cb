@@ -575,8 +575,13 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public InputStream getBinaryStream(int columnIndex) throws SQLException
     {
-        //todo implement
-        return null;
+
+        checkClosed();
+        checkIndex();
+        Field field  = getField(columnIndex);
+        return getBinaryStreamChecked(field.getName());
+
+
     }
 
     /**
@@ -1230,7 +1235,7 @@ public class CBResultSet implements java.sql.ResultSet
         }
         try
         {
-            byteArrayInputStream = new ByteArrayInputStream(json.getBytes("ASCII"));
+            byteArrayInputStream = new ByteArrayInputStream(getStringChecked(columnLabel).getBytes("ASCII"));
         }
         catch( UnsupportedEncodingException ex)
         {
@@ -1285,9 +1290,15 @@ public class CBResultSet implements java.sql.ResultSet
         if (checkColumnLabelMissing(jsonObject, columnLabel))
             return null;
 
+        Object json = (String)jsonObject.get(columnLabel);
+        if ( wasNull = (json == null) )
+        {
+            return null;
+        }
+
         try
         {
-            return new ByteArrayInputStream(getString(columnLabel).getBytes("UTF-8"));
+            return new ByteArrayInputStream(getStringChecked(columnLabel).getBytes("UTF-8"));
         }
         catch (UnsupportedEncodingException l_uee)
         {
@@ -1334,9 +1345,15 @@ public class CBResultSet implements java.sql.ResultSet
         {
             return null;
         }
+        Object json = jsonObject.get(columnLabel);
+        if ( wasNull = (json == null) )
+        {
+            return null;
+        }
 
-        //todo implement
-        return null;
+        return new ByteArrayInputStream(getStringChecked(columnLabel).getBytes());
+
+
     }
 
 
@@ -1536,6 +1553,12 @@ public class CBResultSet implements java.sql.ResultSet
             return null;
         }
 
+        Object object = (String)jsonObject.get(columnLabel);
+        if ( wasNull = (object == null) )
+        {
+            return null;
+        }
+
         for (Field field:fields)
         {
             if (field.getName().equals(columnLabel))
@@ -1543,11 +1566,10 @@ public class CBResultSet implements java.sql.ResultSet
                 switch (field.getSqlType())
                 {
                     case Types.NUMERIC:
-                        return new Double((String)jsonObject.get(columnLabel));
+                        return new Double((String)object);
                     case Types.BOOLEAN:
-                        return new Boolean((String)jsonObject.get(columnLabel));
+                        return new Boolean((String)object);
                     case Types.VARCHAR:
-                        Object object = jsonObject.get(columnLabel);
                         if (object instanceof java.util.Date)
                         {
                             return new java.sql.Date(((java.util.Date)object).getTime());
@@ -1557,10 +1579,8 @@ public class CBResultSet implements java.sql.ResultSet
                             return object;
                         }
                     case Types.ARRAY:
-                        return jsonObject.get(columnLabel);
-
                     case Types.JAVA_OBJECT:
-                        return jsonObject.get(columnLabel);
+                        return object;
 
                     case Types.NULL:
                         return null;
@@ -1595,9 +1615,14 @@ public class CBResultSet implements java.sql.ResultSet
             return null;
         }
 
+        Object object = jsonObject.get(columnLabel);
+        if ( wasNull = (object == null) )
+        {
+           return null;
+        }
         int columnIndex = findColumn(columnLabel)-1;
 
-        SQLJSON sqljson = new SqlJsonImplementation(jsonObject.get(columnLabel), fields.get(columnIndex));
+        SQLJSON sqljson = new SqlJsonImplementation( object, fields.get(columnIndex));
         return sqljson;
     }
     /**
@@ -1675,6 +1700,11 @@ public class CBResultSet implements java.sql.ResultSet
     {
         Map jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
+        {
+            return null;
+        }
+        Object object = jsonObject.get(columnLabel);
+        if (wasNull = (object == null ))
         {
             return null;
         }
@@ -3637,6 +3667,11 @@ public class CBResultSet implements java.sql.ResultSet
             return null;
         }
 
+        Object json = jsonObject.get(columnLabel);
+        if ( wasNull = (json == null) )
+        {
+            return null;
+        }
 
         return new CBArray((List)jsonObject.get(columnLabel));
     }
@@ -3999,7 +4034,12 @@ public class CBResultSet implements java.sql.ResultSet
         {
             return null;
         }
+        Object json = jsonObject.get(columnLabel);
 
+        if ( wasNull = (json == null) )
+        {
+            return null;
+        }
         //todo implement
         return null;
     }

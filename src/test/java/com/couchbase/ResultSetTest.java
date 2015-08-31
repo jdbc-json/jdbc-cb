@@ -1431,6 +1431,68 @@ public class ResultSetTest
     }
 
     @Test
+    public void testIsNull() throws Exception
+    {
+        try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
+        {
+            preparedStatement.setString(1, "byte1");
+            preparedStatement.setNull(2, Types.INTEGER);
+
+            assertEquals(1, preparedStatement.executeUpdate());
+            try (Statement stmt = con.createStatement())
+            {
+                try (CBResultSet rs = (CBResultSet) stmt.executeQuery("select name, phone, state, default from default where meta(default).id='byte1'"))
+                {
+                    assertTrue(rs.next());
+                    assertEquals(0,rs.getByte("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertEquals(0,rs.getShort("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertEquals(0,rs.getInt("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertEquals(0,rs.getLong("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertEquals(0,rs.getDouble("default"),0);
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getBigDecimal("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getString("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getObject("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getSQLJSON("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getArray("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getURL("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getAsciiStream("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getBinaryStream("default"));
+                    assertTrue(rs.wasNull());
+
+                    assertNull(rs.getUnicodeStream("default"));
+                    assertTrue(rs.wasNull());
+
+
+                }
+            }
+        }
+    }
+
+    @Test
     public void testWasMissing() throws Exception
     {
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
@@ -1447,7 +1509,7 @@ public class ResultSetTest
                     assertEquals(0, rs.getByte("name"));
                     assertTrue(rs.wasMissing());
                     assertEquals(1,rs.getByte("default"));
-                    assertFalse(rs.wasMissing());
+                    assertTrue(rs.wasMissing());
 
                     assertEquals(0, rs.getShort("name"));
                     assertTrue(rs.wasMissing());
@@ -1486,9 +1548,23 @@ public class ResultSetTest
 
                     assertNull( rs.getSQLJSON("name") );
                     assertTrue(rs.wasMissing());
-                    assertEquals(1,rs.getObject("default"));
+                    assertEquals(1,rs.getSQLJSON("default"));
                     assertFalse(rs.wasMissing());
 
+                    assertNull( rs.getAsciiStream("name") );
+                    assertTrue(rs.wasMissing());
+                    assertNull(rs.getAsciiStream("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertNull(rs.getBinaryStream("name"));
+                    assertTrue(rs.wasNull());
+                    assertNull(rs.getBinaryStream("default"));
+                    assertFalse(rs.wasMissing());
+
+                    assertNull(rs.getUnicodeStream("name"));
+                    assertTrue(rs.wasNull());
+                    assertNull(rs.getUnicodeStream("default"));
+                    assertFalse(rs.wasMissing());
 
 
 
