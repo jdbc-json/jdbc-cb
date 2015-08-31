@@ -362,7 +362,8 @@ public class ProtocolImpl implements Protocol
                     case N1QL_RUNNING:
                     case N1QL_STOPPED:
                     case N1QL_TIMEOUT:
-                        throw  new SQLException("Invalid status " + couchResponse.status );
+                        message = "Invalid Status";
+                        fillSQLException(message, couchResponse);
 
                     default:
                         logger.error("Unexpected status string {} for query {}", couchResponse.status, sql);
@@ -426,6 +427,7 @@ public class ProtocolImpl implements Protocol
         if ( response.metrics.errorCount > 0 )
         {
             error = response.errors.get(0);
+
         }
         else if ( response.metrics.warningCount > 0)
         {
