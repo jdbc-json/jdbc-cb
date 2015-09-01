@@ -36,12 +36,12 @@ public class Credentials
 
     private class Credential
     {
-        String user, password;
+        String user, pass;
 
         Credential(String user, String password)
         {
             this.user       = user;
-            this.password   = password;
+            this.pass = password;
         }
 
     }
