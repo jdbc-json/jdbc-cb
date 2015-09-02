@@ -1509,7 +1509,7 @@ public class ResultSetTest
                     assertEquals(0, rs.getByte("name"));
                     assertTrue(rs.wasMissing());
                     assertEquals(1,rs.getByte("default"));
-                    assertTrue(rs.wasMissing());
+                    assertFalse(rs.wasMissing());
 
                     assertEquals(0, rs.getShort("name"));
                     assertTrue(rs.wasMissing());
@@ -1548,23 +1548,17 @@ public class ResultSetTest
 
                     assertNull( rs.getSQLJSON("name") );
                     assertTrue(rs.wasMissing());
-                    assertEquals(1,rs.getSQLJSON("default"));
+                    assertEquals(1,rs.getSQLJSON("default").getInt());
                     assertFalse(rs.wasMissing());
 
                     assertNull( rs.getAsciiStream("name") );
                     assertTrue(rs.wasMissing());
-                    assertNull(rs.getAsciiStream("default"));
-                    assertFalse(rs.wasMissing());
 
                     assertNull(rs.getBinaryStream("name"));
-                    assertTrue(rs.wasNull());
-                    assertNull(rs.getBinaryStream("default"));
-                    assertFalse(rs.wasMissing());
+                    assertTrue(rs.wasMissing());
 
                     assertNull(rs.getUnicodeStream("name"));
-                    assertTrue(rs.wasNull());
-                    assertNull(rs.getUnicodeStream("default"));
-                    assertFalse(rs.wasMissing());
+                    assertTrue(rs.wasMissing());
 
 
 
@@ -1653,12 +1647,12 @@ public class ResultSetTest
                         }
                         catch (InvocationTargetException ex)
                         {
-                            Throwable cause = ex.getCause();
-                            if (cause.getMessage() == null )
+                            Throwable target = ex.getTargetException();
+                            if (target.getMessage() == null )
                             {
-                                fail(ex.getMessage());
+                                fail(target.getMessage());
                             }
-                            if ( cause != null && cause.getMessage().startsWith("ResultSet does not contain"))
+                            if ( target != null && target.getMessage().startsWith("ResultSet does not contain"))
                             {
                                 assertTrue("Should throw Result does not contain ", true);
                             }

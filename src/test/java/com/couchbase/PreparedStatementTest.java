@@ -618,7 +618,8 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertNull(rs.getArray("default").getArray());
+                    assertNull(rs.getArray("default"));
+                    assertTrue(rs.wasNull());
                 }
             }
 
@@ -659,7 +660,8 @@ public class PreparedStatementTest
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
-                    assertNull( rs.getArray("default").getArray());
+                    assertNull( rs.getArray("default"));
+                    assertTrue( rs.wasNull() );
                 }
             }
 

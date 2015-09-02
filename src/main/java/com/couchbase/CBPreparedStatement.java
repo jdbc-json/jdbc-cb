@@ -22,6 +22,8 @@ import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.boon.json.JsonFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -37,6 +39,7 @@ import java.util.*;
  */
 public class CBPreparedStatement extends CBStatement implements java.sql.PreparedStatement
 {
+    private final static Logger logger = LoggerFactory.getLogger(CBPreparedStatement.class);
 
     static final String QUOTE="\"";
 
@@ -58,6 +61,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parser.parse();
         fields = new String[parser.getNumFields()];
         this.sql = sql;
+
+        logger.trace("Prepare statement {}", parser.toString() );
+
         CouchResponse ret = protocol.prepareStatement(parser.toString(),returning);
 
         // we have to put the result into $1 for raw results
@@ -73,7 +79,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         this.sql = sql;
         this.returning = returning;
 
+        logger.trace("Prepare statement {}", parser.toString() );
         CouchResponse ret = protocol.prepareStatement(parser.toString(), returning);
+
 
         // we have to put the result into $1 for raw results
         preparedStatement = new CBPreparedResult((Map)ret.getFirstResult().get("$1"));
@@ -100,10 +108,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
         // get the query identifier
         valuePair.add(new BasicNameValuePair("prepared", "\""+preparedStatement.getName()+"\""));
+        // add the encoded plan as well
+        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
         }
+
         CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
 
         return new CBResultSet(this, couchResponse);
@@ -132,7 +144,12 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         valuePair.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", "\""+preparedStatement.getName()+"\""));
+        logger.trace( "Using {}\n Encoded Plan {}", preparedStatement.getName(),preparedStatement.getEncodedPlan());
+
+        valuePair.add(new BasicNameValuePair("prepared", "\"" + preparedStatement.getName() + "\""));
+        // add the encoded plan as well
+        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());
@@ -730,6 +747,10 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         valuePair.clear();
 
         valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getName()+"\""));
+
+        // add the encoded plan as well
+        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+
         if (fields!=null && fields.length>0)
         {
             valuePair.add(getPositionalParameters());

@@ -1553,7 +1553,7 @@ public class CBResultSet implements java.sql.ResultSet
             return null;
         }
 
-        Object object = (String)jsonObject.get(columnLabel);
+        Object object = jsonObject.get(columnLabel);
         if ( wasNull = (object == null) )
         {
             return null;
@@ -3669,17 +3669,15 @@ public class CBResultSet implements java.sql.ResultSet
 
         Object json = jsonObject.get(columnLabel);
 
-        if (!(json instanceof List))
-        {
-            throw new SQLException("Column is not a list ");
-        }
-
         if ( wasNull = (json == null) )
         {
             return null;
         }
 
-
+        if (!(json instanceof List))
+        {
+            throw new SQLException("Column is not a list ");
+        }
         return new CBArray((List)json);
     }
 

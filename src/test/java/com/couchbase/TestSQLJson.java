@@ -195,7 +195,8 @@ public class TestSQLJson extends TestCase
                     assertTrue(rs.next());
 
                     SQLJSON sqljson1 = ((CBResultSet)rs).getSQLJSON("default");
-                    assertNull(sqljson1.getString());
+                    assertNull(sqljson1);
+                    assertTrue(rs.wasNull());
                 }
             }
         }
@@ -361,8 +362,8 @@ public class TestSQLJson extends TestCase
             assertEquals((byte) 1, sqljson.getByte());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals((byte) 0, sqljson.getByte());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
 
 
@@ -437,8 +438,8 @@ public class TestSQLJson extends TestCase
             assertEquals( 1, sqljson.getShort());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals( 0, sqljson.getShort());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
     }
@@ -510,8 +511,8 @@ public class TestSQLJson extends TestCase
             assertEquals( 1, sqljson.getInt());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals( 0, sqljson.getInt());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
 
@@ -599,8 +600,8 @@ public class TestSQLJson extends TestCase
             assertEquals( 1, sqljson.getLong());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals(0, sqljson.getInt());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
     }
@@ -684,8 +685,8 @@ public class TestSQLJson extends TestCase
             assertEquals( BigDecimal.valueOf(Double.MIN_VALUE), sqljson.getBigDecimal());
 
             sqljson = rs.getSQLJSON("c5");
-            assertNull(sqljson.getBigDecimal());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
     }
@@ -821,8 +822,8 @@ public class TestSQLJson extends TestCase
             assertEquals( Float.MIN_VALUE, sqljson.getFloat());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals((float)0.0, sqljson.getFloat());
-            assertTrue(sqljson.isNull());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
 
@@ -907,8 +908,8 @@ public class TestSQLJson extends TestCase
             assertEquals( Double.MIN_VALUE, sqljson.getDouble());
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals( 0.0, sqljson.getDouble());
-            assertTrue(sqljson.isNull());
+            assertNull( sqljson);
+            assertTrue(rs.wasNull());
 
         }
     }
@@ -1093,7 +1094,8 @@ public class TestSQLJson extends TestCase
 
 
             sqljson = rs.getSQLJSON("c2");
-            assertNull(sqljson.getMap());
+            assertNull(sqljson);
+            assertTrue(rs.wasNull());
 
         }
     }
@@ -1136,7 +1138,8 @@ public class TestSQLJson extends TestCase
                     assertTrue(rs.next());
 
                     SQLJSON sqljson1 = ((CBResultSet) rs).getSQLJSON("default");
-                    assertNull( sqljson1.getMap());
+                    assertNull( sqljson1 );
+                    assertTrue(rs.wasNull());
                 }
             }
         }
@@ -1314,7 +1317,7 @@ public class TestSQLJson extends TestCase
             assertEquals(sqljson.getJDBCType(), Types.NUMERIC);
 
             sqljson = rs.getSQLJSON("c5");
-            assertEquals(sqljson.getJDBCType(), Types.NULL);
+            assertNull(sqljson);
 
             sqljson = rs.getSQLJSON("c6");
             assertEquals(sqljson.getJDBCType(), Types.VARCHAR);

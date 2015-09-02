@@ -134,7 +134,11 @@ public class ProtocolImpl implements Protocol
 
     public void connect() throws Exception
     {
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout).build();
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(connectTimeout)
+            .setConnectTimeout(connectTimeout)
+            .setSocketTimeout(connectTimeout)
+            .build();
 
 
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
@@ -162,14 +166,16 @@ public class ProtocolImpl implements Protocol
         logger.trace ("Cluster response {}", string);
 
         ObjectMapper mapper = JsonFactory.create();
-        List jsonArray = (List)mapper.fromJson(string);
+
+        // has to be an object here since we can get a 404 back which is a string
+        Object jsonArray = mapper.fromJson(string);
 
         String message="";
 
         switch (status)
         {
             case 200:
-                return new Cluster(jsonArray);
+                return new Cluster((List)jsonArray);
             case 400:
                 message = "Bad Request";
                 break;
@@ -180,7 +186,7 @@ public class ProtocolImpl implements Protocol
                 message = "Forbidden Request: read only violation or client unauthorized to modify";
                 break;
             case 404:
-                message = "Not found: Request references an invalid keyspace or there is no primary key";
+                message = "Not found: Check the URL";
                 break;
             case 405:
                 message = "Method not allowed: The REST method type in request is supported";
@@ -453,6 +459,7 @@ public class ProtocolImpl implements Protocol
             logger.trace("do query {}",httpPost.toString());
             addOptions(nameValuePairs);
 
+
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"));
 
             CloseableHttpResponse response = httpClient.execute(httpPost);
@@ -713,25 +720,12 @@ public class ProtocolImpl implements Protocol
 
     public boolean isValid(int timeout)
     {
-        //todo implement
+
 
         String query = "select 1";
 
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
-//            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
-        addOptions(nameValuePairs);
         nameValuePairs.add(new BasicNameValuePair("statement", query));
-        if ( queryTimeout != 0 )
-        {
-            nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
-        }
-
-        if (credentials != null)
-        {
-            nameValuePairs.add(new BasicNameValuePair("creds",credentials));
-        }
-
         // do the query
 
         try

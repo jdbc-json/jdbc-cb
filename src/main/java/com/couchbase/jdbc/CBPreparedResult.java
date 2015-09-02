@@ -11,6 +11,9 @@
 
 package com.couchbase.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
 /**
@@ -18,23 +21,32 @@ import java.util.Map;
  */
 public class CBPreparedResult
 {
+    private static final Logger logger = LoggerFactory.getLogger(CBPreparedResult.class);
+
     String name;
+    String encodedPlan;
     Map operator;
     Map signature;
 
     public CBPreparedResult( Map preparedResult )
     {
         name = (String)preparedResult.get("name");
+        encodedPlan = (String)preparedResult.get("encoded_plan");
+
         operator = (Map)preparedResult.get("operator");
         signature = (Map)preparedResult.get("signature");
+
+        logger.trace("Prepared statement {}\nencoded_plan {}\noperator {}\nsignature {}", name, encodedPlan,  operator, signature);
     }
     public String getName()
     {
         return name;
     }
+    public String getEncodedPlan() { return encodedPlan; }
     public Map getSignature()
     {
         return signature;
     }
+
 
 }

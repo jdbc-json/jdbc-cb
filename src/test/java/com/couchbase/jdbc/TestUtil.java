@@ -73,19 +73,19 @@ public class TestUtil
     static String []resultSetGetters = {
             "getArray","getAsciiStream",
             "getString","getBigDecimal",
-            "getBinaryStream", "getBlob",
+            "getBinaryStream",
             "getBoolean", "getByte",
             "getBytes", "getCharacterStream",
-            "getClob",  "getDate",
+            "getDate",
             "getDouble","getInt",
-            "getLong",  "getNCharacterStream",
-            "getNClob", "getNString",
-            "getObject", "getShort",
+            "getLong", "getObject",
+            "getShort",
             "getString", "getTime",
             "getTimestamp", "getUnicodeStream",
             "getURL"
     };
     static String []notImplemented = {
+            "getClob","getBlob"
 
     } ;
     public static List<String> getSuppportedResultSetGetters()
