@@ -155,7 +155,6 @@ public class PreparedStatementTest
                     "WHERE children is not NULL\n");
 
             assertTrue(resultSet.next());
-            ;
             assertEquals("Abama",resultSet.getString(1));
 
         }
