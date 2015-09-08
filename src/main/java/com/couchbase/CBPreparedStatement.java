@@ -41,15 +41,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 {
     private final static Logger logger = LoggerFactory.getLogger(CBPreparedStatement.class);
 
-    static final String QUOTE="\"";
+    private static final String PREPARED="prepared";
+    private static final String ARGS="args";
 
     final String sql;
 
     final CBPreparedResult preparedStatement;
     final SqlParser parser;
 
-    final String []fields;
-    List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
+    final Object []fields;
+    Map <String,Object> parameters = new HashMap<String,Object>();
     TimestampUtils timestampUtils = new TimestampUtils();
     String []returning = null;
 
@@ -59,7 +60,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         super(con, protocol);
         parser = new SqlParser(sql);
         parser.parse();
-        fields = new String[parser.getNumFields()];
+        fields = new Object[parser.getNumFields()];
         this.sql = sql;
 
         logger.trace("Prepare statement {}", parser.toString() );
@@ -75,7 +76,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         super(con, protocol);
         parser = new SqlParser(sql);
         parser.parse();
-        fields = new String[parser.getNumFields()];
+        fields = new Object[parser.getNumFields()];
         this.sql = sql;
         this.returning = returning;
 
@@ -107,16 +108,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
 
         // get the query identifier
-        valuePair.add(new BasicNameValuePair("prepared", "\""+preparedStatement.getName()+"\""));
+        parameters.put(PREPARED, preparedStatement.getName());
         // add the encoded plan as well
-        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+        //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
-        if (fields!=null && fields.length>0)
+        if (fields!=null && fields.length >0)
         {
-            valuePair.add(getPositionalParameters());
+            parameters.put(ARGS, fields);
         }
 
-        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
+        CouchResponse couchResponse = protocol.doQuery(sql, parameters);
 
         return new CBResultSet(this, couchResponse);
     }
@@ -142,20 +143,20 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     public int executeUpdate() throws SQLException
     {
         checkClosed();
-        valuePair.clear();
+        parameters.clear();
 
         logger.trace( "Using {}\n Encoded Plan {}", preparedStatement.getName(),preparedStatement.getEncodedPlan());
 
-        valuePair.add(new BasicNameValuePair("prepared", "\"" + preparedStatement.getName() + "\""));
+        parameters.put(PREPARED,  preparedStatement.getName() );
         // add the encoded plan as well
-        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+        //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
         if (fields!=null && fields.length>0)
         {
-            valuePair.add(getPositionalParameters());
+            parameters.put(ARGS,fields);
         }
 
-        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
+        CouchResponse couchResponse = protocol.doQuery(sql, parameters);
         return (int)couchResponse.getMetrics().getMutationCount();
     }
 
@@ -182,7 +183,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         checkClosed();
         checkFields(parameterIndex);
-        fields[parameterIndex-1]="null";
+        fields[parameterIndex-1]=null;
     }
 
     /**
@@ -222,7 +223,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Byte.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -242,7 +243,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Short.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -262,7 +263,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Integer.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -302,7 +303,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Float.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -322,7 +323,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Double.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -342,7 +343,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = x.toString();
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -365,7 +366,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = QUOTE+x+QUOTE;
+        fields[parameterIndex-1] = x;
     }
 
     /**
@@ -386,7 +387,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = QUOTE+new String(x)+QUOTE;
+        fields[parameterIndex-1] = new String(x);
     }
 
     /**
@@ -444,7 +445,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = QUOTE+x.toString()+QUOTE;
+        fields[parameterIndex-1] = x.toString();
     }
 
     /**
@@ -538,7 +539,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
         //todo encode this//
-        fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
+        fields[parameterIndex-1] =  x.toString();
     }
 
     /**
@@ -560,7 +561,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         {
             fields[i] = null;
         }
-        valuePair.clear();
+        parameters.clear();
     }
 
     /**
@@ -744,19 +745,19 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public boolean execute() throws SQLException
     {
-        valuePair.clear();
+        parameters.clear();
 
-        valuePair.add(new BasicNameValuePair("prepared", "\""+(String)preparedStatement.getName()+"\""));
+        parameters.put(PREPARED, preparedStatement.getName());
 
         // add the encoded plan as well
-        //valuePair.add(new BasicNameValuePair("encoded_plan", "\""+(String)preparedStatement.getEncodedPlan()+"\"" ));
+        //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
         if (fields!=null && fields.length>0)
         {
-            valuePair.add(getPositionalParameters());
+            parameters.put(ARGS, fields);
         }
 
-        CouchResponse couchResponse = protocol.doQuery(sql, valuePair);
+        CouchResponse couchResponse = protocol.doQuery(sql, parameters);
 
         updateCount = (int)couchResponse.getMetrics().getMutationCount();
 
@@ -929,7 +930,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         }
         else
         {
-            fields[parameterIndex - 1] = ((CBArray) x).getJsonArray();
+            fields[parameterIndex - 1] = ((CBArray) x).getArray();
         }
     }
 
@@ -1003,7 +1004,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] =timestampUtils.toString(cal, x) ;
         }
     }
 
@@ -1043,7 +1044,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] = timestampUtils.toString(cal, x);
         }
     }
 
@@ -1084,7 +1085,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
                 cal = (Calendar) cal.clone();
             }
 
-            fields[parameterIndex - 1] = QUOTE + timestampUtils.toString(cal, x) + QUOTE;
+            fields[parameterIndex - 1] = timestampUtils.toString(cal, x);
         }
     }
 
@@ -1155,7 +1156,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         }
         else
         {
-            fields[parameterIndex-1] = QUOTE + x.toString() + QUOTE;
+            fields[parameterIndex-1] = x.toString() ;
         }
     }
 
@@ -1227,7 +1228,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         }
         else
         {
-            fields[parameterIndex-1] = QUOTE + value + QUOTE;
+            fields[parameterIndex-1] =  value ;
         }
 
     }
@@ -2091,13 +2092,14 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     {
         checkClosed();
         checkFields(parameterIndex);
-        fields[parameterIndex-1] = JsonFactory.toJson(map);
+        fields[parameterIndex-1] = map;
     }
     private void checkFields(int index) throws SQLException
     {
         if (fields == null) throw new SQLException("fields not initialized");
         if ( index-1 > fields.length ) throw new SQLException("Column number out of bounds");
     }
+/*
     private NameValuePair getPositionalParameters()
     {
         StringBuffer parameters = new StringBuffer("[");
@@ -2108,8 +2110,9 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parameters.deleteCharAt(parameters.lastIndexOf(","));
         parameters.append(']');
 
-        return new BasicNameValuePair("args",parameters.toString());
+        String args = JsonFactory.toJson(fields);
+        return new BasicNameValuePair("args",args);
 
     }
-
+*/
 }
