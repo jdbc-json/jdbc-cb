@@ -121,7 +121,7 @@ public interface SQLJSON
     public boolean isNull() throws SQLException;
 
     public int getJDBCType();
-    public String parameterValue();
+    public Object parameterValue();
 
 
     public Object parse(Class clazz) throws SQLException;
