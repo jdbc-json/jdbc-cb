@@ -896,18 +896,9 @@ public class SqlJsonImplementation implements SQLJSON
 
     static final String QUOTE="\"";
 
-    public String parameterValue()
+    public Object parameterValue()
     {
-        if (jsonObject == null )
-            return "null";
-        else if (jsonObject instanceof String)
-            return QUOTE + jsonObject + QUOTE;
-        else if (jsonObject instanceof Map)
-            return  JsonFactory.toJson(jsonObject);
-        else if (jsonObject instanceof List)
-            return  JsonFactory.toJson(jsonObject);
-        else
-            return jsonObject.toString();
+        return jsonObject;
     }
     public int getLength()
     {

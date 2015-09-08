@@ -17,4 +17,6 @@ package com.couchbase;
 public class ConnectionParameters
 {
     public final static String CONNECTION_TIMEOUT="connectionTimeout";
+    public final static String USER="user";
+    public final static String PASSWORD="password";
 }

@@ -21,11 +21,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +44,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.*;
+import java.util.jar.Attributes;
 
 /**
  * Created by davec on 2015-02-22.
@@ -49,14 +52,21 @@ import java.util.*;
 public class ProtocolImpl implements Protocol
 {
 
+    private static final String STATEMENT="statement";
+    private static final String ENCODING = "encoding";
+    private static final String NAMESPACE = "namespace";
+    private static final String READ_ONLY = "readonly";
+    private static final String TIMEOUT = "timeout";
+    private static final String CREDENTIALS = "creds";
+    private static final String SCAN_CONSITENCY = "scan_consistency";
 
-    static final int N1QL_ERROR = -1;
-    static final int N1QL_SUCCESS = 0;
-    static final int N1QL_RUNNING = 1;
-    static final int N1QL_COMPLETED = 2;
-    static final int N1QL_STOPPED = 3;
-    static final int N1QL_TIMEOUT = 4;
-    static final int N1QL_FATAL = 5;
+    private static final int N1QL_ERROR = -1;
+    private static final int N1QL_SUCCESS = 0;
+    private static final int N1QL_RUNNING = 1;
+    private static final int N1QL_COMPLETED = 2;
+    private static final int N1QL_STOPPED = 3;
+    private static final int N1QL_TIMEOUT = 4;
+    private static final int N1QL_FATAL = 5;
 
 
     static final Map <String,Integer> statusStrings = new HashMap<String,Integer>();
@@ -116,13 +126,13 @@ public class ProtocolImpl implements Protocol
 
     public ProtocolImpl(String url, Properties props)
     {
-        if ( props.containsKey("user"))
+        if ( props.containsKey(ConnectionParameters.USER))
         {
-            user=props.getProperty("user");
+            user=props.getProperty(ConnectionParameters.USER);
         }
-        if (props.containsKey("password"))
+        if (props.containsKey(ConnectionParameters.PASSWORD))
         {
-            password=props.getProperty("password");
+            password=props.getProperty(ConnectionParameters.PASSWORD);
         }
         if (props.containsKey("credentials"))
         {
@@ -135,7 +145,7 @@ public class ProtocolImpl implements Protocol
     public void connect() throws Exception
     {
         RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectionRequestTimeout(connectTimeout)
+            .setConnectionRequestTimeout(0)
             .setConnectTimeout(connectTimeout)
             .setSocketTimeout(connectTimeout)
             .build();
@@ -210,45 +220,64 @@ public class ProtocolImpl implements Protocol
 
     public CBResultSet query(CBStatement statement, String sql) throws SQLException
     {
-        List<NameValuePair> valuePair = new ArrayList<NameValuePair>();
-        valuePair.add(new BasicNameValuePair("statement", sql));
-        addOptions(valuePair);
 
+        String endPoint = cluster.getNextEndpoint();
+        logger.trace("Using endpoint {}", endPoint);
 
-        String endpoint = cluster.getNextEndpoint();
-        logger.trace("Using endpoint {}", endpoint);
+        Map <String,String>parameters = new HashMap();
 
-        URI uri=null;
-        try
+        parameters.put(STATEMENT,sql);
+        addOptions(parameters);
 
+        List<NameValuePair>parms = new ArrayList<NameValuePair>();
+
+        for(String parameter:parameters.keySet())
         {
-            uri = new URIBuilder(endpoint).addParameters(valuePair).build();
-        }
-        catch ( URISyntaxException ex)
-        {
-            logger.error("Invalid request {}", endpoint);
+            parms.add(new BasicNameValuePair(parameter,parameters.get(parameter)));
         }
 
-        HttpGet httpGet = new HttpGet( uri );
 
-        httpGet.setHeader("Accept", "application/json");
-        logger.trace("Get request {}",httpGet.toString());
-
-
-
-        try
+        while(true)
         {
+            URI uri = null;
+            try
+            {
+                uri = new URIBuilder(endPoint).addParameters(parms).build();
+            } catch (URISyntaxException ex) {
+                logger.error("Invalid request {}", endPoint);
+            }
 
-            CloseableHttpResponse response = httpClient.execute(httpGet);
-            return new CBResultSet(statement, handleResponse(sql, response));
+            HttpGet httpGet = new HttpGet(uri);
 
-        }
-        catch (IOException ex)
-        {
-            logger.error ("Error executing query [{}] {}", sql, ex.getMessage());
-            throw new SQLException("Error executing update",ex.getCause());
+            httpGet.setHeader("Accept", "application/json");
+            logger.trace("Get request {}", httpGet.toString());
+
+
+            try {
+
+                CloseableHttpResponse response = httpClient.execute(httpGet);
+                return new CBResultSet(statement, handleResponse(sql, response));
+
+            } catch (ConnectTimeoutException cte)
+            {
+                logger.trace(cte.getLocalizedMessage());
+
+                // this one failed, lets move on
+                cluster.invalidateEndpoint(endPoint);
+                // get the next one
+                endPoint = cluster.getNextEndpoint();
+                if (endPoint == null) {
+                    throw new SQLException("All endpoints have failed, giving up");
+                }
+
+
+            } catch (IOException ex) {
+                logger.error("Error executing query [{}] {}", sql, ex.getMessage());
+                throw new SQLException("Error executing update", ex.getCause());
+            }
         }
     }
+
 
     public int executeUpdate(CBStatement statement, String query) throws SQLException
     {
@@ -446,31 +475,51 @@ public class ProtocolImpl implements Protocol
         throw new SQLException(error.msg, null, error.code);
     }
 
-    private static NameValuePair scanConstistency= new BasicNameValuePair("scan_consistency","request_plus");
 
-    public CouchResponse doQuery(String query, List <NameValuePair> nameValuePairs ) throws SQLException
+    public CouchResponse doQuery(String query, Map queryParameters) throws SQLException
     {
-        try
-        {
+        String endPoint = cluster.getNextEndpoint();
 
-            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint());
-            httpPost.setHeader("Accept", "application/json");
+        // keep trying endpoints
+        while(true) {
+            try {
 
-            logger.trace("do query {}",httpPost.toString());
-            addOptions(nameValuePairs);
+                logger.trace("Using endpoint {}", endPoint);
+                HttpPost httpPost = new HttpPost(endPoint);
+                httpPost.setHeader("Accept", "application/json");
+
+                logger.trace("do query {}", httpPost.toString());
+                addOptions(queryParameters);
 
 
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs,"UTF-8"));
+                String jsonParameters = JsonFactory.toJson(queryParameters);
+                StringEntity entity = new StringEntity(jsonParameters, ContentType.APPLICATION_JSON);
 
-            CloseableHttpResponse response = httpClient.execute(httpPost);
 
-            return handleResponse(query, response);
+                httpPost.setEntity(entity);
 
-        }
-        catch (Exception ex)
-        {
-            logger.error ("Error executing query [{}] {}", query, ex.getMessage());
-            throw new SQLException("Error executing update",ex);
+                CloseableHttpResponse response = httpClient.execute(httpPost);
+
+                return handleResponse(query, response);
+
+            }
+            catch (ConnectTimeoutException cte)
+            {
+                logger.trace(cte.getLocalizedMessage());
+
+                // this one failed, lets move on
+                cluster.invalidateEndpoint(endPoint);
+                // get the next one
+                endPoint = cluster.getNextEndpoint();
+                if (endPoint == null) {
+                    throw new SQLException("All endpoints have failed, giving up");
+                }
+
+
+            } catch (Exception ex) {
+                logger.error("Error executing query [{}] {}", query, ex.getMessage());
+                throw new SQLException("Error executing update", ex);
+            }
         }
     }
 
@@ -478,13 +527,13 @@ public class ProtocolImpl implements Protocol
     {
         try
         {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            Map parameters = new HashMap();
 
 //            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
-            nameValuePairs.add(new BasicNameValuePair("statement", query));
+            parameters.put(STATEMENT, query);
 
             // do the query
-            CouchResponse response = doQuery(query, nameValuePairs );
+            CouchResponse response = doQuery(query, parameters );
 
             updateCount = response.metrics.mutationCount;
             if ( updateCount > 0 )
@@ -508,7 +557,10 @@ public class ProtocolImpl implements Protocol
 
     public CouchResponse prepareStatement( String sql, String []returning ) throws SQLException
     {
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        Map parameters = new HashMap();
+
+//            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
+
 
         // append returning clause
         if (returning != null )
@@ -525,9 +577,9 @@ public class ProtocolImpl implements Protocol
             }
         }
 
-        nameValuePairs.add(new BasicNameValuePair("statement", "prepare " + sql));
+        parameters.put(STATEMENT, "prepare " + sql);
 
-        return doQuery(sql, nameValuePairs);
+        return doQuery(sql, parameters);
     }
 
     public int [] executeBatch() throws SQLException
@@ -537,17 +589,14 @@ public class ProtocolImpl implements Protocol
             HttpPost httpPost = new HttpPost(cluster.getNextEndpoint());
             httpPost.setHeader("Accept", "application/json");
 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-            addOptions(nameValuePairs);
+            Map <String,Object> parameters = new HashMap<String,Object>();
+            addOptions(parameters);
             for (String query:batchStatements)
             {
-                nameValuePairs.add(new BasicNameValuePair("statement", query));
+                parameters.put(STATEMENT, query);
             }
-            if ( queryTimeout != 0 )
-            {
-                nameValuePairs.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
-            }
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            //TODO fixme
+            //httpPost.setEntity(new UrlEncodedFormEntity(parameters));
             CloseableHttpResponse response = httpClient.execute(httpPost);
             int status = response.getStatusLine().getStatusCode();
 
@@ -673,13 +722,11 @@ public class ProtocolImpl implements Protocol
     {
        sqlWarning=null;
     }
-    private static NameValuePair schemaValuePair= new BasicNameValuePair("namespace","default");
 
     @Override
     public void setSchema(String schema) throws SQLException
     {
         this.schema = schema;
-        schemaValuePair = new BasicNameValuePair("namespace",schema);
     }
 
     @Override
@@ -688,33 +735,35 @@ public class ProtocolImpl implements Protocol
         return schema;
     }
 
-    private static final NameValuePair readOnlyValuePair = new BasicNameValuePair("readonly","true");
-    private static final NameValuePair encodingValuePair = new BasicNameValuePair("encoding","UTF-8");
 
-    private void addOptions(List<NameValuePair> valuePair)
+
+
+
+    private void addOptions(Map parameters)
     {
 
-        valuePair.add(encodingValuePair);
+        parameters.put(ENCODING,"UTF-8");
 
         if ( schema != null )
         {
-            valuePair.add(schemaValuePair);
+            parameters.put(NAMESPACE, schema);
         }
         if( readOnly )
         {
-            valuePair.add(readOnlyValuePair);
+            parameters.put(READ_ONLY, "true");
         }
         if ( queryTimeout != 0 )
         {
-            valuePair.add(new BasicNameValuePair("timeout", ""+queryTimeout+'s'));
+            parameters.put(TIMEOUT, ""+queryTimeout+'s');
         }
 
         if (credentials != null)
         {
-            valuePair.add(new BasicNameValuePair("creds",credentials));
+            parameters.put(CREDENTIALS, credentials);
         }
 
-        valuePair.add(scanConstistency);
+//        parameters.put("scan_consistency","not_bounded");
+        parameters.put(SCAN_CONSITENCY,"request_plus");
 
     }
 
@@ -724,13 +773,13 @@ public class ProtocolImpl implements Protocol
 
         String query = "select 1";
 
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("statement", query));
+        Map parameters = new HashMap();
+        parameters.put(STATEMENT, query);
         // do the query
 
         try
         {
-            CouchResponse response = doQuery(query, nameValuePairs);
+            CouchResponse response = doQuery(query, parameters);
             return response.getMetrics().getResultCount() == 1;
         }
         catch (Exception ex)
@@ -738,6 +787,15 @@ public class ProtocolImpl implements Protocol
             return false;
 
         }
+    }
+    //for testing
+    public Cluster getCluster()
+    {
+        return cluster;
+    }
+    public void setCluster(Cluster cluster)
+    {
+        this.cluster = cluster;
     }
 }
 
