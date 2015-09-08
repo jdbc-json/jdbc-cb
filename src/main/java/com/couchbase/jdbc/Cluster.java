@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by davec on 2015-05-22.
@@ -27,7 +28,7 @@ public class Cluster
     private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
     Integer instanceIndex = new Integer(0);
-    int numInstances = 0;
+    AtomicInteger numInstances = new AtomicInteger(0);
     List<Instance> endpoints = new ArrayList<Instance>();
 
     /*
@@ -45,7 +46,7 @@ public class Cluster
             try
             {
                 endpoints.add(new Instance(jsonArray.get(i)));
-                numInstances++;
+                numInstances.incrementAndGet();
             }
             catch( SQLException ex)
             {
@@ -55,15 +56,15 @@ public class Cluster
     }
     public String getNextEndpoint()
     {
-        //return "http://54.237.32.30:8093/query/service";
+//        return "http://54.237.32.30:8093/query/service";
 
 
-       int i;
+        int i;
         synchronized (instanceIndex)
         {
             i = instanceIndex++;
 
-            if (i >= numInstances)
+            if (i >= numInstances.get())
             {
                 instanceIndex = 0;
                 i=0;
@@ -73,5 +74,25 @@ public class Cluster
         logger.trace( "Endpoint {} of {}",i,numInstances);
         return endpoints.get(i).getQueryEndPoint();
 
+    }
+    public void addEndPoint(Map endpoint)
+    {
+        try
+        {
+            endpoints.add(new Instance(endpoint));
+            numInstances.incrementAndGet();
+        }
+        catch( SQLException ex)
+        {
+            logger.debug("Invalid endpoint ", ex.getCause().getMessage());
+        }
+    }
+    public void invalidateEndpoint(String endpoint)
+    {
+        synchronized (instanceIndex)
+        {
+            endpoints.remove(endpoint);
+            numInstances.decrementAndGet();
+        }
     }
 }
