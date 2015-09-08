@@ -19,6 +19,7 @@ import org.apache.http.NameValuePair;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-02-26.
@@ -36,7 +37,7 @@ public interface Protocol
     public int [] executeBatch(  ) throws SQLException;
 
     public CouchResponse prepareStatement( String sql, String []returning ) throws SQLException;
-    public CouchResponse doQuery(String query, List<NameValuePair> nameValuePairs ) throws SQLException;
+    public CouchResponse doQuery(String query, Map queryParameters) throws SQLException;
 
     public long getUpdateCount();
     public CBResultSet getResultSet();
