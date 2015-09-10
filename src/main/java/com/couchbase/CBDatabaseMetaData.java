@@ -12,7 +12,14 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.core.CouchMetrics;
+import com.couchbase.jdbc.core.CouchResponse;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-02-20.
@@ -122,7 +129,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean nullsAreSortedLow() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -172,6 +179,12 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getDatabaseProductVersion() throws SQLException
     {
+
+        ResultSet rs = connection.createStatement().executeQuery("select version()");
+        if(rs.next())
+        {
+            return rs.getString(1);
+        }
         return null;
     }
 
@@ -360,7 +373,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getIdentifierQuoteString() throws SQLException
     {
-        return null;
+        return "`";
     }
 
     /**
@@ -503,7 +516,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsColumnAliasing() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -564,7 +577,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsTableCorrelationNames() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -590,7 +603,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsExpressionsInOrderBy() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -617,7 +630,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsGroupBy() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -796,7 +809,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsOuterJoins() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -846,7 +859,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getProcedureTerm() throws SQLException
     {
-        return null;
+        return "procedure";
     }
 
     /**
@@ -858,7 +871,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getCatalogTerm() throws SQLException
     {
-        return null;
+        return "namespace";
     }
 
     /**
@@ -872,7 +885,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean isCatalogAtStart() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -885,7 +898,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getCatalogSeparator() throws SQLException
     {
-        return null;
+        return ":";
     }
 
     /**
@@ -897,7 +910,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSchemasInDataManipulation() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -933,7 +946,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSchemasInIndexDefinitions() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -957,7 +970,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsCatalogsInDataManipulation() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -993,7 +1006,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsCatalogsInIndexDefinitions() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1070,7 +1083,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSubqueriesInComparisons() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1083,7 +1096,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSubqueriesInExists() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1096,7 +1109,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSubqueriesInIns() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1109,7 +1122,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsSubqueriesInQuantifieds() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1133,7 +1146,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsUnion() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1145,7 +1158,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsUnionAll() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1438,7 +1451,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean doesMaxRowSizeIncludeBlobs() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1527,7 +1540,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getDefaultTransactionIsolation() throws SQLException
     {
-        return 0;
+        return Connection.TRANSACTION_READ_UNCOMMITTED;
     }
 
     /**
@@ -1542,7 +1555,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsTransactions() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1557,7 +1570,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsTransactionIsolationLevel(int level) throws SQLException
     {
-        return false;
+        return Connection.TRANSACTION_READ_UNCOMMITTED==level;
     }
 
     /**
@@ -1852,7 +1865,31 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getCatalogs() throws SQLException
     {
-        return null;
+        //todo need to return namespaces (default, system)
+        List <Map<String,String>> catalogs = new ArrayList<>(2);
+        Map <String,String>table = new HashMap<>();
+
+        table.put("TABLE_CAT","default");
+        catalogs.add(table);
+
+        table = new HashMap<>();
+        table.put("TABLE_CAT", "system");
+        catalogs.add(table);
+
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(table.size());
+        // this just has to be not 0
+        metrics.setResultSize(1);
+
+        Map signature = new HashMap();
+        signature.put("TABLE_CAT","string");
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(catalogs);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
     }
 
     /**
@@ -2011,6 +2048,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getColumnPrivileges(String catalog, String schema, String table, String columnNamePattern) throws SQLException
     {
+        //todo figure out what to do with this
         return null;
     }
 
@@ -2803,7 +2841,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsBatchUpdates() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -2872,7 +2910,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public Connection getConnection() throws SQLException
     {
-        return null;
+        return  connection;
     }
 
     /**
@@ -3154,7 +3192,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getDatabaseMajorVersion() throws SQLException
     {
-        return 0;
+        return 1;
     }
 
     /**
@@ -3167,7 +3205,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getDatabaseMinorVersion() throws SQLException
     {
-        return 0;
+        return 1;
     }
 
     /**
@@ -3195,6 +3233,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getJDBCMinorVersion() throws SQLException
     {
+        //todo figure out how to return 2 for java 1.8
         return 1;
     }
 

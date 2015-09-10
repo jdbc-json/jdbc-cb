@@ -12,6 +12,7 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
+import com.couchbase.json.SQLJSON;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -19,32 +20,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by davec on 2015-08-11.
  */
 @RunWith(JUnit4.class)
-public class Test16017 extends TestCase
+public class Test16017 extends CouchBaseTestCase
 {
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-    }
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-        con.createStatement().executeUpdate("delete from default");
-        con.close();
-    }
     @Test
     public void testValues() throws Exception
     {
@@ -78,4 +64,6 @@ public class Test16017 extends TestCase
         }
 
     }
+
+
 }

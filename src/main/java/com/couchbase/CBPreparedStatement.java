@@ -963,7 +963,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     @Override
     public ResultSetMetaData getMetaData() throws SQLException
     {
-
         throw CBDriver.notImplemented(CBPreparedStatement.class, "getMetaData");
     }
 

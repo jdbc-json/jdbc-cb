@@ -26,11 +26,11 @@ public class CBDriver implements java.sql.Driver
 {
     public static final org.slf4j.Logger logger = LoggerFactory.getLogger(CBDriver.class.getName());
 
-    public static final int MAJOR_VERSION = 0;
+    public static final int MAJOR_VERSION = 1;
 
     public static final int MINOR_VERSION = 1;
 
-    public static final String DRIVER_NAME = "Couchbase N1QL Driver";
+    public static final String DRIVER_NAME = "n1ql_jdbc";
 
     static CBDriver registered;
 

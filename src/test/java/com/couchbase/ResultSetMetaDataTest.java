@@ -15,21 +15,23 @@ import com.couchbase.jdbc.TestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.sql.*;
 
 import static org.junit.Assert.*;
-
-public class ResultSetMetaDataTest
+@RunWith(JUnit4.class)
+public class ResultSetMetaDataTest extends CouchBaseTestCase
 {
-    Connection con;
     ResultSet resultSet;
     ResultSetMetaData resultSetMetaData;
 
+    @Override
     @Before
     public void openConnection() throws Exception
     {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
+        super.openConnection();
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
@@ -38,6 +40,8 @@ public class ResultSetMetaDataTest
         resultSetMetaData = resultSet.getMetaData();
 
     }
+
+    @Override
     @After
     public void closeConnection() throws Exception
     {

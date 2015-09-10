@@ -24,7 +24,9 @@ public class TestUtil
             ex.printStackTrace(System.err);
         }
     }
-        public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+
+    public static String getSSLUrl() { return environment.getProperty("couchbasedb.test.sslurl", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:18093");}
 
     public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
 

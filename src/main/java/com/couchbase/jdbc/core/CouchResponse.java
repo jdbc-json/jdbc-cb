@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CouchResponse
 {
-    String    clientContextID;
     AtomicBoolean fieldsInitialized = new AtomicBoolean(false);
 
     Map <String,String>    signature=null;
@@ -106,6 +105,14 @@ public class CouchResponse
     public List <Map<String,Object>> getResults()
     {
         return results;
+    }
+    public void setResults(List results)
+    {
+        this.results = results;
+    }
+    public void setMetrics(CouchMetrics metrics)
+    {
+        this.metrics = metrics;
     }
     public List <CouchError> getWarnings() {return warnings;}
     public List <CouchError> getErrors(){return errors;}

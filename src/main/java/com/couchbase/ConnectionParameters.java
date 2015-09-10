@@ -19,4 +19,8 @@ public class ConnectionParameters
     public final static String CONNECTION_TIMEOUT="connectionTimeout";
     public final static String USER="user";
     public final static String PASSWORD="password";
+    public final static String SCAN_CONSISTENCY="ScanConsistency";
+    public final static String ENABLE_SSL="EnableSSL";
+    public final static String REDUNDANCY="Redundancy";
+    public final static String SSL_CERTIFICATE="SSLCertificate";
 }

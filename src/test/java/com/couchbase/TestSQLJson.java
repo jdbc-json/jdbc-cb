@@ -33,36 +33,12 @@ import java.util.*;
  * Created by davec on 2015-07-10.
  */
 @RunWith(JUnit4.class)
-public class TestSQLJson extends TestCase
+public class TestSQLJson extends CouchBaseTestCase
 {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    //todo fill in all of these tests
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-        con.createStatement().executeUpdate("delete from default");
-        System.out.print("connection opened");
-    }
-
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-
-        try(Statement statement = con.createStatement())
-        {
-            statement.executeUpdate("delete from default");
-        }
-
-        con.close();
-    }
 
     @Test
     public void getSqlJson() throws Exception
@@ -183,7 +159,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -223,7 +199,7 @@ public class TestSQLJson extends TestCase
 
         try (Statement statement = con.createStatement())
         {
-            try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+            try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
             {
                 assertTrue(rs.next());
 
@@ -317,7 +293,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -391,7 +367,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -465,7 +441,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -546,7 +522,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -633,7 +609,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -718,7 +694,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -770,7 +746,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 
@@ -856,7 +832,7 @@ public class TestSQLJson extends TestCase
 
             try (Statement statement = con.createStatement())
             {
-                try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val1'"))
+                try (ResultSet rs = statement.executeQuery("select default from default where meta(default).id='val1'"))
                 {
                     assertTrue(rs.next());
 

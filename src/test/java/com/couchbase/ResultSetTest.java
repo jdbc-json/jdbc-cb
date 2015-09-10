@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -31,34 +33,11 @@ import static org.junit.Assert.*;
 /**
  * Created by davec on 2015-07-15.
  */
-public class ResultSetTest
+@RunWith(JUnit4.class)
+public class ResultSetTest extends CouchBaseTestCase
 {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
-
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-        con.createStatement().executeUpdate("delete from default");
-        System.out.print("connection opened");
-    }
-
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-
-        try(Statement statement = con.createStatement())
-        {
-            statement.executeUpdate("delete from default");
-        }
-
-        con.close();
-    }
 
     @Test
     public void testAbsoluteNotImplemented() throws Exception

@@ -31,23 +31,8 @@ import java.util.Map;
  * Created by davec on 2015-02-26.
  */
 @RunWith(JUnit4.class)
-public class StatementTest extends TestCase
+public class StatementTest extends CouchBaseTestCase
 {
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-    }
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-        con.createStatement().executeUpdate("delete from default");
-        con.close();
-    }
     @Test
     public void createStatement() throws Exception
     {

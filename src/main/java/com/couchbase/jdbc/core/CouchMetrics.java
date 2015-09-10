@@ -59,4 +59,12 @@ public class CouchMetrics
     {
         return warningCount;
     }
+    public void setResultCount(int count)
+    {
+        resultCount = count;
+    }
+    public void setResultSize(int size)
+    {
+        resultSize = size;
+    }
 }

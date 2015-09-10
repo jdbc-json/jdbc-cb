@@ -40,6 +40,8 @@ public class CBConnection implements java.sql.Connection
     private AtomicBoolean connected = new AtomicBoolean(false);
 
     Protocol protocol;
+    private static final String HTTP  = "http";
+    private static final String HTTPS = "https";
 
     boolean readOnly=false;
 
@@ -47,8 +49,18 @@ public class CBConnection implements java.sql.Connection
     {
         try
         {
+            String connectionURL;
 
-            String connectionURL = "http" + url.substring(14) ;
+            if (props.containsKey(ConnectionParameters.ENABLE_SSL) && props.getProperty(ConnectionParameters.ENABLE_SSL).equals("true"))
+            {
+                logger.trace("Enabling SSL connection");
+                connectionURL = HTTPS + url.substring(14) ;
+            }
+            else
+            {
+                logger.trace("Normal http connection");
+                connectionURL = HTTP + url.substring(14);
+            }
 
             List <NameValuePair> parameters = URLEncodedUtils.parse(new URI(connectionURL),"UTF-8");
 

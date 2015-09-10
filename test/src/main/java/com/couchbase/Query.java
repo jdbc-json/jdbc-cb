@@ -22,8 +22,7 @@ package com.couchbase;
 import java.sql.*;
 
 public class Query {
-
-    static String ConnectionURL = "jdbc:couchbase://52.17.179.12:8093";
+    static String ConnectionURL = "jdbc:couchbase://54.237.32.30:8093";
 
     public static void main(String[] args) throws SQLException
     {

@@ -85,12 +85,14 @@ public class ProtocolImpl implements Protocol
     String user;
     String password;
     String credentials;
+    String scanConsistency = "not_bounded";
+
     SQLWarning sqlWarning;
 
     Cluster cluster;
 
     int connectTimeout=0;
-    int queryTimeout=0;
+    int queryTimeout=75;
     boolean readOnly = false;
     long updateCount;
     CBResultSet resultSet;
@@ -140,6 +142,10 @@ public class ProtocolImpl implements Protocol
         }
         this.url = url;
         setConnectionTimeout(props.getProperty(ConnectionParameters.CONNECTION_TIMEOUT));
+        if (props.containsKey(ConnectionParameters.SCAN_CONSISTENCY))
+        {
+            scanConsistency=props.getProperty(ConnectionParameters.SCAN_CONSISTENCY);
+        }
     }
 
     public void connect() throws Exception
@@ -736,9 +742,6 @@ public class ProtocolImpl implements Protocol
     }
 
 
-
-
-
     private void addOptions(Map parameters)
     {
 
@@ -762,8 +765,7 @@ public class ProtocolImpl implements Protocol
             parameters.put(CREDENTIALS, credentials);
         }
 
-//        parameters.put("scan_consistency","not_bounded");
-        parameters.put(SCAN_CONSITENCY,"request_plus");
+        parameters.put(SCAN_CONSITENCY,scanConsistency);
 
     }
 

@@ -17,6 +17,8 @@ import org.boon.json.JsonFactory;
 import org.hamcrest.core.IsEqual;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -27,35 +29,13 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class PreparedStatementTest
+@RunWith(JUnit4.class)
+public class PreparedStatementTest extends CouchBaseTestCase
 {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-        con.createStatement().executeUpdate("delete from default");
-        System.out.print("connection opened");
-    }
-
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-
-        try(Statement statement = con.createStatement())
-        {
-            statement.executeUpdate("delete from default");
-        }
-
-        con.close();
-    }
 
     @Test
     public void createStatement() throws Exception

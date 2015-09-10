@@ -31,27 +31,11 @@ import java.util.concurrent.Executors;
  * Created by davec on 2015-07-21.
  */
 @RunWith(JUnit4.class)
-public class ConnectionTest extends TestCase
+public class ConnectionTest extends CouchBaseTestCase
 {
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-    Connection con;
-
-    @Before
-    public void openConnection() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        assertNotNull(con);
-    }
-    @After
-    public void closeConnection() throws Exception
-    {
-        assertNotNull(con);
-        if( con.isClosed()) return;
-        con.createStatement().executeUpdate("delete from default");
-        con.close();
-    }
 
     @Test
     public void testCreateArray() throws Exception
