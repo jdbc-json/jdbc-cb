@@ -1,5 +1,6 @@
 package com.couchbase.jdbc.core;
 
+import com.couchbase.jdbc.util.JSONTypes;
 import com.couchbase.jdbc.util.TimestampUtils;
 import com.couchbase.json.SQLJSON;
 import org.boon.core.reflection.Mapper;
@@ -28,40 +29,7 @@ public class SqlJsonImplementation implements SQLJSON
     TimestampUtils timestampUtils = new TimestampUtils();
 
 
-    final static private int JSON_NUMBER = 0;
-    final static private int JSON_STRING = 1;
-    final static private int JSON_BOOLEAN = 2;
-    final static private int JSON_ARRAY = 3;
-    final static private int JSON_MAP = 4;
-    final static private int JSON_OBJECT = 5;
-    final static private int JSON_NULL = 6;
 
-    static private Map <String, Integer> jsonTypes = new HashMap<String, Integer>();
-
-    static {
-        jsonTypes.put("number",JSON_NUMBER);
-        jsonTypes.put("string",JSON_STRING);
-        jsonTypes.put("boolean",JSON_BOOLEAN);
-        jsonTypes.put("array",JSON_ARRAY);
-        jsonTypes.put("map",JSON_MAP);
-        jsonTypes.put("object",JSON_OBJECT);
-        jsonTypes.put("json",JSON_OBJECT);
-        jsonTypes.put("null",JSON_NULL);
-    }
-
-    static private Map <String, Integer> jdbcTypes = new HashMap<String, Integer>();
-
-    static {
-        jdbcTypes.put("number", Types.NUMERIC);
-        jdbcTypes.put("string", Types.VARCHAR);
-        jdbcTypes.put("boolean", Types.BOOLEAN);
-        jdbcTypes.put("array", Types.ARRAY);
-        jdbcTypes.put("map", Types.JAVA_OBJECT); //??
-        jdbcTypes.put("object", Types.JAVA_OBJECT);
-        jdbcTypes.put("json", Types.JAVA_OBJECT);
-        jdbcTypes.put("null", Types.NULL);
-
-    }
     public SqlJsonImplementation()
     {
 
@@ -123,25 +91,25 @@ public class SqlJsonImplementation implements SQLJSON
     @Override
     public String getString() throws SQLException
     {
-        int type = jsonTypes.get(field.getType());
+        int type = JSONTypes.jsonTypes.get(field.getType());
         switch (type)
         {
-            case JSON_ARRAY:
-            case JSON_OBJECT:
-            case JSON_MAP:
+            case JSONTypes.JSON_ARRAY:
+            case JSONTypes.JSON_OBJECT:
+            case JSONTypes.JSON_MAP:
                 toJson();
                 return sqlJson;
-            case JSON_NULL:
+            case JSONTypes.JSON_NULL:
                 return null;
-            case JSON_STRING:
+            case JSONTypes.JSON_STRING:
                 if ( sqlJson != null ) return sqlJson;
                 if ( jsonObject != null ) return (String) jsonObject;
                 isNull = true;
                 return null;
 
-            case JSON_BOOLEAN:
+            case JSONTypes.JSON_BOOLEAN:
                 return Boolean.toString((boolean)jsonObject);
-            case JSON_NUMBER:
+            case JSONTypes.JSON_NUMBER:
                 return Long.toString((long)jsonObject);
             default:
                 return "";
@@ -174,23 +142,23 @@ public class SqlJsonImplementation implements SQLJSON
 
     public boolean getBoolean() throws SQLException
     {
-        int type = jsonTypes.get(field.getType());
+        int type = JSONTypes.jsonTypes.get(field.getType());
 
         switch (type)
         {
-            case JSON_BOOLEAN:
+            case JSONTypes.JSON_BOOLEAN:
                 return (boolean) jsonObject;
-            case JSON_NUMBER:
+            case JSONTypes.JSON_NUMBER:
                 Number number = (Number)jsonObject;
                 return number != (Number)0;
-            case JSON_STRING:
+            case JSONTypes.JSON_STRING:
                 String string = (String) jsonObject;
                 return !string.isEmpty();
-            case JSON_MAP:
-            case JSON_OBJECT:
+            case JSONTypes.JSON_MAP:
+            case JSONTypes.JSON_OBJECT:
                 Map map = (Map) jsonObject;
                 return !map.isEmpty();
-            case JSON_ARRAY:
+            case JSONTypes.JSON_ARRAY:
                 List list = (List)jsonObject;
                 return !list.isEmpty();
 
@@ -877,7 +845,7 @@ public class SqlJsonImplementation implements SQLJSON
     }
     public int getJDBCType()
     {
-        return jdbcTypes.get(field.getType());
+        return JSONTypes.jdbcTypes.get(field.getType());
     }
 
     @Override

@@ -11,6 +11,8 @@
 
 package com.couchbase.jdbc.core;
 
+import com.couchbase.jdbc.util.JSONTypes;
+
 import java.sql.Types;
 
 /**
@@ -61,13 +63,6 @@ public class Field
 
     public int getSqlType()
     {
-        if (type.equals("number"))  return Types.NUMERIC;
-        if (type.equals("string"))  return Types.VARCHAR;
-        if (type.equals("boolean")) return Types.BOOLEAN;
-        if (type.equals("array"))   return Types.ARRAY;
-        if (type.equals("json"))    return Types.JAVA_OBJECT;
-        if (type.equals("object"))  return Types.JAVA_OBJECT;
-        if (type.equals("null"))    return Types.NULL;
-        return Types.OTHER;
+        return JSONTypes.jdbcTypes.get(type);
     }
 }
