@@ -69,6 +69,18 @@ public class SqlJsonImplementation implements SQLJSON
     public SqlJsonImplementation(Object jsonObject, Field field )
     {
         this.jsonObject = jsonObject;
+        if (jsonObject instanceof String)
+            field.setType("string");
+        else if (jsonObject instanceof Number)
+            field.setType("number");
+        else if (jsonObject instanceof Boolean)
+            field.setType("boolean");
+        else if (jsonObject instanceof List)
+            field.setType("array");
+        // map should be json as well
+        else
+            field.setType("json");
+
         this.field = field;
     }
 
@@ -893,8 +905,6 @@ public class SqlJsonImplementation implements SQLJSON
         }
         else return null;
     }
-
-    static final String QUOTE="\"";
 
     public Object parameterValue()
     {
