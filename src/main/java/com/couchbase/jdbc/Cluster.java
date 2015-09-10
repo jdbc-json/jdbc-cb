@@ -38,7 +38,7 @@ public class Cluster
     {"cluster":"default","name":"10.30.210.238","queryEndpoint":"http://10.30.210.238:8093/query/service","adminEndpoint":"http://10.30.210.238:8093/admin","options":null}]
      */
 
-    public Cluster( List <Map> jsonArray )
+    public Cluster( List <Map> jsonArray, boolean ssl )
     {
         int num = jsonArray.size();
         for(int i=0; i < num ;i++)
@@ -54,10 +54,18 @@ public class Cluster
             }
         }
     }
-    public String getNextEndpoint()
+    public String getNextEndpoint(boolean ssl)
     {
-//        return "http://54.237.32.30:8093/query/service";
-
+        /*
+        if (ssl)
+        {
+            return "https://54.237.32.30:18093/query/service";
+        }
+        else
+        {
+            return "http://54.237.32.30:8093/query/service";
+        }
+        */
 
         int i;
         synchronized (instanceIndex)
@@ -72,7 +80,16 @@ public class Cluster
         }
 
         logger.trace( "Endpoint {} of {}",i,numInstances);
-        return endpoints.get(i).getQueryEndPoint();
+
+        if (ssl)
+        {
+            return endpoints.get(i).getSecureQueryEndPoint();
+        }
+        else
+        {
+            return endpoints.get(i).getQueryEndPoint();
+        }
+
 
     }
     public void addEndPoint(Map endpoint)

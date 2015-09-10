@@ -24,7 +24,10 @@ public class Instance
     String cluster,
            name,
            queryEndPoint,
-           adminEndPoint;
+           adminEndPoint,
+           querySecure,
+           adminSecure;
+
     String options;
 
     public Instance( Map <String, String> jsonObject )  throws SQLException
@@ -33,9 +36,13 @@ public class Instance
         this.name           = jsonObject.get("name");
 
         this.adminEndPoint  = jsonObject.get("adminEndpoint");
+        this.adminSecure    = jsonObject.get("adminSecure");
+
         isValidURI( adminEndPoint );
 
         this.queryEndPoint  = jsonObject.get("queryEndpoint");
+        this.querySecure    = jsonObject.get("querySecure");
+
         isValidURI(queryEndPoint);
     }
     public String getCluster()
@@ -62,6 +69,7 @@ public class Instance
     {
         return queryEndPoint;
     }
+    public String getSecureQueryEndPoint() { return querySecure; }
 
     public void setQueryEndPoint(String queryEndPoint)
     {

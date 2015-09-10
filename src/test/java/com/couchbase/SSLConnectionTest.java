@@ -46,6 +46,7 @@ public class SSLConnectionTest extends TestCase
         {
             try(ResultSet rs = statement.executeQuery("select 1"))
             {
+                assertTrue(rs.next());
                 assertEquals(1, rs.getInt(1));
             }
 

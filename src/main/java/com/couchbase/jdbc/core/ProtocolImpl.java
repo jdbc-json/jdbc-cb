@@ -25,11 +25,19 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.boon.core.reflection.MapObjectConversion;
@@ -38,9 +46,15 @@ import org.boon.json.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.*;
@@ -90,6 +104,7 @@ public class ProtocolImpl implements Protocol
     SQLWarning sqlWarning;
 
     Cluster cluster;
+    boolean ssl=false;
 
     int connectTimeout=0;
     int queryTimeout=75;
@@ -126,8 +141,11 @@ public class ProtocolImpl implements Protocol
 
     CloseableHttpClient httpClient;
 
+    RequestConfig requestConfig;
+
     public ProtocolImpl(String url, Properties props)
     {
+
         if ( props.containsKey(ConnectionParameters.USER))
         {
             user=props.getProperty(ConnectionParameters.USER);
@@ -146,18 +164,73 @@ public class ProtocolImpl implements Protocol
         {
             scanConsistency=props.getProperty(ConnectionParameters.SCAN_CONSISTENCY);
         }
+
+        requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(0)
+                .setConnectTimeout(connectTimeout)
+                .setSocketTimeout(connectTimeout)
+                .build();
+
+        if (props.containsKey(ConnectionParameters.ENABLE_SSL) && props.getProperty(ConnectionParameters.ENABLE_SSL).equals("true"))
+        {
+            SSLContextBuilder builder = SSLContexts.custom();
+
+            try
+            {
+                builder.loadTrustMaterial(null, new TrustStrategy() {
+                    @Override
+                    public boolean isTrusted(X509Certificate[] chain, String authType)
+                            throws CertificateException {
+                        return true;
+                    }
+                });
+                SSLContext sslContext = builder.build();
+                SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                        sslContext, new X509HostnameVerifier() {
+                    @Override
+                    public void verify(String host, SSLSocket ssl)
+                            throws IOException {
+                    }
+
+                    @Override
+                    public void verify(String host, X509Certificate cert)
+                            throws SSLException {
+                    }
+
+                    @Override
+                    public void verify(String host, String[] cns,
+                                       String[] subjectAlts) throws SSLException {
+                    }
+
+                    @Override
+                    public boolean verify(String s, SSLSession sslSession) {
+                        return true;
+                    }
+                });
+
+                Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                        .<ConnectionSocketFactory> create().register("https", sslsf)
+                        .build();
+                HttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+                httpClient = HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig).build();
+                ssl=true;
+
+            }catch (Exception ex)
+            {
+                logger.error("Error creating ssl client", ex);
+            }
+
+
+
+        }
+        else
+        {
+            httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+        }
     }
 
     public void connect() throws Exception
     {
-        RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectionRequestTimeout(0)
-            .setConnectTimeout(connectTimeout)
-            .setSocketTimeout(connectTimeout)
-            .build();
-
-
-        httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
         HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
         httpGet.setHeader("Accept", "application/json");
@@ -191,7 +264,7 @@ public class ProtocolImpl implements Protocol
         switch (status)
         {
             case 200:
-                return new Cluster((List)jsonArray);
+                return new Cluster((List)jsonArray, ssl);
             case 400:
                 message = "Bad Request";
                 break;
@@ -227,7 +300,7 @@ public class ProtocolImpl implements Protocol
     public CBResultSet query(CBStatement statement, String sql) throws SQLException
     {
 
-        String endPoint = cluster.getNextEndpoint();
+        String endPoint = cluster.getNextEndpoint(ssl);
         logger.trace("Using endpoint {}", endPoint);
 
         Map <String,String>parameters = new HashMap();
@@ -271,7 +344,7 @@ public class ProtocolImpl implements Protocol
                 // this one failed, lets move on
                 cluster.invalidateEndpoint(endPoint);
                 // get the next one
-                endPoint = cluster.getNextEndpoint();
+                endPoint = cluster.getNextEndpoint(ssl);
                 if (endPoint == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
@@ -484,7 +557,7 @@ public class ProtocolImpl implements Protocol
 
     public CouchResponse doQuery(String query, Map queryParameters) throws SQLException
     {
-        String endPoint = cluster.getNextEndpoint();
+        String endPoint = cluster.getNextEndpoint(ssl);
 
         // keep trying endpoints
         while(true) {
@@ -516,7 +589,7 @@ public class ProtocolImpl implements Protocol
                 // this one failed, lets move on
                 cluster.invalidateEndpoint(endPoint);
                 // get the next one
-                endPoint = cluster.getNextEndpoint();
+                endPoint = cluster.getNextEndpoint(ssl);
                 if (endPoint == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
@@ -592,7 +665,7 @@ public class ProtocolImpl implements Protocol
     {
         try
         {
-            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint());
+            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint(ssl));
             httpPost.setHeader("Accept", "application/json");
 
             Map <String,Object> parameters = new HashMap<String,Object>();
@@ -753,7 +826,7 @@ public class ProtocolImpl implements Protocol
         }
         if( readOnly )
         {
-            parameters.put(READ_ONLY, "true");
+            parameters.put(READ_ONLY, true);
         }
         if ( queryTimeout != 0 )
         {

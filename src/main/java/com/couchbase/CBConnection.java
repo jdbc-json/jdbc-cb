@@ -17,11 +17,29 @@ import com.couchbase.jdbc.core.ProtocolImpl;
 import com.couchbase.jdbc.core.SqlJsonImplementation;
 import com.couchbase.json.SQLJSON;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.*;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import java.io.IOException;
 import java.net.URI;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +73,7 @@ public class CBConnection implements java.sql.Connection
             {
                 logger.trace("Enabling SSL connection");
                 connectionURL = HTTPS + url.substring(14) ;
+
             }
             else
             {
