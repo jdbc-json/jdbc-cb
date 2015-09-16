@@ -2040,7 +2040,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2271,7 +2271,21 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException
     {
-        return getEmptyResultSet();
+        String sql = "select null as TABLE_CAT, namespace_id as TABLE_SCHEM, keyspace_id as TABLE_NAME, 'id' as COLUMN_NAME, 1 as KEY_SEQ, name as PK_NAME from system:indexes where is_primary = true";
+
+        if (schema != null )
+        {
+            sql += " and namespace_id like " + schema;
+        }
+        if (table != null)
+        {
+            sql += " and keyspace_id like " + table;
+        }
+
+        try(Statement statement = connection.createStatement())
+        {
+            return statement.executeQuery(sql);
+        }
     }
 
     /**
@@ -2905,7 +2919,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsResultSetType(int type) throws SQLException
     {
-        return false;
+        return type == ResultSet.TYPE_FORWARD_ONLY;
     }
 
     /**
@@ -2996,7 +3010,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersUpdatesAreVisible(int type) throws SQLException
     {
-        return true;
+        return false;
     }
 
     /**
@@ -3015,7 +3029,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersDeletesAreVisible(int type) throws SQLException
     {
-        return true;
+        return false;
     }
 
     /**
@@ -3034,7 +3048,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersInsertsAreVisible(int type) throws SQLException
     {
-        return true;
+        return false;
     }
 
     /**
@@ -3516,8 +3530,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getJDBCMinorVersion() throws SQLException
     {
-        //todo figure out how to return 2 for java 1.8
-        return 1;
+        return (Integer.parseInt(System.getProperty("java.specification.version").split("\\.")[1]) == 8) ? 2:1;
     }
 
     /**

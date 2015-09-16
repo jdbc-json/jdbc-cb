@@ -511,9 +511,8 @@ public class CBConnection implements java.sql.Connection
     @Override
     public void setTransactionIsolation(int level) throws SQLException
     {
-
-        //todo this needs research
         checkClosed();
+
         switch (level)
         {
             case Connection.TRANSACTION_NONE:
@@ -1245,8 +1244,6 @@ public class CBConnection implements java.sql.Connection
     {
         checkClosed();
         throw CBDriver.notImplemented(CBConnection.class, "createBlob");
-        //todo implement
-        //return null;
     }
 
     /**

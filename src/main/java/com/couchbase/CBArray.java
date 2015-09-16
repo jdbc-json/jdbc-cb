@@ -214,7 +214,6 @@ public class CBArray implements Array
     {
         Object []newArray = new Object[count];
 
-        // todo this may be an issue if index is greater than Integer.Max_Value ??
         for (int i=(int)index, j=0; j < count;j++)
         {
             newArray[j] = array[i++];
