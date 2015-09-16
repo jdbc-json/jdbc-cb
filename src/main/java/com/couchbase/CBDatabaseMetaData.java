@@ -2082,8 +2082,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getColumnPrivileges(String catalog, String schema, String table, String columnNamePattern) throws SQLException
     {
-        //todo figure out what to do with this
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2129,7 +2128,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getTablePrivileges(String catalog, String schemaPattern, String tableNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2272,7 +2271,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2891,7 +2890,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3305,7 +3304,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getSuperTypes(String catalog, String schemaPattern, String typeNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3345,7 +3344,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getSuperTables(String catalog, String schemaPattern, String tableNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3430,7 +3429,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getAttributes(String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
