@@ -17,10 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
@@ -47,23 +44,27 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testAllProceduresAreCallable() throws Exception {
-
+    public void testAllProceduresAreCallable() throws Exception
+    {
+        assertTrue(dbmd.allProceduresAreCallable());
     }
 
     @Test
-    public void testAllTablesAreSelectable() throws Exception {
-
+    public void testAllTablesAreSelectable() throws Exception
+    {
+        assertTrue(dbmd.allTablesAreSelectable());
     }
 
     @Test
-    public void testGetURL() throws Exception {
-
+    public void testGetURL() throws Exception
+    {
+        assertNotNull(dbmd.getURL());
     }
 
     @Test
-    public void testGetUserName() throws Exception {
-
+    public void testGetUserName() throws Exception
+    {
+        assertNotNull(dbmd.getUserName());
     }
 
     @Test
@@ -152,7 +153,7 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     @Test
     public void testSupportsMixedCaseIdentifiers() throws Exception
     {
-        assertFalse(dbmd.supportsMixedCaseIdentifiers());
+        assertTrue(dbmd.supportsMixedCaseIdentifiers());
     }
 
     @Test
@@ -164,17 +165,19 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     @Test
     public void testStoresLowerCaseIdentifiers() throws Exception
     {
-        assertTrue(dbmd.storesLowerCaseIdentifiers());
+        assertFalse(dbmd.storesLowerCaseIdentifiers());
     }
 
     @Test
-    public void testStoresMixedCaseIdentifiers() throws Exception {
-
+    public void testStoresMixedCaseIdentifiers() throws Exception
+    {
+        assertFalse(dbmd.storesMixedCaseIdentifiers());
     }
 
     @Test
-    public void testSupportsMixedCaseQuotedIdentifiers() throws Exception {
-
+    public void testSupportsMixedCaseQuotedIdentifiers() throws Exception
+    {
+        assertTrue(dbmd.supportsMixedCaseQuotedIdentifiers());
     }
 
     @Test
@@ -203,13 +206,15 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetNumericFunctions() throws Exception {
-
+    public void testGetNumericFunctions() throws Exception
+    {
+        assertEquals(0, dbmd.getNumericFunctions().compareTo("add,div,mod,mult,neg,sub,abs,acos,asin,atan,atan2,ceil,cos,deg,degrees,e,exp,ln,log,floor,inf,nan,neginf,pi,posinf,power,rad,radians,random,round,sign,sin,sqrt,tan,trunc"));
     }
 
     @Test
-    public void testGetStringFunctions() throws Exception {
-
+    public void testGetStringFunctions() throws Exception
+    {
+        assertEquals(0, dbmd.getStringFunctions().compareTo("contains,initcap,length,lower,ltrim,position,pos,regex_contains,regex_like,regex_position,regex_pos,regex_replace,repeat,replace,rtrim,split,substr,title,trim,upper"));
     }
 
     @Test
@@ -218,13 +223,16 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetTimeDateFunctions() throws Exception {
+    public void testGetTimeDateFunctions() throws Exception
+    {
+        assertEquals(0, dbmd.getTimeDateFunctions().compareTo("clock_millis,clock_str,date_add_millis,date_add_str,date_diff_millis,date_diff_str,date_part_millis,date_part_str,date_trunc_millis,date_trunc_str,millis,millis_to_str,millis_to_utc,millis_to_zone_name,now_millis,now_str,str_to_millis,str_to_utc,str_to_zone_name"));
 
     }
 
     @Test
-    public void testGetSearchStringEscape() throws Exception {
-
+    public void testGetSearchStringEscape() throws Exception
+    {
+        assertEquals("\\", dbmd.getSearchStringEscape());
     }
 
     @Test
@@ -252,13 +260,17 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testNullPlusNonNullIsNull() throws Exception {
+    public void testNullPlusNonNullIsNull() throws Exception
+    {
 
+        //(NULL + MISSING = MISSING.   NULL + X = NULL)
+        assertFalse(dbmd.nullPlusNonNullIsNull());
     }
 
     @Test
-    public void testSupportsConvert() throws Exception {
-
+    public void testSupportsConvert() throws Exception
+    {
+        assertTrue(dbmd.supportsConvert());
     }
 
     @Test
@@ -273,8 +285,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsDifferentTableCorrelationNames() throws Exception {
-
+    public void testSupportsDifferentTableCorrelationNames() throws Exception
+    {
+        assertTrue(dbmd.supportsDifferentTableCorrelationNames());
     }
 
     @Test
@@ -284,8 +297,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsOrderByUnrelated() throws Exception {
-
+    public void testSupportsOrderByUnrelated() throws Exception
+    {
+        assertFalse(dbmd.supportsOrderByUnrelated());
     }
 
     @Test
@@ -295,18 +309,21 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsGroupByUnrelated() throws Exception {
-
+    public void testSupportsGroupByUnrelated() throws Exception
+    {
+        assertTrue(dbmd.supportsGroupByUnrelated());
     }
 
     @Test
-    public void testSupportsGroupByBeyondSelect() throws Exception {
-
+    public void testSupportsGroupByBeyondSelect() throws Exception
+    {
+        assertTrue(dbmd.supportsGroupByBeyondSelect());
     }
 
     @Test
-    public void testSupportsLikeEscapeClause() throws Exception {
-
+    public void testSupportsLikeEscapeClause() throws Exception
+    {
+        assertFalse(dbmd.supportsLikeEscapeClause());
     }
 
     @Test
@@ -316,8 +333,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsMultipleTransactions() throws Exception {
-
+    public void testSupportsMultipleTransactions() throws Exception
+    {
+        assertTrue(dbmd.supportsMultipleTransactions());
     }
 
     @Test
@@ -327,13 +345,15 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsMinimumSQLGrammar() throws Exception {
-
+    public void testSupportsMinimumSQLGrammar() throws Exception
+    {
+        assertTrue(dbmd.supportsMinimumSQLGrammar());
     }
 
     @Test
-    public void testSupportsCoreSQLGrammar() throws Exception {
-
+    public void testSupportsCoreSQLGrammar() throws Exception
+    {
+        assertTrue(dbmd.supportsCoreSQLGrammar());
     }
 
     @Test
@@ -350,7 +370,7 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
 
     @Test
     public void testSupportsANSI92IntermediateSQL() throws Exception {
-        assertTrue(dbmd.supportsANSI92IntermediateSQL() );
+        assertFalse(dbmd.supportsANSI92IntermediateSQL());
 
     }
 
@@ -362,8 +382,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsIntegrityEnhancementFacility() throws Exception {
-
+    public void testSupportsIntegrityEnhancementFacility() throws Exception
+    {
+        assertFalse(dbmd.supportsIntegrityEnhancementFacility());
     }
 
     @Test
@@ -379,13 +400,15 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsLimitedOuterJoins() throws Exception {
-
+    public void testSupportsLimitedOuterJoins() throws Exception
+    {
+        assertFalse(dbmd.supportsLimitedOuterJoins());
     }
 
     @Test
-    public void testGetSchemaTerm() throws Exception {
-
+    public void testGetSchemaTerm() throws Exception
+    {
+        assertEquals("NAMESPACE", dbmd.getSchemaTerm());
     }
 
     @Test
@@ -711,18 +734,21 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsDataDefinitionAndDataManipulationTransactions() throws Exception {
-
+    public void testSupportsDataDefinitionAndDataManipulationTransactions() throws Exception
+    {
+        assertTrue(dbmd.supportsDataDefinitionAndDataManipulationTransactions());
     }
 
     @Test
-    public void testSupportsDataManipulationTransactionsOnly() throws Exception {
-
+    public void testSupportsDataManipulationTransactionsOnly() throws Exception
+    {
+        assertFalse(dbmd.supportsDataManipulationTransactionsOnly());
     }
 
     @Test
     public void testDataDefinitionCausesTransactionCommit() throws Exception
     {
+        assertFalse(dbmd.dataDefinitionCausesTransactionCommit());
     }
 
     @Test
@@ -733,8 +759,11 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetProcedures() throws Exception {
-
+    public void testGetProcedures() throws Exception
+    {
+        ResultSet rs = dbmd.getProcedures(null, null, null);
+        // should always be empty
+        assertFalse(rs.next());
     }
 
     @Test
@@ -743,13 +772,27 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetTables() throws Exception {
+    public void testGetTables() throws Exception
+    {
+        ResultSet rs = dbmd.getTables(null, null, null,null);
+        assertTrue(rs.next());
+
+        rs = dbmd.getTables(null, "default", null, null);
+        assertTrue(rs.next());
+
+        rs = dbmd.getTables(null, null, "default", null);
+        assertTrue(rs.next());
+
+        rs = dbmd.getTables(null, "default", "default", null);
+        assertTrue(rs.next());
 
     }
 
     @Test
     public void testGetSchemas() throws Exception {
-
+        ResultSet rs = dbmd.getSchemas();
+        assertTrue(rs.next());
+        assertEquals(rs.getString("TABLE_SCHEM"),"default");
     }
 
     @Test
@@ -760,14 +803,13 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
         assertTrue(rs.next());
         assertEquals(rs.getString(1), "default");
 
-        assertTrue(rs.next());
-        assertEquals(rs.getString(1),"system");
-
     }
 
     @Test
-    public void testGetTableTypes() throws Exception {
-
+    public void testGetTableTypes() throws Exception
+    {
+        ResultSet rs = dbmd.getTableTypes();
+        assertTrue(rs.next());
     }
 
     @Test
@@ -816,8 +858,13 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetTypeInfo() throws Exception {
-
+    public void testGetTypeInfo() throws Exception
+    {
+        ResultSet rs = dbmd.getTypeInfo();
+        while(rs.next())
+        {
+            assertTrue(!rs.getString("TYPE_NAME").isEmpty());
+        }
     }
 
     @Test
@@ -851,18 +898,21 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testOthersUpdatesAreVisible() throws Exception {
-
+    public void testOthersUpdatesAreVisible() throws Exception
+    {
+        assertTrue(dbmd.othersUpdatesAreVisible(0));
     }
 
     @Test
-    public void testOthersDeletesAreVisible() throws Exception {
-
+    public void testOthersDeletesAreVisible() throws Exception
+    {
+        assertTrue(dbmd.othersDeletesAreVisible(0));
     }
 
     @Test
-    public void testOthersInsertsAreVisible() throws Exception {
-
+    public void testOthersInsertsAreVisible() throws Exception
+    {
+        assertTrue(dbmd.othersInsertsAreVisible(0));
     }
 
     @Test
@@ -888,8 +938,10 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetUDTs() throws Exception {
-
+    public void testGetUDTs() throws Exception
+    {
+        ResultSet rs = dbmd.getUDTs(null, null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
@@ -905,18 +957,21 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSupportsNamedParameters() throws Exception {
-
+    public void testSupportsNamedParameters() throws Exception
+    {
+        assertTrue(dbmd.supportsNamedParameters());
     }
 
     @Test
-    public void testSupportsMultipleOpenResults() throws Exception {
-
+    public void testSupportsMultipleOpenResults() throws Exception
+    {
+        assertFalse(dbmd.supportsMultipleOpenResults());
     }
 
     @Test
-    public void testSupportsGetGeneratedKeys() throws Exception {
-
+    public void testSupportsGetGeneratedKeys() throws Exception
+    {
+        assertFalse(dbmd.supportsGetGeneratedKeys());
     }
 
     @Test
@@ -940,8 +995,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetResultSetHoldability() throws Exception {
-
+    public void testGetResultSetHoldability() throws Exception
+    {
+        assertEquals(ResultSet.HOLD_CURSORS_OVER_COMMIT, dbmd.getResultSetHoldability());
     }
 
     @Test
@@ -968,28 +1024,34 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetSQLStateType() throws Exception {
-
+    public void testGetSQLStateType() throws Exception
+    {
+        assertEquals(dbmd.sqlStateSQL, dbmd.getSQLStateType());
     }
 
     @Test
-    public void testLocatorsUpdateCopy() throws Exception {
-
+    public void testLocatorsUpdateCopy() throws Exception
+    {
+        assertFalse(dbmd.locatorsUpdateCopy());
     }
 
     @Test
-    public void testSupportsStatementPooling() throws Exception {
-
+    public void testSupportsStatementPooling() throws Exception
+    {
+        assertFalse(dbmd.supportsStatementPooling());
     }
 
     @Test
-    public void testGetRowIdLifetime() throws Exception {
-
+    public void testGetRowIdLifetime() throws Exception
+    {
+        assertEquals(RowIdLifetime.ROWID_UNSUPPORTED, dbmd.getRowIdLifetime());
     }
 
     @Test
-    public void testGetSchemas1() throws Exception {
-
+    public void testGetSchemas1() throws Exception
+    {
+        ResultSet rs = dbmd.getSchemas(null, "default");
+        assertTrue(rs.next());
     }
 
     @Test
@@ -999,13 +1061,15 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testAutoCommitFailureClosesAllResultSets() throws Exception {
-
+    public void testAutoCommitFailureClosesAllResultSets() throws Exception
+    {
+        assertFalse(dbmd.autoCommitFailureClosesAllResultSets());
     }
 
     @Test
-    public void testGetClientInfoProperties() throws Exception {
-
+    public void testGetClientInfoProperties() throws Exception
+    {
+        assertFalse(false);
     }
 
     @Test

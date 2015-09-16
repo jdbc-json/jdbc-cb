@@ -42,7 +42,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean allProceduresAreCallable() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -269,7 +269,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsMixedCaseIdentifiers() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -321,7 +321,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -401,7 +401,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getNumericFunctions() throws SQLException
     {
-        return "";
+        return "add,div,mod,mult,neg,sub,abs,acos,asin,atan,atan2,ceil,cos,deg,degrees,e,exp,ln,log,floor,inf,nan,neginf,pi,posinf,power,rad,radians,random,round,sign,sin,sqrt,tan,trunc";
     }
 
     /**
@@ -415,7 +415,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getStringFunctions() throws SQLException
     {
-        return "";
+        return "contains,initcap,length,lower,ltrim,position,pos,regex_contains,regex_like,regex_position,regex_pos,regex_replace,repeat,replace,rtrim,split,substr,title,trim,upper";
     }
 
     /**
@@ -442,7 +442,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getTimeDateFunctions() throws SQLException
     {
-        return "";
+        return "clock_millis,clock_str,date_add_millis,date_add_str,date_diff_millis,date_diff_str,date_part_millis,date_part_str,date_trunc_millis,date_trunc_str,millis,millis_to_str,millis_to_utc,millis_to_zone_name,now_millis,now_str,str_to_millis,str_to_utc,str_to_zone_name";
     }
 
     /**
@@ -461,7 +461,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getSearchStringEscape() throws SQLException
     {
-        return null;
+        return "\\";
     }
 
     /**
@@ -545,7 +545,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsConvert() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -590,7 +590,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsDifferentTableCorrelationNames() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -644,7 +644,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsGroupByUnrelated() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -659,7 +659,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsGroupByBeyondSelect() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -699,7 +699,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsMultipleTransactions() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -723,7 +723,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsMinimumSQLGrammar() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -735,7 +735,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsCoreSQLGrammar() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -760,7 +760,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsANSI92EntryLevelSQL() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -847,7 +847,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public String getSchemaTerm() throws SQLException
     {
-        return null;
+        return "NAMESPACE";
     }
 
     /**
@@ -1200,7 +1200,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsOpenStatementsAcrossCommit() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1214,7 +1214,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsOpenStatementsAcrossRollback() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1583,7 +1583,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsDataDefinitionAndDataManipulationTransactions() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -1674,7 +1674,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -1773,7 +1773,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getProcedureColumns(String catalog, String schemaPattern, String procedureNamePattern, String columnNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -1825,7 +1825,30 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException
     {
-        return null;
+        String sql = "select null as TABLE_CAT, namespace_id as TABLE_SCHEM, name as TABLE_NAME, 'TABLE' as TABLE_TYPE, null as REMARKS, null as TYPE_CAT, null as TYPE_SCHEM," +
+                "null as TYPE_NAME, null as SELF_REFERENCING_COL_NAME, null as REF_GENERATION from system:keyspaces";
+
+        if (schemaPattern != null || tableNamePattern != null)
+        {
+            sql += " where ";
+            if ( schemaPattern != null )
+            {
+                sql += "namespace_id like '" + schemaPattern + "'";
+            }
+            if ( schemaPattern != null && tableNamePattern != null )
+            {
+                sql += " and ";
+            }
+            if (tableNamePattern != null )
+            {
+                sql += "name LIKE '" + tableNamePattern +"'";
+            }
+        }
+
+        try(Statement statement = connection.createStatement())
+        {
+            return statement.executeQuery(sql);
+        }
     }
 
     /**
@@ -1846,7 +1869,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getSchemas() throws SQLException
     {
-        return null;
+        return getSchemas(null, null);
     }
 
     /**
@@ -1865,31 +1888,11 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getCatalogs() throws SQLException
     {
-        //todo need to return namespaces (default, system)
-        List <Map<String,String>> catalogs = new ArrayList<>(2);
-        Map <String,String>table = new HashMap<>();
-
-        table.put("TABLE_CAT","default");
-        catalogs.add(table);
-
-        table = new HashMap<>();
-        table.put("TABLE_CAT", "system");
-        catalogs.add(table);
-
-        CouchMetrics metrics = new CouchMetrics();
-        metrics.setResultCount(table.size());
-        // this just has to be not 0
-        metrics.setResultSize(1);
-
-        Map signature = new HashMap();
-        signature.put("TABLE_CAT","string");
-
-        CouchResponse couchResponse = new CouchResponse();
-        couchResponse.setResults(catalogs);
-        couchResponse.setMetrics(metrics);
-        couchResponse.setSignature(signature);
-
-        return new CBResultSet(null, couchResponse);
+        String sql = "select name as TABLE_CAT from system:namespaces";
+        try( Statement statement = connection.createStatement())
+        {
+            return statement.executeQuery( sql );
+        }
     }
 
     /**
@@ -1910,7 +1913,38 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getTableTypes() throws SQLException
     {
-        return null;
+        List <Map<String,String>> catalogs = new ArrayList<>(2);
+        Map <String,String>table = new HashMap<>();
+////SYSTEM; BUCKET; GSI INDEX; VIEW INDEX
+        table.put("TABLE_TYPE","SYSTEM");
+        catalogs.add(table);
+
+        table = new HashMap<>();
+        table.put("TABLE_TYPE", "BUCKET");
+        catalogs.add(table);
+
+        table = new HashMap<>();
+        table.put("TABLE_TYPE", "GSI INDEX");
+        catalogs.add(table);
+
+        table = new HashMap<>();
+        table.put("TABLE_TYPE", "VIEW INDEX");
+        catalogs.add(table);
+
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(table.size());
+        // this just has to be not 0
+        metrics.setResultSize(1);
+
+        Map signature = new HashMap();
+        signature.put("TABLE_TYPE","string");
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(catalogs);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
     }
 
     /**
@@ -2152,7 +2186,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getBestRowIdentifier(String catalog, String schema, String table, int scope, boolean nullable) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2203,7 +2237,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getVersionColumns(String catalog, String schema, String table) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2319,7 +2353,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getImportedKeys(String catalog, String schema, String table) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2401,7 +2435,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2490,7 +2524,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getCrossReference(String parentCatalog, String parentSchema, String parentTable, String foreignCatalog, String foreignSchema, String foreignTable) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -2560,7 +2594,240 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getTypeInfo() throws SQLException
     {
-        return null;
+        /*
+
+            TYPE_NAME: NUMERIC, DATA_TYPE: -5, PRECISION: 19, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: null, NULLABLE: 1, CASE_SENSITIVE: 0, SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: 0, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NUMERIC, MINIMUM_SCALE: 0, MAXIMUM_SCALE: 0, SQL_DATA_TYPE: -5, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: 10,
+            TYPE_NAME: NULL, DATA_TYPE: 0, PRECISION: 0, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: LENGTH, NULLABLE: 1, CASE_SENSITIVE: 1, SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NULL, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 0, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+            TYPE_NAME: NUMERIC, DATA_TYPE: 4, PRECISION: 10, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: null, NULLABLE: 1, CASE_SENSITIVE: 0, SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: 0, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NUMERIC, MINIMUM_SCALE: 0, MAXIMUM_SCALE: 0, SQL_DATA_TYPE: 4, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: 10,
+            TYPE_NAME: NUMERIC, DATA_TYPE: 8, PRECISION: 15, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: null, NULLABLE: 1, CASE_SENSITIVE: 0, SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: 0, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NUMERIC, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 8, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: 2,
+            TYPE_NAME: ARRAY, DATA_TYPE: 12, PRECISION: 65500, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1, SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: ARRAY, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+            TYPE_NAME: MISSING, DATA_TYPE: 12, PRECISION: 255, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1, SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: MISSING, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+            TYPE_NAME: OBJECT, DATA_TYPE: 12, PRECISION: 65500, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1, SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: OBJECT, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+            TYPE_NAME: STRING, DATA_TYPE: 12, PRECISION: 510, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1, SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: STRING, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+            TYPE_NAME: BOOLEAN, DATA_TYPE: 16, PRECISION: 1, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: null, NULLABLE: 1, CASE_SENSITIVE: 0, SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: BOOLEAN, MINIMUM_SCALE: null, MAXIMUM_SCALE: null, SQL_DATA_TYPE: 16, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null"
+            */
+
+        List <Map<String,Object>> types = new ArrayList<>(2);
+        Map <String,Object>type = new HashMap<>(32);
+
+
+        types.add(type);
+
+
+        // TYPE_NAME: NUMERIC, DATA_TYPE: 2, PRECISION: 38, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: precision,scale, NULLABLE: 1, CASE_SENSITIVE: 0,
+        // SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: 0, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NUMERIC, MINIMUM_SCALE: 0, MAXIMUM_SCALE: 38, SQL_DATA_TYPE: 2,
+        // SQL_DATETIME_SUB: null, NUM_PREC_RADIX: 10,
+
+        type.put("TYPE_NAME",       "NUMERIC");
+        type.put("DATA_TYPE",       Types.NUMERIC);
+        type.put("PRECISION",       38);
+        type.put("LITERAL_PREFIX",  null);
+        type.put("LITERAL_SUFFIX",  null);
+        type.put("CREATE_PARMS",    "precision,scale");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  false);
+        type.put("SEARCHABLE",      typePredBasic);
+        type.put("UNSIGNED_ATTRIBUTE", false);
+        type.put("FIXED_PREC_SCALE", false);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "NUMERIC");
+        type.put("MINIMUM_SCALE",   0);
+        type.put("MAXIMUM_SCALE",   38);
+        type.put("SQL_DATA_TYPE",   2);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  10);
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        //TYPE_NAME: NULL, DATA_TYPE: 0, PRECISION: 0, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: LENGTH, NULLABLE: 1, CASE_SENSITIVE: 1,
+        // SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: NULL, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 0,SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+
+        type.put("TYPE_NAME",       "NULL");
+        type.put("DATA_TYPE",       Types.NULL);
+        type.put("PRECISION",       0);
+        type.put("LITERAL_PREFIX",  "'");
+        type.put("LITERAL_SUFFIX",  "'");
+        type.put("CREATE_PARMS",    "length");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  true);
+        type.put("SEARCHABLE",      typeSearchable);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "NULL");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   0);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+
+        //TYPE_NAME: ARRAY, DATA_TYPE: 12, PRECISION: 65500, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1,
+        // SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: ARRAY, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        type.put("TYPE_NAME",       "ARRAY");
+        type.put("DATA_TYPE",       Types.ARRAY);
+        type.put("PRECISION",       65500);
+        type.put("LITERAL_PREFIX",  "'");
+        type.put("LITERAL_SUFFIX",  "'");
+        type.put("CREATE_PARMS",    "max length");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  true);
+        type.put("SEARCHABLE",      typeSearchable);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "ARRAY");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   Types.VARCHAR);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        // TYPE_NAME: MISSING, DATA_TYPE: 12, PRECISION: 255, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1,
+        // SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: MISSING, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+
+        type.put("TYPE_NAME",       "MISSING");
+        type.put("DATA_TYPE",       Types.VARCHAR);
+        type.put("PRECISION",       255);
+        type.put("LITERAL_PREFIX",  "'");
+        type.put("LITERAL_SUFFIX",  "'");
+        type.put("CREATE_PARMS",    "max length");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  true);
+        type.put("SEARCHABLE",      typeSearchable);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "MISSING");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   Types.VARCHAR);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        // TYPE_NAME: OBJECT, DATA_TYPE: 12, PRECISION: 65500, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1,
+        // SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: OBJECT, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+
+        type.put("TYPE_NAME",       "OBJECT");
+        type.put("DATA_TYPE",       Types.VARCHAR);
+        type.put("PRECISION",       65500);
+        type.put("LITERAL_PREFIX",  "'");
+        type.put("LITERAL_SUFFIX",  "'");
+        type.put("CREATE_PARMS",    "max length");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  true);
+        type.put("SEARCHABLE",      typeSearchable);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "OBJECT");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   Types.VARCHAR);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        // TYPE_NAME: STRING, DATA_TYPE: 12, PRECISION: 510, LITERAL_PREFIX: ', LITERAL_SUFFIX: ', CREATE_PARAMS: max length, NULLABLE: 1, CASE_SENSITIVE: 1,
+        // SEARCHABLE: 3, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: STRING, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 12, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null,
+
+        type.put("TYPE_NAME",       "STRING");
+        type.put("DATA_TYPE",       Types.VARCHAR);
+        type.put("PRECISION",       510);
+        type.put("LITERAL_PREFIX",  "'");
+        type.put("LITERAL_SUFFIX",  "'");
+        type.put("CREATE_PARMS",    "max length");
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  true);
+        type.put("SEARCHABLE",      typeSearchable);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "STRING");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   Types.VARCHAR);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+        types.add(type);
+        type = new HashMap<>(32);
+
+        // TYPE_NAME: BOOLEAN, DATA_TYPE: 16, PRECISION: 1, LITERAL_PREFIX: null, LITERAL_SUFFIX: null, CREATE_PARAMS: null, NULLABLE: 1, CASE_SENSITIVE: 0,
+        // SEARCHABLE: 2, UNSIGNED_ATTRIBUTE: null, FIXED_PREC_SCALE: 0, AUTO_INCREMENT: null, LOCAL_TYPE_NAME: BOOLEAN, MINIMUM_SCALE: null, MAXIMUM_SCALE: null,
+        // SQL_DATA_TYPE: 16, SQL_DATETIME_SUB: null, NUM_PREC_RADIX: null"
+
+        type.put("TYPE_NAME",       "BOOLEAN");
+        type.put("DATA_TYPE",       Types.BOOLEAN);
+        type.put("PRECISION",       1);
+        type.put("LITERAL_PREFIX",  null);
+        type.put("LITERAL_SUFFIX",  null);
+        type.put("CREATE_PARMS",    null);
+        type.put("NULLABLE",        typeNullable);
+        type.put("CASE_SENSITIVE",  false);
+        type.put("SEARCHABLE",      typePredBasic);
+        type.put("UNSIGNED_ATTRIBUTE", null);
+        type.put("FIXED_PREC_SCALE", 0);
+        type.put("AUTO_INCREMENT",  null);
+        type.put("LOCAL_TYPE_NAME", "BOOLEAN");
+        type.put("MINIMUM_SCALE",   null);
+        type.put("MAXIMUM_SCALE",   null);
+        type.put("SQL_DATA_TYPE",   Types.BOOLEAN);
+        type.put("SQL_DATETIME_SUB",null);
+        type.put("NUM_PREC_RADIX",  null);
+
+        types.add(type);
+
+        Map <String, String> signature = new <String, String> HashMap();
+        signature.put("TYPE_NAME","string");
+        signature.put("DATA_TYPE","numeric");
+        signature.put("PRECISION","numeric");
+        signature.put("LITERAL_PREFIX","string");
+        signature.put("LITERAL_SUFFIX","string");
+        signature.put("CREATE_PARMS","string");
+        signature.put("NULLABLE","numeric");
+        signature.put("CASE_SENSITIVE","boolean");
+        signature.put("SEARCHABLE","numeric");
+        signature.put("UNSIGNED_ATTRIBUTE","boolean");
+        signature.put("FIXED_PREC_SCALE","boolean");
+        signature.put("AUTO_INCREMENT","boolean");
+        signature.put("LOCAL_TYPE_NAME","string");
+        signature.put("MINIMUM_SCALE","numeric");
+        signature.put("MAXIMUM_SCALE","numeric");
+        signature.put("SQL_DATA_TYPE","numeric");
+        signature.put("SQL_DATETIME_SUB","numeric");
+        signature.put("NUM_PREC_RADIX","numeric");
+
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(types.size());
+        // this just has to be not 0
+        metrics.setResultSize(2);
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(types);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
+
     }
 
     /**
@@ -2730,7 +2997,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersUpdatesAreVisible(int type) throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -2749,7 +3016,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersDeletesAreVisible(int type) throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -2768,7 +3035,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean othersInsertsAreVisible(int type) throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -2896,7 +3163,24 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types) throws SQLException
     {
-        return null;
+        List <Map<String,String>> udts = new ArrayList<>(2);
+
+
+
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(udts.size());
+        // this just has to be not 0
+        metrics.setResultSize(1);
+
+        Map signature = new HashMap();
+
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(udts);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
     }
 
     /**
@@ -2939,7 +3223,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public boolean supportsNamedParameters() throws SQLException
     {
-        return false;
+        return true;
     }
 
     /**
@@ -3179,7 +3463,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getResultSetHoldability() throws SQLException
     {
-        return 0;
+        return ResultSet.HOLD_CURSORS_OVER_COMMIT;
     }
 
     /**
@@ -3250,7 +3534,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public int getSQLStateType() throws SQLException
     {
-        return 0;
+        return sqlStateSQL;
     }
 
     /**
@@ -3304,7 +3588,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public RowIdLifetime getRowIdLifetime() throws SQLException
     {
-        return null;
+        return RowIdLifetime.ROWID_UNSUPPORTED;
     }
 
     /**
@@ -3333,7 +3617,16 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException
     {
-        return null;
+
+        String sql = "select name as TABLE_SCHEM, 'Couchbase' as TABLE_CATALOG from system:namespaces";
+        if (schemaPattern != null)
+        {
+            sql += " where name like '" + schemaPattern +"'";
+        }
+        try( Statement statement = connection.createStatement())
+        {
+            return statement.executeQuery( sql );
+        }
     }
 
     /**
@@ -3393,7 +3686,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getClientInfoProperties() throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3447,7 +3740,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getFunctions(String catalog, String schemaPattern, String functionNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3547,7 +3840,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3615,7 +3908,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
     {
-        return null;
+        return getEmptyResultSet();
     }
 
     /**
@@ -3681,5 +3974,21 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
         return iface.isAssignableFrom(getClass());
+    }
+    private ResultSet getEmptyResultSet()
+    {
+        List types = new ArrayList();
+        Map signature = new HashMap();
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(types.size());
+        // this just has to be not 0
+        metrics.setResultSize(2);
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(types);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
     }
 }
