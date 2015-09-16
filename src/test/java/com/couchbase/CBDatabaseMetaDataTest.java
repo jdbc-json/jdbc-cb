@@ -706,7 +706,8 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetMaxUserNameLength() throws Exception {
+    public void testGetMaxUserNameLength() throws Exception
+    {
         assertEquals(0, dbmd.getMaxUserNameLength());
     }
 
@@ -767,8 +768,10 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetProcedureColumns() throws Exception {
-
+    public void testGetProcedureColumns() throws Exception
+    {
+        ResultSet rs = dbmd.getProcedureColumns(null, null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
@@ -789,7 +792,8 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetSchemas() throws Exception {
+    public void testGetSchemas() throws Exception
+    {
         ResultSet rs = dbmd.getSchemas();
         assertTrue(rs.next());
         assertEquals(rs.getString("TABLE_SCHEM"),"default");
@@ -813,48 +817,69 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetColumns() throws Exception {
+    public void testGetColumns() throws Exception
+    {
+        ResultSet rs = dbmd.getColumns(null, null, null, null);
+        assertFalse(rs.next());
+    }
+
+    @Test
+    public void testGetColumnPrivileges() throws Exception
+    {
+        ResultSet rs = dbmd.getColumnPrivileges(null, null, null, null);
+        assertFalse(rs.next());
 
     }
 
     @Test
-    public void testGetColumnPrivileges() throws Exception {
+    public void testGetTablePrivileges() throws Exception
+    {
+        ResultSet rs = dbmd.getTablePrivileges(null, null, null);
+        assertFalse(rs.next());
 
     }
 
     @Test
-    public void testGetTablePrivileges() throws Exception {
+    public void testGetBestRowIdentifier() throws Exception
+    {
+        ResultSet rs = dbmd.getBestRowIdentifier(null, null, null, 0, false);
+        assertFalse(rs.next());
+    }
+
+    @Test
+    public void testGetVersionColumns() throws Exception
+    {
+        ResultSet rs = dbmd.getVersionColumns(null, null, null);
+        assertFalse(rs.next());
+    }
+
+    @Test
+    public void testGetPrimaryKeys() throws Exception
+    {
+        ResultSet rs = dbmd.getPrimaryKeys(null, null, null);
+        assertTrue (rs.next());
+    }
+
+    @Test
+    public void testGetImportedKeys() throws Exception
+    {
+        ResultSet rs = dbmd.getImportedKeys(null, null, null);
+        assertFalse(rs.next());
 
     }
 
     @Test
-    public void testGetBestRowIdentifier() throws Exception {
-
+    public void testGetExportedKeys() throws Exception
+    {
+        ResultSet rs = dbmd.getExportedKeys(null, null,null);
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testGetVersionColumns() throws Exception {
-
-    }
-
-    @Test
-    public void testGetPrimaryKeys() throws Exception {
-
-    }
-
-    @Test
-    public void testGetImportedKeys() throws Exception {
-
-    }
-
-    @Test
-    public void testGetExportedKeys() throws Exception {
-
-    }
-
-    @Test
-    public void testGetCrossReference() throws Exception {
-
+    public void testGetCrossReference() throws Exception
+    {
+        ResultSet rs = dbmd.getCrossReference(null, null, null,null,null,null);
+        assertFalse(rs.next());
     }
 
     @Test
@@ -868,56 +893,61 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetIndexInfo() throws Exception {
+    public void testGetIndexInfo() throws Exception
+    {
 
     }
 
     @Test
-    public void testSupportsResultSetType() throws Exception {
+    public void testSupportsResultSetType() throws Exception
+    {
+        assertTrue(dbmd.supportsResultSetType(ResultSet.TYPE_FORWARD_ONLY));
+        assertFalse(dbmd.supportsResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE));
+        assertFalse(dbmd.supportsResultSetType(ResultSet.TYPE_SCROLL_SENSITIVE));
+    }
+
+    @Test
+    public void testSupportsResultSetConcurrency() throws Exception
+    {
+        assertFalse(dbmd.supportsResultSetConcurrency(0,0));
+    }
+
+    @Test
+    public void testOwnUpdatesAreVisible() throws Exception
+    {
+        assertFalse(dbmd.ownUpdatesAreVisible(0));
 
     }
 
     @Test
-    public void testSupportsResultSetConcurrency() throws Exception {
-
-    }
-
-    @Test
-    public void testOwnUpdatesAreVisible() throws Exception {
-
-    }
-
-    @Test
-    public void testOwnDeletesAreVisible() throws Exception {
-
+    public void testOwnDeletesAreVisible() throws Exception
+    {
+        assertFalse(dbmd.ownDeletesAreVisible(0));
     }
 
     @Test
     public void testOwnInsertsAreVisible() throws Exception {
-
+        assertFalse(dbmd.ownInsertsAreVisible(0));
     }
 
     @Test
-    public void testOthersUpdatesAreVisible() throws Exception
-    {
-        assertTrue(dbmd.othersUpdatesAreVisible(0));
+    public void testOthersUpdatesAreVisible() throws Exception {
+        assertFalse(dbmd.othersUpdatesAreVisible(0));
     }
 
     @Test
-    public void testOthersDeletesAreVisible() throws Exception
-    {
-        assertTrue(dbmd.othersDeletesAreVisible(0));
+    public void testOthersDeletesAreVisible() throws Exception {
+        assertFalse(dbmd.othersDeletesAreVisible(0));
     }
 
     @Test
-    public void testOthersInsertsAreVisible() throws Exception
-    {
-        assertTrue(dbmd.othersInsertsAreVisible(0));
+    public void testOthersInsertsAreVisible() throws Exception {
+        assertFalse(dbmd.othersInsertsAreVisible(0));
     }
 
     @Test
     public void testUpdatesAreDetected() throws Exception {
-
+        assertFalse(dbmd.updatesAreDetected(Types.NULL));
     }
 
     @Test
@@ -927,8 +957,9 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testInsertsAreDetected() throws Exception {
-
+    public void testInsertsAreDetected() throws Exception
+    {
+        assertFalse(dbmd.insertsAreDetected(Types.JAVA_OBJECT));
     }
 
     @Test
@@ -976,22 +1007,28 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
 
     @Test
     public void testGetSuperTypes() throws Exception {
-
+        ResultSet rs = dbmd.getSuperTypes( null,null,null );
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testGetSuperTables() throws Exception {
-
+    public void testGetSuperTables() throws Exception
+    {
+        ResultSet rs = dbmd.getSuperTables(null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testGetAttributes() throws Exception {
-
+    public void testGetAttributes() throws Exception
+    {
+        ResultSet rs = dbmd.getAttributes(null, null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testSupportsResultSetHoldability() throws Exception {
-
+    public void testSupportsResultSetHoldability() throws Exception
+    {
+        assertFalse(dbmd.supportsResultSetHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT));
     }
 
     @Test
@@ -1019,8 +1056,10 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetJDBCMinorVersion() throws Exception {
-        assertEquals(1,dbmd.getJDBCMinorVersion());
+    public void testGetJDBCMinorVersion() throws Exception
+    {
+        int expected = (Integer.parseInt(System.getProperty("java.specification.version").split("\\.")[1]) == 8) ? 2:1;
+        assertEquals(expected,dbmd.getJDBCMinorVersion());
     }
 
     @Test
@@ -1073,17 +1112,24 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testGetFunctions() throws Exception {
-
+    public void testGetFunctions() throws Exception
+    {
+        ResultSet rs = dbmd.getFunctions(null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testGetFunctionColumns() throws Exception {
-
+    public void testGetFunctionColumns() throws Exception
+    {
+        ResultSet rs = dbmd.getFunctionColumns(null, null, null, null);
+        assertFalse(rs.next());
     }
 
     @Test
-    public void testGetPseudoColumns() throws Exception {
+    public void testGetPseudoColumns() throws Exception
+    {
+        ResultSet rs = dbmd.getPseudoColumns(null, null, null, null);
+        assertFalse(rs.next());
 
     }
 
