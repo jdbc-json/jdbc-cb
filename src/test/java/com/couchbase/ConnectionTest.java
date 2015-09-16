@@ -655,18 +655,6 @@ public class ConnectionTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testUnwrap() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsWrapperFor() throws Exception
-    {
-
-    }
-
-    @Test
     public void testCheckClosed() throws Exception
     {
 
