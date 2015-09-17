@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,7 +28,7 @@ public class Cluster
 {
     private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
-    final Integer instanceIndex = new Integer(0);
+    Integer instanceIndex = new Integer(0);
     AtomicInteger numInstances = new AtomicInteger(0);
     List<Instance> endpoints = new ArrayList<Instance>();
 
@@ -54,18 +55,28 @@ public class Cluster
             }
         }
     }
-    public String getNextEndpoint(boolean ssl)
+    public Instance getNextEndpoint()
     {
 
-        if (ssl)
-        {
-            return "https://54.237.32.30:18093/query/service";
-        }
-        else
-        {
-            return "http://54.237.32.30:8093/query/service";
-        }
         /*
+        Map jsonObject = new HashMap();
+        jsonObject.put("queryEndpoint","http://54.237.32.30:8093/query/service" );
+        jsonObject.put("adminEndpoint","http://54.237.32.30:8093/query/admin" );
+
+        jsonObject.put("querySecure", "https://54.237.32.30:18093/query/service");
+        jsonObject.put("adminSecure", "https://54.237.32.30:18093/query/admin");
+
+        try
+        {
+            Instance instance = new Instance(jsonObject);
+            return instance;
+        }
+        catch (SQLException ex )
+        {
+            return null;
+        }
+        */
+
 
         int i;
         synchronized (instanceIndex)
@@ -81,15 +92,8 @@ public class Cluster
 
         logger.trace( "Endpoint {} of {}",i,numInstances);
 
-        if (ssl)
-        {
-            return endpoints.get(i).getSecureQueryEndPoint();
-        }
-        else
-        {
-            return endpoints.get(i).getQueryEndPoint();
-        }
-*/
+        return endpoints.get(i);
+
 
     }
     public void addEndPoint(Map endpoint)
@@ -104,11 +108,11 @@ public class Cluster
             logger.debug("Invalid endpoint ", ex.getCause().getMessage());
         }
     }
-    public void invalidateEndpoint(String endpoint)
+    public void invalidateEndpoint(Instance instance)
     {
         synchronized (instanceIndex)
         {
-            endpoints.remove(endpoint);
+            endpoints.remove(instance);
             numInstances.decrementAndGet();
         }
     }

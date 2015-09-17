@@ -108,4 +108,8 @@ public class Instance
             throw new SQLException("Endpoint " + uriStr + " is invalid", e);
         }
     }
+    public String getEndpointURL(boolean ssl)
+    {
+        return ssl?querySecure:queryEndPoint;
+    }
 }

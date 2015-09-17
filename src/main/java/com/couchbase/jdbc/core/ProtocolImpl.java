@@ -16,6 +16,7 @@ import com.couchbase.CBResultSet;
 import com.couchbase.CBStatement;
 import com.couchbase.ConnectionParameters;
 import com.couchbase.jdbc.Cluster;
+import com.couchbase.jdbc.Instance;
 import com.couchbase.jdbc.Protocol;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -298,8 +299,8 @@ public class ProtocolImpl implements Protocol
     public CBResultSet query(CBStatement statement, String sql) throws SQLException
     {
 
-        String endPoint = cluster.getNextEndpoint(ssl);
-        logger.trace("Using endpoint {}", endPoint);
+        Instance instance = cluster.getNextEndpoint();
+
 
         Map <String,String>parameters = new HashMap();
 
@@ -316,12 +317,15 @@ public class ProtocolImpl implements Protocol
 
         while(true)
         {
+            String url = instance.getEndpointURL(ssl);
+            logger.trace("Using endpoint {}", url);
+
             URI uri = null;
             try
             {
-                uri = new URIBuilder(endPoint).addParameters(parms).build();
+                uri = new URIBuilder(url).addParameters(parms).build();
             } catch (URISyntaxException ex) {
-                logger.error("Invalid request {}", endPoint);
+                logger.error("Invalid request {}", url);
             }
 
             HttpGet httpGet = new HttpGet(uri);
@@ -340,10 +344,10 @@ public class ProtocolImpl implements Protocol
                 logger.trace(cte.getLocalizedMessage());
 
                 // this one failed, lets move on
-                cluster.invalidateEndpoint(endPoint);
+                cluster.invalidateEndpoint(instance);
                 // get the next one
-                endPoint = cluster.getNextEndpoint(ssl);
-                if (endPoint == null) {
+                instance = cluster.getNextEndpoint();
+                if (instance == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
 
@@ -554,14 +558,17 @@ public class ProtocolImpl implements Protocol
 
     public CouchResponse doQuery(String query, Map queryParameters) throws SQLException
     {
-        String endPoint = cluster.getNextEndpoint(ssl);
+        Instance endPoint = cluster.getNextEndpoint();
 
         // keep trying endpoints
-        while(true) {
-            try {
+        while(true)
+        {
 
-                logger.trace("Using endpoint {}", endPoint);
-                HttpPost httpPost = new HttpPost(endPoint);
+            try {
+                String url = endPoint.getEndpointURL(ssl);
+
+                logger.trace("Using endpoint {}", url);
+                HttpPost httpPost = new HttpPost(url);
                 httpPost.setHeader("Accept", "application/json");
 
                 logger.trace("do query {}", httpPost.toString());
@@ -586,7 +593,7 @@ public class ProtocolImpl implements Protocol
                 // this one failed, lets move on
                 cluster.invalidateEndpoint(endPoint);
                 // get the next one
-                endPoint = cluster.getNextEndpoint(ssl);
+                endPoint = cluster.getNextEndpoint();
                 if (endPoint == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
@@ -663,7 +670,10 @@ public class ProtocolImpl implements Protocol
     {
         try
         {
-            HttpPost httpPost = new HttpPost(cluster.getNextEndpoint(ssl));
+            Instance instance = cluster.getNextEndpoint();
+            String url = instance.getEndpointURL(ssl);
+
+            HttpPost httpPost = new HttpPost( url );
             httpPost.setHeader("Accept", "application/json");
 
             Map <String,Object> parameters = new HashMap<String,Object>();
