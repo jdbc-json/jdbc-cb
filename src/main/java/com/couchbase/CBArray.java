@@ -28,6 +28,7 @@ class CBArray implements Array
     private Object []array;
     private String jsonArray;
 
+    @SuppressWarnings("unchecked")
     private static final Map <String, String> typeMap = new <String, String> HashMap();
 
     static

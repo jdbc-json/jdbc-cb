@@ -1913,8 +1913,8 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     @Override
     public ResultSet getTableTypes() throws SQLException
     {
-        List <Map<String,String>> catalogs = new ArrayList<>(2);
-        Map <String,String>table = new HashMap<>();
+        List <Map<String,String>> catalogs = new ArrayList<Map<String,String>>(2);
+        Map <String,String>table = new HashMap<String, String>();
 ////SYSTEM; BUCKET; GSI INDEX; VIEW INDEX
         table.put("TABLE_TYPE","SYSTEM");
         catalogs.add(table);
@@ -1936,7 +1936,8 @@ public class CBDatabaseMetaData implements DatabaseMetaData
         // this just has to be not 0
         metrics.setResultSize(1);
 
-        Map signature = new HashMap();
+        @SuppressWarnings("unchecked")
+        Map <String, String> signature = new HashMap();
         signature.put("TABLE_TYPE","string");
 
         CouchResponse couchResponse = new CouchResponse();
@@ -2809,6 +2810,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
 
         types.add(type);
 
+        @SuppressWarnings("unchecked")
         Map <String, String> signature = new <String, String> HashMap();
         signature.put("TYPE_NAME","string");
         signature.put("DATA_TYPE","numeric");
@@ -3185,7 +3187,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
         // this just has to be not 0
         metrics.setResultSize(1);
 
-        Map signature = new HashMap();
+        @SuppressWarnings("unchecked") Map <String, String>signature = new <String,String>HashMap();
 
 
         CouchResponse couchResponse = new CouchResponse();
@@ -3999,6 +4001,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
         CouchResponse couchResponse = new CouchResponse();
         couchResponse.setResults(types);
         couchResponse.setMetrics(metrics);
+        //noinspection unchecked
         couchResponse.setSignature(signature);
 
         return new CBResultSet(null, couchResponse);

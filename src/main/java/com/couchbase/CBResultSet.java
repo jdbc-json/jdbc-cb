@@ -608,7 +608,7 @@ public class CBResultSet implements java.sql.ResultSet
     // internal to avoid checking twice
     private String getStringChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object>jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -666,7 +666,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     private boolean getBooleanChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
         Object object = jsonObject.get(columnLabel);
@@ -703,7 +703,7 @@ public class CBResultSet implements java.sql.ResultSet
     private byte getByteChecked(String columnLabel) throws SQLException
     {
         byte value;
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
         try
         {
@@ -757,7 +757,7 @@ public class CBResultSet implements java.sql.ResultSet
     {
         short value;
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
         try
@@ -810,7 +810,7 @@ public class CBResultSet implements java.sql.ResultSet
     private int getIntChecked(String columnLabel) throws SQLException
     {
         int value;
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
 
        if( checkColumnLabelMissing(jsonObject, columnLabel))
        {
@@ -870,7 +870,7 @@ public class CBResultSet implements java.sql.ResultSet
     private long getLongChecked(String columnLabel) throws SQLException
     {
         long value = 0;
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
 
@@ -928,7 +928,7 @@ public class CBResultSet implements java.sql.ResultSet
     private float getFloatChecked(String columnLabel) throws SQLException
     {
         float value=0;
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
 
@@ -990,7 +990,7 @@ public class CBResultSet implements java.sql.ResultSet
     {
         double value=0;
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
 
@@ -1052,7 +1052,7 @@ public class CBResultSet implements java.sql.ResultSet
     private BigDecimal getBigDecimalChecked(String columnLabel, int scale) throws SQLException
     {
         BigDecimal value;
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
         Object json = jsonObject.get(columnLabel);
@@ -1101,7 +1101,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     private byte[] getBytesChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         checkColumnLabelMissing(jsonObject, columnLabel);
 
         String json = (String)jsonObject.get(columnLabel);
@@ -1221,7 +1221,7 @@ public class CBResultSet implements java.sql.ResultSet
     {
         ByteArrayInputStream byteArrayInputStream;
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
 
         String json;
 
@@ -1286,7 +1286,7 @@ public class CBResultSet implements java.sql.ResultSet
     private InputStream getUnicodeStreamChecked(String columnLabel) throws SQLException
     {
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
             return null;
 
@@ -1340,7 +1340,7 @@ public class CBResultSet implements java.sql.ResultSet
     private InputStream getBinaryStreamChecked(String columnLabel) throws SQLException
     {
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -1547,7 +1547,7 @@ public class CBResultSet implements java.sql.ResultSet
     private Object getObjectChecked(String columnLabel) throws SQLException
     {
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -1609,7 +1609,7 @@ public class CBResultSet implements java.sql.ResultSet
     }
     private SQLJSON getSQLJSONChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if( checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -1697,7 +1697,7 @@ public class CBResultSet implements java.sql.ResultSet
     }
     private Reader getCharacterStreamChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -1759,7 +1759,7 @@ public class CBResultSet implements java.sql.ResultSet
     {
         BigDecimal value=null;
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -3660,7 +3660,7 @@ public class CBResultSet implements java.sql.ResultSet
     public Array getArrayChecked(String columnLabel) throws SQLException
     {
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -3744,7 +3744,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         Date date;
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -3851,7 +3851,7 @@ public class CBResultSet implements java.sql.ResultSet
     private Time getTimeChecked(String columnLabel, Calendar cal) throws SQLException
     {
         Time time;
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -3940,7 +3940,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         Timestamp ts;
 
-        Map  jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -4033,7 +4033,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     private URL getURLChecked(String columnLabel) throws SQLException
     {
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -4505,7 +4505,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -4558,7 +4558,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -4731,7 +4731,7 @@ public class CBResultSet implements java.sql.ResultSet
         checkClosed();
         checkIndex();
 
-        Map jsonObject = response.getResults().get(index);
+        Map <String,Object> jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
         {
             return null;
@@ -5654,10 +5654,12 @@ public class CBResultSet implements java.sql.ResultSet
         // TODO this is not complete
         if ( type.getName().equals("java.sql.Timestamp"))
         {
+            //noinspection unchecked
             return (T) getTimestampChecked(columnLabel,null);
         }
         else if ( type.getName().equals("java.sql.Date"))
         {
+            //noinspection unchecked
             return (T) getDateChecked(columnLabel,null);
         }
 
