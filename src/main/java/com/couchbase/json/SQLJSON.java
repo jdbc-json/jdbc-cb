@@ -24,62 +24,62 @@ import java.util.Map;
  */
 public interface SQLJSON
 {
-    public void free();
+    void free();
 
-    public InputStream getBinaryStream() throws SQLException;
-    public void setBinaryStream() throws SQLException;
+    InputStream getBinaryStream() throws SQLException;
+    void setBinaryStream() throws SQLException;
 
-    public Reader getCharacterStream() throws SQLException;
-    public void setCharacterStream(Reader stream) throws SQLException;
+    Reader getCharacterStream() throws SQLException;
+    void setCharacterStream(Reader stream) throws SQLException;
 
-    public String getString() throws SQLException;
-    public void setString(String str) throws SQLException;
+    String getString() throws SQLException;
+    void setString(String str) throws SQLException;
 
-    public boolean getBoolean() throws SQLException;
-    public void setBoolean(boolean val) throws SQLException;
+    boolean getBoolean() throws SQLException;
+    void setBoolean(boolean val) throws SQLException;
 
-    public byte getByte() throws  SQLException;
-    public void setByte(byte val ) throws SQLException;
+    byte getByte() throws  SQLException;
+    void setByte(byte val) throws SQLException;
 
-    public short getShort() throws SQLException;
-    public void setShort(short val) throws SQLException;
+    short getShort() throws SQLException;
+    void setShort(short val) throws SQLException;
 
-    public int getInt() throws SQLException;
-    public void setInt(int val) throws SQLException;
+    int getInt() throws SQLException;
+    void setInt(int val) throws SQLException;
 
-    public long getLong() throws SQLException;
-    public void setLong(long val) throws SQLException;
+    long getLong() throws SQLException;
+    void setLong(long val) throws SQLException;
 
-    public void setFloat(float val)throws SQLException;
-    public float getFloat()throws SQLException;
+    void setFloat(float val)throws SQLException;
+    float getFloat()throws SQLException;
 
-    public void setDouble( double val )throws SQLException;
-    public double getDouble()throws SQLException;
+    void setDouble(double val)throws SQLException;
+    double getDouble()throws SQLException;
 
-    public void setBytes( byte[] val)throws SQLException;
-    public byte[] getBytes()throws SQLException;
+    void setBytes(byte[] val)throws SQLException;
+    byte[] getBytes()throws SQLException;
 
-    public void setDate(Date val, Calendar cal)throws SQLException;
-    public Date getDate(Calendar cal)throws SQLException;
+    void setDate(Date val, Calendar cal)throws SQLException;
+    Date getDate(Calendar cal)throws SQLException;
 
-    public void setTime( Time val, Calendar cal )throws SQLException;
-    public Time getTime(Calendar cal)throws SQLException;
+    void setTime(Time val, Calendar cal)throws SQLException;
+    Time getTime(Calendar cal)throws SQLException;
 
-    public void setTimestamp( Timestamp val, Calendar cal)throws SQLException;
-    public Timestamp getTimestamp(Calendar cal)throws SQLException;
+    void setTimestamp(Timestamp val, Calendar cal)throws SQLException;
+    Timestamp getTimestamp(Calendar cal)throws SQLException;
 
-    public BigDecimal getBigDecimal() throws SQLException;
-    public void setBigDecimal(BigDecimal val) throws SQLException;
+    BigDecimal getBigDecimal() throws SQLException;
+    void setBigDecimal(BigDecimal val) throws SQLException;
 
-    public Map getMap() throws SQLException;
-    public void setMap(Map map) throws SQLException;
+    Map getMap() throws SQLException;
+    void setMap(Map map) throws SQLException;
 
-    public List getArray() throws SQLException;
-    public void setArray(Object []array) throws SQLException;
-    public void setArray(List array) throws SQLException;
+    List getArray() throws SQLException;
+    void setArray(Object[] array) throws SQLException;
+    void setArray(List array) throws SQLException;
 
-    public Object getObject() throws SQLException;
-    public void setObject(Object val) throws SQLException;
+    Object getObject() throws SQLException;
+    void setObject(Object val) throws SQLException;
 
     /**
      *
@@ -88,7 +88,7 @@ public interface SQLJSON
              Get the given object with the given fieldName,
      * @throws SQLException   Throw not valid exception if the SQLJSON object is not a JSON object.
      */
-    public Object getObject(String columnName) throws SQLException;
+    Object getObject(String columnName) throws SQLException;
 
 
     /**
@@ -98,7 +98,7 @@ public interface SQLJSON
      * @param val
      * @throws SQLException  Throw not valid exception if the SQLJSON object is not a JSON object.
      */
-    public void setObject(String columnName, Object val) throws SQLException;
+    void setObject(String columnName, Object val) throws SQLException;
 
 
     /**
@@ -109,7 +109,7 @@ public interface SQLJSON
      * @param index
      * @return
      */
-    public Object get(int index) ;
+    Object get(int index) ;
 
     /**
      * Set the given index with the given element, if the SQLJSON object is a JSON array.
@@ -117,15 +117,15 @@ public interface SQLJSON
      * @param index
      * @return
      */
-    public void set(int index, Object object) throws SQLException;
-    public boolean isNull() throws SQLException;
+    void set(int index, Object object) throws SQLException;
+    boolean isNull() throws SQLException;
 
-    public int getJDBCType();
-    public Object parameterValue();
+    int getJDBCType();
+    Object parameterValue();
 
 
-    public Object parse(Class clazz) throws SQLException;
-    public Map parse() throws SQLException;
+    Object parse(Class clazz) throws SQLException;
+    Map parse() throws SQLException;
 
-    public int compareTo(SQLJSON sqljson);
+    int compareTo(SQLJSON sqljson);
 }

@@ -76,7 +76,7 @@ public class SqlJsonImplementation implements SQLJSON
         }
         catch (UnsupportedEncodingException ex)
         {
-            //TODO fixme
+            logger.error("Error Encoding", ex );
             return null;
         }
     }
@@ -150,7 +150,7 @@ public class SqlJsonImplementation implements SQLJSON
                 return (boolean) jsonObject;
             case JSONTypes.JSON_NUMBER:
                 Number number = (Number)jsonObject;
-                return number != (Number)0;
+                return !number.equals((Number)0);
             case JSONTypes.JSON_STRING:
                 String string = (String) jsonObject;
                 return !string.isEmpty();
@@ -171,7 +171,7 @@ public class SqlJsonImplementation implements SQLJSON
     public void setBoolean(boolean val) throws SQLException
     {
         field = new Field(null,"boolean" );
-        jsonObject = (boolean)val;
+        jsonObject = val;
     }
 
     public byte getByte() throws SQLException
@@ -191,8 +191,6 @@ public class SqlJsonImplementation implements SQLJSON
             return ((Byte)jsonObject).byteValue();
         else if (jsonObject instanceof Double)
             return ((Double)jsonObject).byteValue();
-
-            //todo this needs more options
         else if (!(jsonObject instanceof Number))
             throw new SQLException( "value " +jsonObject+ " not a number");
         return 0;
@@ -716,7 +714,7 @@ public class SqlJsonImplementation implements SQLJSON
         else if (x instanceof Byte)
             setByte(((Byte)x).byteValue());
         else if (x instanceof Character)
-            setString(((Character) x).toString());
+            setString(x.toString());
         else if ( x instanceof List)
             setArray((List)x);
         else if ( x instanceof Object [] )

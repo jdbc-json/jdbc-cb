@@ -19,9 +19,6 @@ import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
 import com.couchbase.jdbc.util.TimestampUtils;
 import com.couchbase.json.SQLJSON;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.boon.json.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -702,7 +699,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         else if (x instanceof SQLJSON)
             setSQLJSON(parameterIndex, (SQLJSON) x);
         else if (x instanceof Character)
-            setString(parameterIndex, ((Character)x).toString());
+            setString(parameterIndex, x.toString());
         else if (x instanceof Map)
             setMap(parameterIndex, (Map)x);
         else
@@ -818,7 +815,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         if (reader == null )
         {
             setNull(parameterIndex, Types.VARCHAR);
-            return;
         }
         else
         {
@@ -930,7 +926,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         }
         else
         {
-            fields[parameterIndex - 1] = ((CBArray) x).getArray();
+            fields[parameterIndex - 1] = x.getArray();
         }
     }
 
@@ -994,7 +990,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         if (x == null)
         {
             setNull(parameterIndex, Types.DATE);
-            return;
         }
         else
         {
@@ -1075,7 +1070,6 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         if (x == null)
         {
             setNull(parameterIndex, Types.TIME);
-            return;
         }
         else
         {
@@ -1690,7 +1684,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     private static boolean castToBoolean(final Object in) throws SQLException {
         try {
             if (in instanceof String)
-                return ((String) in).equalsIgnoreCase("true") || ((String) in).equals("1") || ((String) in).equalsIgnoreCase("t");
+                return ((String) in).equalsIgnoreCase("true") || in.equals("1") || ((String) in).equalsIgnoreCase("t");
             if (in instanceof BigDecimal)
                 return ((BigDecimal) in).signum() != 0;
             if (in instanceof Number)

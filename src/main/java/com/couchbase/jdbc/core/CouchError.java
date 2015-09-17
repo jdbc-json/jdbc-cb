@@ -11,9 +11,6 @@
 
 package com.couchbase.jdbc.core;
 
-/**
- * Created by davec on 2015-06-23.
- */
 public class CouchError
 {
     Integer code;

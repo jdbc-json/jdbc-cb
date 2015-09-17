@@ -11,7 +11,6 @@
 
 package com.couchbase;
 
-import com.couchbase.jdbc.TestUtil;
 import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
 import org.hamcrest.core.IsEqual;
@@ -652,7 +651,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         Calendar cal = Calendar.getInstance();
 
 
-        cal.set(2015,0,31,23,59,59);
+        cal.set(2015,Calendar.JANUARY,31,23,59,59);
         Calendar cal2 = Calendar.getInstance();
 
         Date date = new Date(cal.getTime().getTime());

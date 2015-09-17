@@ -19,10 +19,6 @@ import org.junit.runners.JUnit4;
 
 import java.sql.*;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Created by davec on 2015-09-09.
  */
@@ -1065,7 +1061,7 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     @Test
     public void testGetSQLStateType() throws Exception
     {
-        assertEquals(dbmd.sqlStateSQL, dbmd.getSQLStateType());
+        assertEquals(DatabaseMetaData.sqlStateSQL, dbmd.getSQLStateType());
     }
 
     @Test

@@ -11,13 +11,9 @@
 
 package com.couchbase;
 
-import com.couchbase.jdbc.TestUtil;
 import com.couchbase.json.SQLJSON;
-import junit.framework.TestCase;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -508,7 +504,7 @@ public class TestSQLJson extends CouchBaseTestCase
             assertEquals(1, preparedStatement.executeUpdate());
 
             preparedStatement.setString(1, "val2");
-            sqljson.setInt((int) 0);
+            sqljson.setInt(0);
             ((CBPreparedStatement)preparedStatement).setSQLJSON(2, sqljson);
 
             assertEquals(1, preparedStatement.executeUpdate());
@@ -586,7 +582,7 @@ public class TestSQLJson extends CouchBaseTestCase
     public void testSetLong() throws Exception
     {
         SQLJSON sqljson = ((CBConnection)con).createSQLJSON();
-        sqljson.setLong((long) Long.MAX_VALUE);
+        sqljson.setLong(Long.MAX_VALUE);
 
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {

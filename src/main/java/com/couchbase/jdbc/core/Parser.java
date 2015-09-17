@@ -174,8 +174,8 @@ public class Parser {
 
     /**
      * unmark '??' in query back to '?'
-     * @param query
-     * @return
+     * @param query query to remove question marks from
+     * @return modified query
      */
     public static String unmarkDoubleQuestion( String query )
     {
@@ -183,7 +183,7 @@ public class Parser {
 
         char[] aChars = query.toCharArray();
         StringBuilder buf = new StringBuilder(aChars.length);
-        for(int i=0, j=-1; i< aChars.length; i++)
+        for(int i=0, j; i< aChars.length; i++)
         {
             switch (aChars[i])
             {

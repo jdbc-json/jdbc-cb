@@ -51,7 +51,7 @@ public class CouchResponse
     public ArrayList<Field>getFields()
     {
         // check to make sure we haven't set these yet
-        if (fieldsInitialized.getAndSet(true) == false)
+        if (!fieldsInitialized.getAndSet(true))
         {
             if (signature != null)
             {
@@ -61,7 +61,7 @@ public class CouchResponse
             if (signature.containsKey("*")  )
             {
                 if (metrics.getResultSize() > 0) {
-                    Map<String,Object> firstRow = (Map<String,Object>)results.get(0);
+                    Map<String,Object> firstRow = results.get(0);
                     Set <String>keySet = firstRow.keySet();
 
                     for (String key : keySet)

@@ -67,7 +67,7 @@ public class DriverTest extends TestCase
     {
         try
         {
-            Connection con = DriverManager.getConnection(TestUtil.getBadURL()+"/?connectionTimeout=1000", TestUtil.getUser(), TestUtil.getPassword());
+            DriverManager.getConnection(TestUtil.getBadURL()+"/?connectionTimeout=1000", TestUtil.getUser(), TestUtil.getPassword());
             assertFalse("Should not get here",true);
         }
         catch(SQLException ex)

@@ -22,13 +22,13 @@ import java.util.Map;
 /**
  * Created by davec on 2015-07-21.
  */
-public class CBArray implements Array
+class CBArray implements Array
 {
-    String baseType;
-    Object []array;
-    String jsonArray;
+    private String baseType;
+    private Object []array;
+    private String jsonArray;
 
-    private static Map <String, String> typeMap = new <String, String> HashMap();
+    private static final Map <String, String> typeMap = new <String, String> HashMap();
 
     static
     {
@@ -51,7 +51,7 @@ public class CBArray implements Array
 
 
     }
-    protected CBArray(List arrayList)
+    CBArray(List arrayList)
     {
         if (arrayList == null )
         {
@@ -64,7 +64,7 @@ public class CBArray implements Array
             jsonArray = JsonFactory.toJson(array);
         }
     }
-    protected CBArray(String typeName, Object []array)
+    CBArray(String typeName, Object[] array)
     {
         this.array = array;
         baseType = typeName;
@@ -427,7 +427,7 @@ public class CBArray implements Array
         array=null;
         jsonArray=null;
     }
-    protected String getJsonArray()
+    String getJsonArray()
     {
         return jsonArray;
     }

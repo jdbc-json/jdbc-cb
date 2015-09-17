@@ -13,11 +13,6 @@ package com.couchbase.jdbc.core;
 
 import com.couchbase.jdbc.util.JSONTypes;
 
-import java.sql.Types;
-
-/**
- * Created by davec on 2015-02-26.
- */
 public class Field
 {
     String name;

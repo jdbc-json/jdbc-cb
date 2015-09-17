@@ -12,8 +12,6 @@
 package com.couchbase.jdbc;
 
 
-import com.couchbase.CBPreparedStatement;
-
 import java.sql.ParameterMetaData;
 import java.sql.SQLException;
 
@@ -57,7 +55,7 @@ public class CBParameterMetaData implements ParameterMetaData
     @Override
     public int isNullable(int param) throws SQLException
     {
-        return 0;
+        return parameterNullable;
     }
 
     /**
@@ -174,7 +172,7 @@ public class CBParameterMetaData implements ParameterMetaData
     @Override
     public int getParameterMode(int param) throws SQLException
     {
-        return 0;
+        return parameterModeIn;
     }
 
     /**
@@ -197,7 +195,11 @@ public class CBParameterMetaData implements ParameterMetaData
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException
     {
-        return null;
+        if (iface.isAssignableFrom(getClass()))
+        {
+            return iface.cast(this);
+        }
+        throw new SQLException("Cannot unwrap to " + iface.getName());
     }
 
     /**
@@ -218,6 +220,6 @@ public class CBParameterMetaData implements ParameterMetaData
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException
     {
-        return false;
+        return iface.isAssignableFrom(getClass());
     }
 }

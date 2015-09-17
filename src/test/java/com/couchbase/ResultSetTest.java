@@ -12,8 +12,6 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,8 +25,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.Calendar;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by davec on 2015-07-15.
@@ -177,7 +173,7 @@ public class ResultSetTest extends CouchBaseTestCase
             {
                 assertTrue(rs.next());
                 expectedException.expect(SQLFeatureNotSupportedException.class);
-                rs.updateAsciiStream(1, null, (int) 0);
+                rs.updateAsciiStream(1, null, 0);
             }
         }
     }

@@ -32,9 +32,9 @@ public class WrapperTest extends CouchBaseTestCase
      *
      */
     private interface PrivateInterface {
-    };
+    }
 
-    
+
     @Before
     public void setup() throws Exception
     {

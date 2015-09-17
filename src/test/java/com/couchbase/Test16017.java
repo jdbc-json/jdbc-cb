@@ -11,19 +11,11 @@
 
 package com.couchbase;
 
-import com.couchbase.jdbc.TestUtil;
-import com.couchbase.json.SQLJSON;
-import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by davec on 2015-08-11.

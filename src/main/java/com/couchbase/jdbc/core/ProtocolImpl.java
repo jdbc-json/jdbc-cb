@@ -36,7 +36,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -58,7 +57,6 @@ import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.*;
-import java.util.jar.Attributes;
 
 /**
  * Created by davec on 2015-02-22.
@@ -396,7 +394,7 @@ public class ProtocolImpl implements Protocol
         }
         couchResponse.status    = (String)rootAsMap.get("status");
         couchResponse.requestId = (String)rootAsMap.get("requestID");
-        Object signature = (Object)rootAsMap.get("signature");
+        Object signature = rootAsMap.get("signature");
 
         if ( signature instanceof Map )
         {
@@ -512,8 +510,7 @@ public class ProtocolImpl implements Protocol
                 message = "Service Unavailable: there is an issue preventing the request from being serviced";
                 logger.debug("Error with the request {}", message);
 
-                CouchError  errors =  null,
-                        warnings = null;
+                CouchError  errors, warnings;
 
                 if (couchResponse.metrics.errorCount > 0 )
                 {
@@ -661,6 +658,7 @@ public class ProtocolImpl implements Protocol
         return doQuery(sql, parameters);
     }
 
+// batch statements do not work
     public int [] executeBatch() throws SQLException
     {
         try
@@ -674,8 +672,7 @@ public class ProtocolImpl implements Protocol
             {
                 parameters.put(STATEMENT, query);
             }
-            //TODO fixme
-            //httpPost.setEntity(new UrlEncodedFormEntity(parameters));
+
             CloseableHttpResponse response = httpClient.execute(httpPost);
             int status = response.getStatusLine().getStatusCode();
 

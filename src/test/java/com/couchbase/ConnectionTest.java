@@ -12,9 +12,6 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
-import junit.framework.TestCase;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -172,7 +169,7 @@ public class ConnectionTest extends CouchBaseTestCase
         Statement statement = con.createStatement();
         try
         {
-            int inserted = statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K1', 1)");
+            statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K1', 1)");
         }
         catch (SQLException ex)
         {

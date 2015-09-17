@@ -1065,7 +1065,7 @@ public class CBResultSet implements java.sql.ResultSet
         try
         {
             value = new BigDecimal((double)json);
-            value.setScale(scale);
+            value = value.setScale(scale,BigDecimal.ROUND_HALF_UP);
         }
         catch( Exception ex)
         {
@@ -1114,7 +1114,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
-            return ((String)json).getBytes();
+            return json.getBytes();
 
         }
         catch( Exception ex)
@@ -1223,7 +1223,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         Map  jsonObject = response.getResults().get(index);
 
-        String json = null;
+        String json;
 
 
         checkColumnLabelMissing(jsonObject, columnLabel);
@@ -1290,7 +1290,7 @@ public class CBResultSet implements java.sql.ResultSet
         if (checkColumnLabelMissing(jsonObject, columnLabel))
             return null;
 
-        Object json = (String)jsonObject.get(columnLabel);
+        Object json = jsonObject.get(columnLabel);
         if ( wasNull = (json == null) )
         {
             return null;
@@ -1568,7 +1568,7 @@ public class CBResultSet implements java.sql.ResultSet
                     case Types.NUMERIC:
                         return new Double((String)object);
                     case Types.BOOLEAN:
-                        return new Boolean((String)object);
+                        return Boolean.valueOf((String) object);
                     case Types.VARCHAR:
                         if (object instanceof java.util.Date)
                         {
@@ -1592,7 +1592,7 @@ public class CBResultSet implements java.sql.ResultSet
         return null;
     }
 
-    public SQLJSON getSQLJSON(int columnIndex ) throws SQLException
+    public SQLJSON getSQLJSON( int columnIndex ) throws SQLException
     {
         checkClosed();
         checkIndex();
@@ -1622,8 +1622,7 @@ public class CBResultSet implements java.sql.ResultSet
         }
         int columnIndex = findColumn(columnLabel)-1;
 
-        SQLJSON sqljson = new SqlJsonImplementation( object, fields.get(columnIndex));
-        return sqljson;
+        return new SqlJsonImplementation( object, fields.get(columnIndex));
     }
     /**
      * Maps the given <code>ResultSet</code> column label to its
@@ -3743,7 +3742,7 @@ public class CBResultSet implements java.sql.ResultSet
     private Date getDateChecked(String columnLabel, Calendar cal) throws SQLException
     {
 
-        Date date=null;
+        Date date;
 
         Map  jsonObject = response.getResults().get(index);
         if (checkColumnLabelMissing(jsonObject, columnLabel))
@@ -5734,7 +5733,7 @@ public class CBResultSet implements java.sql.ResultSet
     }
     void checkClosed() throws SQLException
     {
-        if (closed.get() == true) throw new SQLException("ResultSet is closed");
+        if (closed.get()) throw new SQLException("ResultSet is closed");
     }
 
     boolean checkColumnLabelMissing(Map<String, Object> jsonObject, String label)  throws SQLException

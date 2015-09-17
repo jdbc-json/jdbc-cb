@@ -77,16 +77,14 @@ public class TimestampUtils
 
     public synchronized Date parse(String string) throws Exception
     {
-        Date date = new Date(df.parse(string).getTime());
-        return date;
+        return new Date(df.parse(string).getTime());
     }
 
     private static final SimpleDateFormat tf = new SimpleDateFormat("HH:mm:ss");
 
     public synchronized Time parseTime(String string) throws Exception
     {
-        Time time = new Time(tf.parse(string).getTime());
-        return time;
+        return new Time(tf.parse(string).getTime());
     }
 
     private static final SimpleDateFormat tsf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -94,7 +92,7 @@ public class TimestampUtils
     public synchronized Timestamp parseTimestamp(String json) throws Exception
     {
         // parse the date part
-        Timestamp ts = new Timestamp( tsf.parse((String)json).getTime()  );
+        Timestamp ts = new Timestamp( tsf.parse(json).getTime()  );
 
 
         // now find the nanos

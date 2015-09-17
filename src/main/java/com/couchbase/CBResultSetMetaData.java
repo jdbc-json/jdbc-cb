@@ -101,7 +101,7 @@ public class CBResultSetMetaData implements ResultSetMetaData
     @Override
     public int isNullable(int column) throws SQLException
     {
-        return 0;
+        return columnNullable;
     }
 
     /**

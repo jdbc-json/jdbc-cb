@@ -121,7 +121,7 @@ public class CBStatement implements java.sql.Statement
     @Override
     public void close() throws SQLException
     {
-        boolean wasClosed = closed.getAndSet(true);
+        closed.getAndSet(true);
     }
 
     /**
@@ -611,7 +611,7 @@ public class CBStatement implements java.sql.Statement
     public int getResultSetType() throws SQLException
     {
         checkClosed();
-        return resultSet.TYPE_FORWARD_ONLY;
+        return ResultSet.TYPE_FORWARD_ONLY;
     }
 
     /**

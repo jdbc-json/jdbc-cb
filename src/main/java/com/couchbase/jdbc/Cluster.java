@@ -27,7 +27,7 @@ public class Cluster
 {
     private static final Logger logger = LoggerFactory.getLogger(Cluster.class);
 
-    Integer instanceIndex = new Integer(0);
+    final Integer instanceIndex = new Integer(0);
     AtomicInteger numInstances = new AtomicInteger(0);
     List<Instance> endpoints = new ArrayList<Instance>();
 
@@ -56,7 +56,7 @@ public class Cluster
     }
     public String getNextEndpoint(boolean ssl)
     {
-        /*
+
         if (ssl)
         {
             return "https://54.237.32.30:18093/query/service";
@@ -65,7 +65,7 @@ public class Cluster
         {
             return "http://54.237.32.30:8093/query/service";
         }
-        */
+        /*
 
         int i;
         synchronized (instanceIndex)
@@ -89,7 +89,7 @@ public class Cluster
         {
             return endpoints.get(i).getQueryEndPoint();
         }
-
+*/
 
     }
     public void addEndPoint(Map endpoint)

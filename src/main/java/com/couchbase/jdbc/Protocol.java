@@ -14,11 +14,9 @@ package com.couchbase.jdbc;
 import com.couchbase.CBResultSet;
 import com.couchbase.CBStatement;
 import com.couchbase.jdbc.core.CouchResponse;
-import org.apache.http.NameValuePair;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,37 +24,37 @@ import java.util.Map;
  */
 public interface Protocol
 {
-    public void connect() throws Exception;
-    public void close() throws Exception;
+    void connect() throws Exception;
+    void close() throws Exception;
 
-    public CBResultSet query( CBStatement statement, String sql ) throws SQLException;
-    public int executeUpdate( CBStatement statement, String sql ) throws SQLException;
-    public boolean execute( CBStatement statement, String sql ) throws SQLException;
-    public void addBatch( String sql ) throws SQLException;
-    public void clearBatch() throws SQLException;
-    public int [] executeBatch(  ) throws SQLException;
+    CBResultSet query(CBStatement statement, String sql) throws SQLException;
+    int executeUpdate(CBStatement statement, String sql) throws SQLException;
+    boolean execute(CBStatement statement, String sql) throws SQLException;
+    void addBatch(String sql) throws SQLException;
+    void clearBatch() throws SQLException;
+    int [] executeBatch() throws SQLException;
 
-    public CouchResponse prepareStatement( String sql, String []returning ) throws SQLException;
-    public CouchResponse doQuery(String query, Map queryParameters) throws SQLException;
+    CouchResponse prepareStatement(String sql, String[] returning) throws SQLException;
+    CouchResponse doQuery(String query, Map queryParameters) throws SQLException;
 
-    public long getUpdateCount();
-    public CBResultSet getResultSet();
+    long getUpdateCount();
+    CBResultSet getResultSet();
 
-    public String getURL();
-    public String getUserName();
-    public String getPassword();
+    String getURL();
+    String getUserName();
+    String getPassword();
 
-    public void setConnectionTimeout(String timeout);
-    public void setConnectionTimeout(int timeout);
-    public void setReadOnly(boolean readOnly);
-    public boolean getReadOnly();
+    void setConnectionTimeout(String timeout);
+    void setConnectionTimeout(int timeout);
+    void setReadOnly(boolean readOnly);
+    boolean getReadOnly();
 
-    public void setQueryTimeout(int seconds) throws SQLException;
-    public int getQueryTimeout() throws SQLException;
-    public SQLWarning getWarnings() throws SQLException;
-    public void clearWarning() throws SQLException;
-    public void setSchema(String schema) throws SQLException;
-    public String getSchema() throws SQLException;
-    public boolean isValid(int timeout) throws SQLException;
+    void setQueryTimeout(int seconds) throws SQLException;
+    int getQueryTimeout() throws SQLException;
+    SQLWarning getWarnings() throws SQLException;
+    void clearWarning() throws SQLException;
+    void setSchema(String schema) throws SQLException;
+    String getSchema() throws SQLException;
+    boolean isValid(int timeout) throws SQLException;
 
 }

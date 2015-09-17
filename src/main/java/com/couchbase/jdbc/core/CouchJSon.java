@@ -13,9 +13,6 @@ package com.couchbase.jdbc.core;
 
 import java.util.HashMap;
 
-/**
- * Created by davec on 2015-06-23.
- */
 public class CouchJSon extends HashMap
 {
 

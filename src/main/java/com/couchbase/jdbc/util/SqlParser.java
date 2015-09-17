@@ -88,7 +88,7 @@ public class SqlParser
                     {
                         fragmentList.add(query.substring(fragmentStart, i));
                         fragmentStart = i + 1;
-                        if (fragmentList.size() > 1 || ((String) fragmentList.get(0)).trim().length() > 0)
+                        if (fragmentList.size() > 1 || fragmentList.get(0).trim().length() > 0)
                             statementList.add(fragmentList.toArray(new String[fragmentList.size()]));
                         fragmentList.clear();
                     }
