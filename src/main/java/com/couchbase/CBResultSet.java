@@ -1225,7 +1225,6 @@ public class CBResultSet implements java.sql.ResultSet
 
         String json;
 
-
         checkColumnLabelMissing(jsonObject, columnLabel);
 
         json = (String)jsonObject.get(columnLabel);
@@ -1235,6 +1234,7 @@ public class CBResultSet implements java.sql.ResultSet
         }
         try
         {
+            //noinspection ConstantConditions
             byteArrayInputStream = new ByteArrayInputStream(getStringChecked(columnLabel).getBytes("ASCII"));
         }
         catch( UnsupportedEncodingException ex)
@@ -1298,6 +1298,7 @@ public class CBResultSet implements java.sql.ResultSet
 
         try
         {
+            //noinspection ConstantConditions
             return new ByteArrayInputStream(getStringChecked(columnLabel).getBytes("UTF-8"));
         }
         catch (UnsupportedEncodingException l_uee)
@@ -1351,6 +1352,7 @@ public class CBResultSet implements java.sql.ResultSet
             return null;
         }
 
+        //noinspection ConstantConditions
         return new ByteArrayInputStream(getStringChecked(columnLabel).getBytes());
 
 
@@ -1383,6 +1385,7 @@ public class CBResultSet implements java.sql.ResultSet
     @Override
     public SQLWarning getWarnings() throws SQLException
     {
+        //noinspection ConstantConditions
         if ( response == null ) throw new SQLException("Result Set is closed");
 
         SQLWarning sqlWarning=null;

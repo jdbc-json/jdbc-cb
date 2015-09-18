@@ -108,6 +108,7 @@ public class CouchResponse
     }
     public void setResults(List results)
     {
+        //noinspection unchecked
         this.results = results;
     }
     public void setMetrics(CouchMetrics metrics)

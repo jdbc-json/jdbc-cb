@@ -29,6 +29,7 @@ public class SqlParser
     public SqlParser(String sql)
     {
         statementList = new ArrayList();
+        //noinspection unchecked
         fragmentList = new ArrayList(15);
         query=sql;
     }
@@ -89,6 +90,7 @@ public class SqlParser
                         fragmentList.add(query.substring(fragmentStart, i));
                         fragmentStart = i + 1;
                         if (fragmentList.size() > 1 || fragmentList.get(0).trim().length() > 0)
+                            //noinspection unchecked
                             statementList.add(fragmentList.toArray(new String[fragmentList.size()]));
                         fragmentList.clear();
                     }

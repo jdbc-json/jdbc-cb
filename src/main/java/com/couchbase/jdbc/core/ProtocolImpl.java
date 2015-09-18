@@ -263,6 +263,7 @@ public class ProtocolImpl implements Protocol
         switch (status)
         {
             case 200:
+                //noinspection unchecked
                 return new Cluster((List)jsonArray, ssl);
             case 400:
                 message = "Bad Request";
@@ -302,7 +303,7 @@ public class ProtocolImpl implements Protocol
         Instance instance = cluster.getNextEndpoint();
 
 
-        Map <String,String>parameters = new HashMap();
+        @SuppressWarnings("unchecked") Map <String,String>parameters = new HashMap();
 
         parameters.put(STATEMENT,sql);
         addOptions(parameters);
@@ -390,6 +391,7 @@ public class ProtocolImpl implements Protocol
         Map<String, Object> rootAsMap = null;
         if (foo instanceof Map)
         {
+            //noinspection unchecked
             rootAsMap = (Map <String,Object>) foo;
         }
         else
@@ -402,7 +404,9 @@ public class ProtocolImpl implements Protocol
 
         if ( signature instanceof Map )
         {
+            //noinspection unchecked
             couchResponse.signature = (Map)signature;
+            //noinspection unchecked
             couchResponse.results   = (List)rootAsMap.get("results");
         }
         else if ( signature instanceof String )
@@ -418,7 +422,9 @@ public class ProtocolImpl implements Protocol
                 Object object = iterator.next();
 
                 HashMap entry = new HashMap();
+                //noinspection unchecked
                 entry.put("$1", object );
+                //noinspection unchecked
                 couchResponse.results.add(entry) ;
             }
 
@@ -427,15 +433,18 @@ public class ProtocolImpl implements Protocol
         {
             throw new SQLException("Error reading signature" + signature );
         }
+        //noinspection unchecked
         couchResponse.metrics   = MapObjectConversion.fromMap((Map)rootAsMap.get("metrics"), CouchMetrics.class);
         List errorList = (List)rootAsMap.get("errors");
         if ( errorList != null )
         {
+            //noinspection unchecked,unchecked
             couchResponse.errors    = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, errorList);
         }
         List  warningList = (List)rootAsMap.get("warnings");
         if ( warningList != null )
         {
+            //noinspection unchecked,unchecked
             couchResponse.warnings  = MapObjectConversion.convertListOfMapsToObjects(CouchError.class, warningList );
 
             for (CouchError warning : couchResponse.warnings)
@@ -613,6 +622,7 @@ public class ProtocolImpl implements Protocol
             Map parameters = new HashMap();
 
 //            nameValuePairs.add(new BasicNameValuePair("pretty","0"));
+            //noinspection unchecked
             parameters.put(STATEMENT, query);
 
             // do the query
@@ -660,6 +670,7 @@ public class ProtocolImpl implements Protocol
             }
         }
 
+        //noinspection unchecked
         parameters.put(STATEMENT, "prepare " + sql);
 
         return doQuery(sql, parameters);
@@ -690,7 +701,7 @@ public class ProtocolImpl implements Protocol
             {
                 HttpEntity entity = response.getEntity();
                 ObjectMapper mapper = JsonFactory.create();
-                Map <String,Object> jsonObject = (Map)mapper.fromJson(EntityUtils.toString(entity));
+                @SuppressWarnings("unchecked") Map <String,Object> jsonObject = (Map)mapper.fromJson(EntityUtils.toString(entity));
 
                 String statusString = (String)jsonObject.get("status");
 
@@ -825,26 +836,32 @@ public class ProtocolImpl implements Protocol
     private void addOptions(Map parameters)
     {
 
+        //noinspection unchecked
         parameters.put(ENCODING,"UTF-8");
 
         if ( schema != null )
         {
+            //noinspection unchecked
             parameters.put(NAMESPACE, schema);
         }
         if( readOnly )
         {
+            //noinspection unchecked
             parameters.put(READ_ONLY, true);
         }
         if ( queryTimeout != 0 )
         {
+            //noinspection unchecked
             parameters.put(TIMEOUT, ""+queryTimeout+'s');
         }
 
         if (credentials != null)
         {
+            //noinspection unchecked
             parameters.put(CREDENTIALS, credentials);
         }
 
+        //noinspection unchecked
         parameters.put(SCAN_CONSITENCY,scanConsistency);
 
     }
@@ -856,6 +873,7 @@ public class ProtocolImpl implements Protocol
         String query = "select 1";
 
         Map parameters = new HashMap();
+        //noinspection unchecked
         parameters.put(STATEMENT, query);
         // do the query
 

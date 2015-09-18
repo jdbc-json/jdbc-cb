@@ -771,6 +771,7 @@ public class SqlJsonImplementation implements SQLJSON
         }
         else
         {
+            //noinspection unchecked
             ((Map)jsonObject).put(columnName, val);
         }
 
@@ -816,6 +817,7 @@ public class SqlJsonImplementation implements SQLJSON
         {
             // this is a hack
             List backingList = ((ValueList) jsonObject).list();
+            //noinspection unchecked
             backingList.set(index,object);
         }
     }
@@ -850,6 +852,7 @@ public class SqlJsonImplementation implements SQLJSON
     public Object parse(Class clazz)
     {
         Mapper mapper = new MapperSimple();
+        //noinspection unchecked
         mapper.fromMap((Map)jsonObject,clazz);
         return null;
     }
@@ -891,7 +894,8 @@ public class SqlJsonImplementation implements SQLJSON
         // if not do name by name comparison
         if (jsonObject instanceof Map && sqljson.jsonObject instanceof Map)
         {
-            Set<String> combinedKeys = ((Map)jsonObject).keySet();
+            @SuppressWarnings("unchecked") Set<String> combinedKeys = ((Map)jsonObject).keySet();
+            //noinspection unchecked
             combinedKeys.addAll(((Map) sqljson.jsonObject).keySet());
             List <String> sorted = new ArrayList<String>(combinedKeys);
             Collections.sort(sorted);
