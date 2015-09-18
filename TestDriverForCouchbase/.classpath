@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-core-io-1.1.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-core-io-1.1.4-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-core-io-1.1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-java-client-2.1.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-java-client-2.1.4-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/couchbase-java-client-2.1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/rxjava-1.0.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/rxjava-1.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Downloads/Couchbase-Java-Client-2.1.4/rxjava-1.0.4.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/jdbc_n1ql/target/jdbc-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/jdbc_n1ql/target/original-jdbc-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Documents/json_simple-1.1-all/lib/json_simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/parag/Documents/mysql-connector-java-5.1.36-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
