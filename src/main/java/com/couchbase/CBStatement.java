@@ -13,6 +13,7 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.util.SqlParser;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -69,6 +70,8 @@ public class CBStatement implements java.sql.Statement
     public ResultSet executeQuery(String sql) throws SQLException
     {
         checkClosed();
+        SqlParser sqlParser = new SqlParser("");
+        sql = sqlParser.replaceProcessing(sql, true);
         return protocol.query(this, sql);
     }
 
@@ -98,6 +101,8 @@ public class CBStatement implements java.sql.Statement
     public int executeUpdate(String sql) throws SQLException
     {
         checkClosed();
+        SqlParser sqlParser = new SqlParser("");
+        sql = sqlParser.replaceProcessing(sql, true);
         return protocol.executeUpdate(this, sql);
     }
 

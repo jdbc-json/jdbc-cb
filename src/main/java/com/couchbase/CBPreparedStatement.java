@@ -58,7 +58,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parser = new SqlParser(sql);
         parser.parse();
         fields = new Object[parser.getNumFields()];
-        this.sql = sql;
+        this.sql = parser.replaceProcessing(sql, true);
 
         logger.trace("Prepare statement {}", parser.toString() );
 
