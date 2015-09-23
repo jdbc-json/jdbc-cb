@@ -90,7 +90,7 @@ public class EscapedFunctions
     public final static String MINUTE="minute";
     public final static String MONTH="month";
     public final static String MONTHNAME="monthname";
-    public final static String NOW="now";
+    public final static String NOW="clock_str";
     public final static String QUARTER="quarter";
     public final static String SECOND="second";
     public final static String WEEK="week";
@@ -390,13 +390,19 @@ public class EscapedFunctions
         buf.append(parsedArgs.get(0));
         return buf.append(')').toString();
     }
+    public static String sqlnow(List parsedArgs) throws  SQLException {
+        if (parsedArgs.size()!=0){
+            throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","now"));
+        }
+        return "clock_str()";
 
+    }
     /** curdate to current_date translation */
     public static String sqlcurdate(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","curdate"));
         }
-        return "current_date";
+        return "clock_str('2006-01-01')";
     }
 
     /** curtime to current_time translation */
@@ -404,15 +410,16 @@ public class EscapedFunctions
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","curtime"));
         }
-        return "current_time";
+        return "clock_str('15:05:05')";
     }
 
+    //TODO replace this with correct function when it becomes available
     /** dayname translation */
     public static String sqldayname(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayname"));
         }
-        return "to_char("+parsedArgs.get(0)+",'Day')";
+        return "(case date_part_str("+parsedArgs.get(0)+",'dow') when 0 then 'SUN' WHEN 1 THEN 'MON' WHEN 2 THEN 'TUE' WHEN 3 THEN 'WED' WHEN 4 THEN 'THU' WHEN 5 THEN 'FRI' WHEN 6 THEN 'SAT' END)";
     }
 
     /** dayofmonth translation */
@@ -420,16 +427,16 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayofmonth"));
         }
-        return "extract(day from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'day')";
     }
 
     /** dayofweek translation
-     * adding 1 to postgresql function since we expect values from 1 to 7 */
+     * adding 1 to  function since we expect values from 1 to 7 */
     public static String sqldayofweek(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayofweek"));
         }
-        return "extract(dow from "+parsedArgs.get(0)+")+1";
+        return "date_part_str("+parsedArgs.get(0)+",'iso_dow') ";
     }
 
     /** dayofyear translation */
@@ -437,7 +444,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayofyear"));
         }
-        return "extract(doy from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'doy')";
     }
 
     /** hour translation */
@@ -445,7 +452,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","hour"));
         }
-        return "extract(hour from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'hour')";
     }
 
     /** minute translation */
@@ -453,7 +460,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","minute"));
         }
-        return "extract(minute from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'minute')";
     }
 
     /** month translation */
@@ -461,15 +468,18 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","month"));
         }
-        return "extract(month from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'month')";
     }
 
+    //TODO replace this with correct function when it becomes available
     /** monthname translation */
     public static String sqlmonthname(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","monthname"));
         }
-        return "to_char("+parsedArgs.get(0)+",'Month')";
+        return "(case date_part_str("+parsedArgs.get(0)+",'month') WHEN 1 THEN 'JAN' WHEN 2 THEN 'FEB' WHEN 3 THEN 'MAR' WHEN 4 THEN 'APR' WHEN 5 THEN 'MAY' WHEN 6 THEN 'JUN'" +
+                " WHEN 7 THEN 'JUL' WHEN 8 THEN 'AUG' WHEN 9 THEN 'SEP' WHEN 10 THEN 'OCT' WHEN 11 THEN 'NOV' WHEN 12 THEN 'DEC' END)";
+
     }
 
     /** quarter translation */
@@ -477,7 +487,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","quarter"));
         }
-        return "extract(quarter from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'quarter')";
     }
 
     /** second translation */
@@ -485,7 +495,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","second"));
         }
-        return "extract(second from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'second')";
     }
 
     /** week translation */
@@ -493,7 +503,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","week"));
         }
-        return "extract(week from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'week')";
     }
 
     /** year translation */
@@ -501,7 +511,7 @@ public class EscapedFunctions
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","year"));
         }
-        return "extract(year from "+parsedArgs.get(0)+")";
+        return "date_part_str("+parsedArgs.get(0)+",'year')";
     }
 
     /** time stamp add */
@@ -509,33 +519,33 @@ public class EscapedFunctions
         if (parsedArgs.size()!=3){
             throw new CouchBaseSQLException(String.format("{0} function takes three and only three arguments.","timestampadd"));
         }
-        String interval = EscapedFunctions.constantToInterval(parsedArgs.get(0).toString(),parsedArgs.get(1).toString());
-        StringBuilder buf = new StringBuilder();
-        buf.append("(").append(interval).append("+");
-        buf.append(parsedArgs.get(2)).append(")");
+        String interval = EscapedFunctions.constantToInterval(parsedArgs.get(0).toString());
+        StringBuilder buf = new StringBuilder("DATE_ADD_STR(");
+        buf.append(parsedArgs.get(2)).append(',').append(parsedArgs.get(1)).append(',');
+        buf.append(interval).append(")");
         return buf.toString();
     }
 
-    private final static String constantToInterval(String type,String value)throws SQLException{
+    private final static String constantToInterval(String type)throws SQLException{
         if (!type.startsWith(SQL_TSI_ROOT))
             throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented",type));
         String shortType = type.substring(SQL_TSI_ROOT.length());
         if (SQL_TSI_DAY.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' day' as interval)";
+            return "'day'";
         else if (SQL_TSI_SECOND.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' second' as interval)";
+            return "'second'";
         else if (SQL_TSI_HOUR.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' hour' as interval)";
+            return "'hour'";
         else if (SQL_TSI_MINUTE.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' minute' as interval)";
+            return "'minute'";
         else if (SQL_TSI_MONTH.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' month' as interval)";
+            return "'month'";
         else if (SQL_TSI_QUARTER.equalsIgnoreCase(shortType))
-            return "CAST((" + value + "::int * 3) || ' month' as interval)";
+            return "'quarter'";
         else if (SQL_TSI_WEEK.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' week' as interval)";
+            return "'week'";
         else if (SQL_TSI_YEAR.equalsIgnoreCase(shortType))
-            return "CAST(" + value + " || ' year' as interval)";
+            return "'year'";
         else if (SQL_TSI_FRAC_SECOND.equalsIgnoreCase(shortType))
             throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented","SQL_TSI_FRAC_SECOND"));
         else throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented",type));
@@ -549,8 +559,8 @@ public class EscapedFunctions
         }
         String datePart = EscapedFunctions.constantToDatePart(parsedArgs.get(0).toString());
         StringBuilder buf = new StringBuilder();
-        buf.append("extract( ").append(datePart)
-                .append(" from (").append(parsedArgs.get(2)).append("-").append(parsedArgs.get(1)).append("))");
+        buf.append("date_diff_str( ").append(parsedArgs.get(2))
+                .append(',').append(parsedArgs.get(1)).append(',').append(datePart).append(")");
         return buf.toString();
     }
 
@@ -559,22 +569,22 @@ public class EscapedFunctions
             throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented",type));
         String shortType = type.substring(SQL_TSI_ROOT.length());
         if (SQL_TSI_DAY.equalsIgnoreCase(shortType))
-            return "day";
+            return "'day'";
         else if (SQL_TSI_SECOND.equalsIgnoreCase(shortType))
-            return "second";
+            return "'second'";
         else if (SQL_TSI_HOUR.equalsIgnoreCase(shortType))
-            return "hour";
+            return "'hour'";
         else if (SQL_TSI_MINUTE.equalsIgnoreCase(shortType))
-            return "minute";
+            return "'minute'";
             // See http://archives.postgresql.org/pgsql-jdbc/2006-03/msg00096.php
-        /*else if (SQL_TSI_MONTH.equalsIgnoreCase(shortType))
-            return "month";
+        else if (SQL_TSI_MONTH.equalsIgnoreCase(shortType))
+            return "'month'";
         else if (SQL_TSI_QUARTER.equalsIgnoreCase(shortType))
-            return "quarter";
+            return "'quarter'";
         else if (SQL_TSI_WEEK.equalsIgnoreCase(shortType))
-            return "week";
+            return "'week'";
         else if (SQL_TSI_YEAR.equalsIgnoreCase(shortType))
-            return "year";*/
+            return "'year'";
         else if (SQL_TSI_FRAC_SECOND.equalsIgnoreCase(shortType))
             throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented","SQL_TSI_FRAC_SECOND"));
         else throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented",type));
