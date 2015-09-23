@@ -39,7 +39,7 @@ public class RQGJDBCTests extends TestCase {
     	RQGJDBCTests.clusterInfo.resetBucketInformation();
     }
     
-  
+    @Test
     public void testAggregateMethods() throws Exception
     {
     	String inputPath  = "/tmp/aggregate_datadump";
@@ -55,7 +55,7 @@ public class RQGJDBCTests extends TestCase {
     	assertTrue(analysis.isTestPassing());
     }
     
-  
+    @Test
     public void testJoins() throws Exception
     {	
     	String inputPath  = "/tmp/joins_datadump";

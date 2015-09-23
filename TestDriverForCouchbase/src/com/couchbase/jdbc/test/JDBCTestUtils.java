@@ -15,6 +15,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -238,8 +241,11 @@ public class JDBCTestUtils {
     
     @SuppressWarnings({ "rawtypes", "null", "unchecked" })
 		public static JSONArray extractDataMapFromQueryResult(ResultSet rs){
+    		JSONArray jsonarray = new JSONArray();
+    		if(rs == null){
+    			return jsonarray;
+    		}
 		    CBResultSet cbrs =(CBResultSet) rs;
-		    JSONArray jsonarray = new JSONArray();
 	        ResultSetMetaData rsmd;
 	        int count=0;
 			try {
@@ -249,89 +255,79 @@ public class JDBCTestUtils {
 	            	rsmd = cbrs.getMetaData();
 					int columnsNumber = rsmd.getColumnCount();
 					JSONObject jsonObjNew = new JSONObject();
-					int not_map_count  = 0;
 	                for (int i = 0; i < columnsNumber; i++)
 	                {
 	                	String type = rsmd.getColumnTypeName(i+1);
 	                	String name = rsmd.getColumnName(i+1);
-	                	
-	                	if(type.equals("json")){
-	                		SQLJSON jsonValue = cbrs.getSQLJSON(i+1);
-	                		
+	                	SQLJSON jsonValue = cbrs.getSQLJSON(i+1);
+	                	if(type.equals("json") && jsonValue != null){
 	                		int jdbcType =jsonValue.getJDBCType();
 	                		if (jdbcType == Types.JAVA_OBJECT){
-		                            boolean error = false;
-		                            try{
-		                            	Map m = jsonValue.getMap();
-			                            JSONObject obj = new JSONObject();
-		                            	obj.putAll(m);
-		                            	jsonarray.add(obj);
-	                				}catch(Exception e){
-	                					error = true;
-	                				}
-		                            if(error){
+		                            if(jsonValue != null){
 		                            	Object o = jsonValue.getObject();
-		                            	if(o.getClass().equals(Integer.class)){
-		                            		int o_actual = (int)o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(String.class)){
-		                            		String o_actual = (String)o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(Double.class)){
-		                            		Double o_actual = (Double)o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(List.class)){
-		                            		List o_actual = (List) o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(Float.class)){
-		                            		Float o_actual = (Float) o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(Byte.class)){
-		                            		Byte o_actual = (Byte) o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else if(o.getClass().equals(Boolean.class)){
-		                            		boolean o_actual = (boolean) o;
-		                            		jsonObjNew.put(name, o_actual);
-		                            	}else{
-		                            		jsonObjNew.put(name, o.toString());
-		                            	}
-		                            	
-		                            	not_map_count++;
-		                            	error=false;
-		                            }
-		                            
-	                		}
-	                		
-	                	}else{
-	                		not_map_count++;
-	                		SQLJSON jsonValue = cbrs.getSQLJSON(i+1);
+		                            	if(o != null){
+		                            		if(o.getClass().equals(Map.class)){
+			                            		Map m = jsonValue.getMap();
+			                            		if(m.size() != 0){
+			                            			jsonObjNew.putAll(m);
+			                            		}
+			                            	}else if(o.getClass().equals(Integer.class)){
+			                            		int o_actual = (int)o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(String.class)){
+			                            		String o_actual = (String)o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(Double.class)){
+			                            		Double o_actual = (Double)o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(List.class)){
+			                            		List o_actual = (List) o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(Float.class)){
+			                            		Float o_actual = (Float) o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(Byte.class)){
+			                            		Byte o_actual = (Byte) o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else if(o.getClass().equals(Boolean.class)){
+			                            		boolean o_actual = (boolean) o;
+			                            		jsonObjNew.put(name, o_actual);
+			                            	}else{
+			                            		jsonObjNew.put(name, o.toString());
+			                            	}
+		                            	} 	
+		                            }    
+	                		}	
+	                	}else if(jsonValue != null){
 	                		int jdbcType =jsonValue.getJDBCType();
-	                		if(Types.INTEGER == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getInt());
-	                		}else if(Types.ARRAY == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getArray());
-	                		}else if(Types.BIGINT == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getBigDecimal());
-	                		}else if(Types.BOOLEAN == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getBoolean());
-	                		}else if(Types.CHAR == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getCharacterStream().toString());
-	                		}else if(Types.FLOAT == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getFloat());
-	                		}else if(Types.BIT == jdbcType){
-	                			jsonObjNew.put(name, jsonValue.getByte());
-	                		}else{
-	                			jsonObjNew.put(name, jsonValue.getObject().toString());
-	                		}
+	                		if(jsonValue != null){
+		                		if(Types.INTEGER == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getInt());
+		                		}else if(Types.ARRAY == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getArray());
+		                		}else if(Types.BIGINT == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getBigDecimal());
+		                		}else if(Types.BOOLEAN == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getBoolean());
+		                		}else if(Types.CHAR == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getCharacterStream().toString());
+		                		}else if(Types.FLOAT == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getFloat());
+		                		}else if(Types.BIT == jdbcType){
+		                			jsonObjNew.put(name, jsonValue.getByte());
+		                		}else{
+		                			Object o =  jsonValue.getObject();
+		                			if(o != null){
+		                				jsonObjNew.put(name, o.toString());
+		                			}
+		                		}
+	                	}
 	                	}}
-	                	if(not_map_count > 0){
-		                	jsonarray.add(jsonObjNew);
-		                	not_map_count  = 0;
-		                }
-	                
-	                
+	                	jsonarray.add(jsonObjNew);
 	            }
 			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch(Exception e){
 				e.printStackTrace();
 			}
 		System.out.println(" number of rows returned "+count);
@@ -433,9 +429,95 @@ public class JDBCTestUtils {
 					StringBuilder errorSb = new StringBuilder();
 					if(actualResult.size() != expectedResult.size()){
 						errorSb.append(String.format("\n actual result size = %d != expected result size %d",actualResult.size(), expectedResult.size()));
-						errorSb.append(String.format("\n actual result :: %s != expected result ::  %s",actualResult.toString(),expectedResult.toString()));
+						errorSb.append(String.format("\n actual result :: %s != expected result ::  %s",actualResult.toString(), expectedResult.toString()));
 					}else{
 						if(!JDBCTestUtils.compareList(actualResult,expectedResult)){
+							errorSb.append(String.format(" actual result :: %s != expected result ::  %s",actualResult.toString(), expectedResult.toString()));
+								
+						}else{
+							analysis.totalPassResults++;
+						}
+					}
+					if(errorSb.length() > 0){
+						errorSb.append("\n N1QL Query::"+n1ql);
+						analysis.addFailureResult(errorSb.toString());
+					}
+				} catch (SQLException e) {
+					
+					e.printStackTrace();
+				}
+	    	}
+		} catch (IOException | ParseException e) {
+			
+			e.printStackTrace();
+		}catch (Exception e1){
+			e1.printStackTrace();
+		}finally{
+			return analysis;
+		}
+    	
+    }
+    
+    
+    public static boolean compareJSONArray(JSONArray array1, JSONArray array2){
+    	HashMap<String, JSONObject> m1 = extractJSONMapFromJSONArray(array1);
+    	HashMap<String, JSONObject> m2 = extractJSONMapFromJSONArray(array1);
+    	for(String key:m1.keySet()){
+    		if(!m2.containsKey(key)){
+    			return false;
+    		}else{
+    			if(!m1.get(key).equals(m2.get(key))){
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
+    public static HashMap<String, JSONObject> extractJSONMapFromJSONArray(JSONArray array){
+    	HashMap<String, JSONObject> map = new HashMap<String, JSONObject>();
+    	for(Object obj:array){
+    		JSONObject o = (JSONObject) obj;
+    		StringBuffer key = new StringBuffer();
+    		for(Object k: o.keySet()){
+    			key.append(k);
+    		}
+    		map.put(key.toString(), o);
+    	}
+    	return map;
+    }
+    
+    @SuppressWarnings("finally")
+	public static TestResultAnalysis runQueriesFromScenarioFileQueriesWithSelectFields(String filePath){
+    	LinkedList<QueryInfo> queryInfoList = null;
+    	TestResultAnalysis analysis = new TestResultAnalysis();
+		try {
+			queryInfoList = JDBCTestUtils.extractScenariosFromFile(filePath);
+			System.out.println(" Will run queries : "+queryInfoList.size());
+			for(QueryInfo queryInfo: queryInfoList){
+				String n1ql = queryInfo.n1ql;
+				JSONArray jsonArray  =  queryInfo.expectedResult;
+				analysis.totalQueries++;
+				try {
+					System.out.println(" ++++++++++ Run Query Number "+analysis.totalQueries+" ++++++++++++ ");
+					System.out.println(n1ql);
+					JSONArray actualResult = JDBCTestUtils.runQueryAndExtractMap(n1ql);
+					JSONArray expectedResult = JDBCTestUtils.extractDataIntoRowsAndColumnsAsMap(jsonArray);
+					StringBuilder errorSb = new StringBuilder();
+					if(actualResult.size() == 1 && actualResult.get(0).toString().equals("{}")){
+						actualResult = new JSONArray();
+					}
+					if(actualResult.size() != expectedResult.size()){
+						errorSb.append(String.format("\n actual result size = %d != expected result size %d",actualResult.size(), expectedResult.size()));
+						errorSb.append(String.format("\n actual result :: %s != expected result ::  %s",actualResult.toString(),expectedResult.toString()));
+					}else{
+						try{
+						actualResult = JDBCTestUtils.sortJsonArray(actualResult);
+						expectedResult = JDBCTestUtils.sortJsonArray(expectedResult);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						if(!compareJSONArray(actualResult,expectedResult)){
 							errorSb.append(String.format(" actual result :: %s != expected result ::  %s",actualResult.toString(),expectedResult.toString()));
 								
 						}else{
@@ -462,52 +544,29 @@ public class JDBCTestUtils {
     	
     }
     
-    @SuppressWarnings("finally")
-	public static TestResultAnalysis runQueriesFromScenarioFileQueriesWithSelectFields(String filePath){
-    	LinkedList<QueryInfo> queryInfoList = null;
-    	TestResultAnalysis analysis = new TestResultAnalysis();
-		try {
-			queryInfoList = JDBCTestUtils.extractScenariosFromFile(filePath);
-			System.out.println(" Will run queries : "+queryInfoList.size());
-			for(QueryInfo queryInfo: queryInfoList){
-				String n1ql = queryInfo.n1ql;
-				JSONArray jsonArray  =  queryInfo.expectedResult;
-				analysis.totalQueries++;
-				try {
-					System.out.println(" ++++++++++ Run Query Number "+analysis.totalQueries+" ++++++++++++ ");
-					System.out.println(n1ql);
-					JSONArray actualResult = JDBCTestUtils.runQueryAndExtractMap(n1ql);
-					JSONArray expectedResult = JDBCTestUtils.extractDataIntoRowsAndColumnsAsMap(jsonArray);
-					StringBuilder errorSb = new StringBuilder();
-					if(actualResult.size() != expectedResult.size()){
-						errorSb.append(String.format("\n actual result size = %d != expected result size %d",actualResult.size(), expectedResult.size()));
-						errorSb.append(String.format("\n actual result :: %s != expected result ::  %s",actualResult.toString(),expectedResult.toString()));
-					}else{
-						if(!actualResult.equals(expectedResult)){
-							errorSb.append(String.format(" actual result :: %s != expected result ::  %s",actualResult.toString(),expectedResult.toString()));
-								
-						}else{
-							analysis.totalPassResults++;
-						}
-					}
-					if(errorSb.length() > 0){
-						errorSb.append("\n N1QL Query::"+n1ql);
-						analysis.addFailureResult(errorSb.toString());
-					}
-				} catch (SQLException e) {
-					
-					e.printStackTrace();
-				}
-	    	}
-		} catch (IOException | ParseException e) {
-			
-			e.printStackTrace();
-		}catch (Exception e1){
-			e1.printStackTrace();
-		}finally{
-			return analysis;
-		}
-    	
+    @SuppressWarnings("unchecked")
+	public static JSONArray sortJsonArray(JSONArray array) {
+    	if(array.size() == 0){
+    		return array;
+    	}
+        ArrayList<JSONObject> jsons = new ArrayList<JSONObject>();
+        for (int i = 0; i < array.size(); i++) {
+            jsons.add((JSONObject)array.get(i));
+        }
+        for(Object field:((JSONObject)array.get(0)).keySet()){
+	        Collections.sort(jsons, new Comparator<JSONObject>() {
+	        	@Override
+	            public int compare(JSONObject lhs, JSONObject rhs) {
+	                String lid = (String) lhs.get(field);
+	                String rid = (String) rhs.get(field);
+	                // Here you could parse string id to integer and then compare.
+	                return lid.compareTo(rid);
+	            }
+        
+        });}
+        JSONArray returnValue = new JSONArray();
+        returnValue.addAll(jsons);
+        return returnValue;
     }
     
     /***
@@ -642,7 +701,7 @@ public class JDBCTestUtils {
     			sb.append(",");
     		}	
     	}
-    	String query = "INSERT INTO "+bucketName+" (KEY, VALUE) VALUES "+sb.toString();
+    	String query = "UPSERT INTO "+bucketName+" (KEY, VALUE) VALUES "+sb.toString();
     	try {
 				JDBCTestUtils.runQueryWithoutResult(query);
 		} catch (SQLException e) {
@@ -658,7 +717,7 @@ public class JDBCTestUtils {
     public static void upsertData(HashMap<String, JSONObject> map, String bucketName){
     	for(String key : map.keySet()){
     		JSONObject obj = map.get(key);
-    		String query = "UPDATE INTO "+bucketName+" (KEY, VALUE) VALUES (\""+key+"\","+obj+")";
+    		String query = "UPSERT INTO "+bucketName+" (KEY, VALUE) VALUES (\""+key+"\","+obj+")";
     		try {
 				JDBCTestUtils.runQueryWithoutResult(query);
 			} catch (SQLException e) {
@@ -680,9 +739,9 @@ public class JDBCTestUtils {
     				m.put(key.toString(), value.toString());
     			}
     		}
-    		JSONObject object = new JSONObject();
-    		object.putAll(m);
-    		listOfObjects.add(m);
+    		JSONObject jobj = new JSONObject();
+    		jobj.putAll(m);
+    		listOfObjects.add(jobj);
     	}
     	return listOfObjects;
     }
@@ -827,6 +886,21 @@ public class JDBCTestUtils {
     @SuppressWarnings("unchecked")
 	public static void main(String[] args) throws SQLException
     {
+    	JSONArray array = new JSONArray();
+    	JSONObject obj1 = new JSONObject();
+    	JSONObject obj2 = new JSONObject();
+    	JSONObject obj3 = new JSONObject();
+    	obj1.put("name", "z");
+    	obj1.put("another", "a");
+    	obj2.put("name", "a");
+    	obj2.put("another", "c");
+    	obj3.put("name", "c");
+    	obj3.put("another", "m");
+    	array.add(obj1);
+    	array.add(obj2);
+    	array.add(obj3);
+    	array = JDBCTestUtils.sortJsonArray(array);
+    	System.out.println(array.toJSONString());
         
     }
 }

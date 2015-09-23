@@ -80,10 +80,6 @@ public class N1QLErrorJDBCDriverHandlingTests {
     	}	
 	}
 	
-	@Test
-	public void testQueryTooManyParallelQueries(){
-		
-	}
 	
 	@Test
 	public void testQueryWithWrongProjectionsTypes(){
@@ -146,11 +142,6 @@ public class N1QLErrorJDBCDriverHandlingTests {
 		}  
 	}
 	
-	@SuppressWarnings("resource")
-	@Test
-	public void testQueryWithLargePayLoadForQueries(){
-		
-	}
 	
 
 }
