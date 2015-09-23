@@ -81,39 +81,6 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	}
 	
 	
-	@Test
-	public void testQueryWithWrongProjectionsTypes(){
-		JDBCTestUtils.setConnection();
-		JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
-		String query = "select 1";
-        try ( Connection con = JDBCTestUtils.con)
-        {
-            try (Statement stmt = con.createStatement())
-            {
-                try (ResultSet rs = stmt.executeQuery(query))
-                {
-                	while(rs.next()){
-                		CBResultSet cbrs = (CBResultSet) rs;
-                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-                		System.out.println(" number of columns "+meta.getColumnCount());
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON(1);
-		                jsonVal1.getMap();
-		             
-                	}
-                }
-            }
-        } catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			assertEquals("xx",e1.getMessage());
-		}
-        String drop_primary_index = "drop primary index on default";
-        try {
-			JDBCTestUtils.runQueryWithoutResult(drop_primary_index);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-	}
 	
 	@Test
 	public void testQueryWithIncorrectSQLSyntax(){
