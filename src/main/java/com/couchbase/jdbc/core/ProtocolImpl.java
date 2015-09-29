@@ -813,7 +813,7 @@ public class ProtocolImpl implements Protocol
     @Override
     public void setSchema(String schema) throws SQLException
     {
-        if (schema.compareToIgnoreCase("system")==0)
+        if (schema != null && schema.compareToIgnoreCase("system")==0)
         {
             schema='#'+schema;
         }
@@ -823,7 +823,8 @@ public class ProtocolImpl implements Protocol
     @Override
     public String getSchema() throws SQLException
     {
-        if (schema.startsWith("#"))
+
+        if (schema!= null && schema.startsWith("#"))
         {
             return schema.substring(1);
         }
