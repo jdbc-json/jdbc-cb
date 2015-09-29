@@ -46,6 +46,7 @@ public class Cluster
         {
             try
             {
+                //noinspection unchecked
                 endpoints.add(new Instance(jsonArray.get(i)));
                 numInstances.incrementAndGet();
             }
@@ -58,7 +59,7 @@ public class Cluster
     public Instance getNextEndpoint()
     {
 
-        /*
+/*
         Map jsonObject = new HashMap();
         jsonObject.put("queryEndpoint","http://54.237.32.30:8093/query/service" );
         jsonObject.put("adminEndpoint","http://54.237.32.30:8093/query/admin" );
@@ -75,7 +76,7 @@ public class Cluster
         {
             return null;
         }
-        */
+*/
 
 
         int i;
@@ -94,12 +95,12 @@ public class Cluster
 
         return endpoints.get(i);
 
-
     }
     public void addEndPoint(Map endpoint)
     {
         try
         {
+            //noinspection unchecked
             endpoints.add(new Instance(endpoint));
             numInstances.incrementAndGet();
         }
@@ -110,6 +111,7 @@ public class Cluster
     }
     public void invalidateEndpoint(Instance instance)
     {
+        logger.trace("Invalidating instance {}", instance);
         synchronized (instanceIndex)
         {
             endpoints.remove(instance);

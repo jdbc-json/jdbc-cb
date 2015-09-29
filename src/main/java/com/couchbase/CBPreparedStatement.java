@@ -58,7 +58,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         parser = new SqlParser(sql);
         parser.parse();
         fields = new Object[parser.getNumFields()];
-        this.sql = parser.replaceProcessing(sql, true);
+        this.sql = parser.replaceProcessing(sql, escapeProcessing);
 
         logger.trace("Prepare statement {}", parser.toString() );
 
@@ -2086,6 +2086,12 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
         fields[parameterIndex-1] = map;
+    }
+    @Override
+    public void setEscapeProcessing(boolean enable) throws SQLException
+    {
+        checkClosed();
+        // ignore as the statement has already been parsed
     }
     private void checkFields(int index) throws SQLException
     {

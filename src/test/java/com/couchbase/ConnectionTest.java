@@ -216,7 +216,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testGetCatalog() throws Exception
     {
         con.setCatalog("system");
-        assertSame(con.getCatalog(),"system");
+        assertEquals(con.getCatalog(),"system");
 
         con.close();
         expectedException.expectMessage("Connection is closed");

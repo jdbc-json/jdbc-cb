@@ -15,11 +15,13 @@ package com.couchbase;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.couchbase.jdbc.Cluster;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.text.MessageFormat;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class CBDriver implements java.sql.Driver
@@ -34,12 +36,15 @@ public class CBDriver implements java.sql.Driver
 
     static CBDriver registered;
 
+    final Thread houseKeepingThread;
+    final ClusterThread ct;
     static
     {
         try
         {
             registered = new CBDriver();
             java.sql.DriverManager.registerDriver(registered);
+
         }
         catch (SQLException e)
         {
@@ -52,6 +57,10 @@ public class CBDriver implements java.sql.Driver
     public CBDriver() throws SQLException
     {
         logger.info("Constructor called");
+        ct = new ClusterThread();
+        houseKeepingThread = new Thread(ct, "Couchbase housekeeping thread");
+        houseKeepingThread.setDaemon(true);
+        houseKeepingThread.start();
     }
     /**
      * Attempts to make a database connection to the given URL.
@@ -83,7 +92,9 @@ public class CBDriver implements java.sql.Driver
 
         if (acceptsURL(url))
         {
-            return new CBConnection(url, info);
+            CBConnection con = new CBConnection(url, info);
+            ct.addConnection(con);
+            return con;
         }
         else
         {
@@ -232,11 +243,67 @@ public class CBDriver implements java.sql.Driver
             try
             {
                 DriverManager.deregisterDriver(registered);
+
+                //stop the thread below
+                runCluster=false;
+                Thread.currentThread().interrupt();
+
+
             }
             catch (SQLException e)
             {
                 logger.warn("Error deregistering driver", e);
             }
+        }
+    }
+    public void cleanup(CBConnection con)
+    {
+        ct.removeConnection(con);
+    }
+
+    static boolean runCluster=true;
+
+    private static class ClusterThread implements Runnable
+    {
+
+        ConcurrentLinkedQueue <CBConnection> connections;
+        ClusterThread()
+        {
+            connections = new ConcurrentLinkedQueue<CBConnection>();
+        }
+        @Override
+        public void run()
+        {
+            while(runCluster)
+            {
+                CBConnection connection = connections.poll();
+                if ( connection != null )
+                {
+                    try
+                    {
+                        connection.pollCluster();
+                    } catch (SQLException e)
+                    {
+                        logger.error("Error polling cluster", e);
+                    }
+                }
+                try
+                {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e)
+                {
+                    // ignore it
+                }
+            }
+        }
+        public void addConnection(CBConnection connection)
+        {
+            connections.add(connection);
+        }
+        public void removeConnection(CBConnection connection)
+        {
+            connections.remove(connection);
         }
     }
 }

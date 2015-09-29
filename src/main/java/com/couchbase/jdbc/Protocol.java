@@ -56,5 +56,5 @@ public interface Protocol
     void setSchema(String schema) throws SQLException;
     String getSchema() throws SQLException;
     boolean isValid(int timeout) throws SQLException;
-
+    void pollCluster() throws SQLException;
 }

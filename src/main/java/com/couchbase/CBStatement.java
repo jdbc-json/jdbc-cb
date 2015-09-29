@@ -34,7 +34,7 @@ public class CBStatement implements java.sql.Statement
     protected int updateCount=0;
     protected CBResultSet resultSet;
     protected Connection connection;
-    protected boolean escapeProcessing = false;
+    protected boolean escapeProcessing = true;
     protected int maxRows = -1;
     protected boolean poolable=false;
     protected boolean closeOnCompletion = false;
@@ -71,7 +71,7 @@ public class CBStatement implements java.sql.Statement
     {
         checkClosed();
         SqlParser sqlParser = new SqlParser("");
-        sql = sqlParser.replaceProcessing(sql, true);
+        sql = sqlParser.replaceProcessing(sql, escapeProcessing);
         return protocol.query(this, sql);
     }
 
@@ -102,7 +102,7 @@ public class CBStatement implements java.sql.Statement
     {
         checkClosed();
         SqlParser sqlParser = new SqlParser("");
-        sql = sqlParser.replaceProcessing(sql, true);
+        sql = sqlParser.replaceProcessing(sql, escapeProcessing);
         return protocol.executeUpdate(this, sql);
     }
 
@@ -236,7 +236,7 @@ public class CBStatement implements java.sql.Statement
     public void setEscapeProcessing(boolean enable) throws SQLException
     {
         checkClosed();
-        escapeProcessing = true;
+        escapeProcessing = enable;
 
     }
 

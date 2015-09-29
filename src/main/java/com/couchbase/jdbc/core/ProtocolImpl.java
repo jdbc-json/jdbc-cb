@@ -58,6 +58,7 @@ import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by davec on 2015-02-22.
@@ -231,21 +232,10 @@ public class ProtocolImpl implements Protocol
     public void connect() throws Exception
     {
 
-        HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
-        httpGet.setHeader("Accept", "application/json");
-
-        try
-        {
-            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
-            cluster  = handleClusterResponse( httpResponse );
-        }
-        catch(Exception ex)
-        {
-            logger.error("Error opening connection {}", ex.getMessage());
-            throw ex;
-        }
+        pollCluster();
 
     }
+
     public Cluster handleClusterResponse(CloseableHttpResponse response) throws IOException
     {
         int status = response.getStatusLine().getStatusCode();
@@ -300,7 +290,7 @@ public class ProtocolImpl implements Protocol
     public CBResultSet query(CBStatement statement, String sql) throws SQLException
     {
 
-        Instance instance = cluster.getNextEndpoint();
+        Instance instance = getNextEndpoint();
 
 
         @SuppressWarnings("unchecked") Map <String,String>parameters = new HashMap();
@@ -345,9 +335,9 @@ public class ProtocolImpl implements Protocol
                 logger.trace(cte.getLocalizedMessage());
 
                 // this one failed, lets move on
-                cluster.invalidateEndpoint(instance);
+                invalidateEndpoint(instance);
                 // get the next one
-                instance = cluster.getNextEndpoint();
+                instance = getNextEndpoint();
                 if (instance == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
@@ -567,7 +557,7 @@ public class ProtocolImpl implements Protocol
 
     public CouchResponse doQuery(String query, Map queryParameters) throws SQLException
     {
-        Instance endPoint = cluster.getNextEndpoint();
+        Instance endPoint = getNextEndpoint();
 
         // keep trying endpoints
         while(true)
@@ -600,9 +590,9 @@ public class ProtocolImpl implements Protocol
                 logger.trace(cte.getLocalizedMessage());
 
                 // this one failed, lets move on
-                cluster.invalidateEndpoint(endPoint);
+                invalidateEndpoint(endPoint);
                 // get the next one
-                endPoint = cluster.getNextEndpoint();
+                endPoint = getNextEndpoint();
                 if (endPoint == null) {
                     throw new SQLException("All endpoints have failed, giving up");
                 }
@@ -681,7 +671,7 @@ public class ProtocolImpl implements Protocol
     {
         try
         {
-            Instance instance = cluster.getNextEndpoint();
+            Instance instance = getNextEndpoint();
             String url = instance.getEndpointURL(ssl);
 
             HttpPost httpPost = new HttpPost( url );
@@ -823,13 +813,23 @@ public class ProtocolImpl implements Protocol
     @Override
     public void setSchema(String schema) throws SQLException
     {
+        if (schema.compareToIgnoreCase("system")==0)
+        {
+            schema='#'+schema;
+        }
         this.schema = schema;
     }
 
     @Override
     public String getSchema() throws SQLException
     {
-        return schema;
+        if (schema.startsWith("#"))
+        {
+            return schema.substring(1);
+        }
+        else {
+            return schema;
+        }
     }
 
 
@@ -888,14 +888,66 @@ public class ProtocolImpl implements Protocol
 
         }
     }
-    //for testing
+
+    // all access to clusters has to be synchronized as there is a thread
+    // changing the value
+    // see CBDriver.ClusterThread
+
+    AtomicBoolean clusterSynch = new AtomicBoolean(true);
     public Cluster getCluster()
     {
-        return cluster;
+        Cluster ret=null;
+        // loop waiting for access
+        while (clusterSynch.getAndSet(false)){}
+
+        ret=cluster;
+        clusterSynch.set(true);
+        return ret;
     }
     public void setCluster(Cluster cluster)
     {
+        while(clusterSynch.getAndSet(false)){}
+
         this.cluster = cluster;
+
+        clusterSynch.set(true);
+
+    }
+
+    public Instance getNextEndpoint()
+    {
+        Instance instance = null;
+        while(clusterSynch.getAndSet(false)){}
+
+        instance = cluster.getNextEndpoint();
+
+        clusterSynch.set(true);
+        return instance;
+    }
+    public void invalidateEndpoint(Instance instance)
+    {
+        while(clusterSynch.getAndSet(false)){}
+
+        cluster.invalidateEndpoint(instance);
+        clusterSynch.set(true);
+    }
+    public void pollCluster() throws SQLException
+    {
+        HttpGet httpGet = new HttpGet(url+"/admin/clusters/default/nodes");
+        httpGet.setHeader("Accept", "application/json");
+
+        try
+        {
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+
+            setCluster(handleClusterResponse(httpResponse));
+        }
+        catch(Exception ex)
+        {
+            logger.error("Error opening connection {}", ex.getMessage());
+
+            throw new SQLException("Error getting cluster response", ex);}
+
     }
 }
 

@@ -336,6 +336,7 @@ public class CBConnection implements java.sql.Connection
             {
                 protocol.close();
                 connected.set(false);
+                CBDriver.registered.cleanup(this);
             }
             catch (Exception ex)
             {
@@ -1765,5 +1766,9 @@ public class CBConnection implements java.sql.Connection
     public SQLJSON createSQLJSON()
     {
         return new SqlJsonImplementation();
+    }
+    protected void pollCluster() throws SQLException
+    {
+        protocol.pollCluster();
     }
 }

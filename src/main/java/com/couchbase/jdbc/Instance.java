@@ -112,4 +112,9 @@ public class Instance
     {
         return ssl?querySecure:queryEndPoint;
     }
+
+    public String toString()
+    {
+        return name;
+    }
 }
