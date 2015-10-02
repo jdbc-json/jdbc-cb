@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase.jdbc.test.utils;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,8 +11,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import com.couchbase.jdbc.test.ClusterInfo;
-import com.couchbase.jdbc.test.NodeInfo;
+
+import com.couchbase.jdbc.test.utils.ClusterInfo;
+import com.couchbase.jdbc.test.utils.NodeInfo;
 
 
 public class ClusterSetupUtils {

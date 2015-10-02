@@ -18,13 +18,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.couchbase.CBResultSet;
+import com.couchbase.jdbc.test.utils.ClusterInfo;
+import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.JDBCTestUtils;
 import com.couchbase.json.SQLJSON;
 
 @RunWith(JUnit4.class)
 public class N1QLErrorJDBCDriverHandlingTests {
 static ClusterInfo clusterInfo = null;
 	@BeforeClass
-	public static void openConnection() throws Exception
+	public static void initializeCluster() throws Exception
 	{
 	JDBCTestUtils.setConnection();
 	String clusterConfigPath = "/tmp/config.json";
@@ -35,7 +38,7 @@ static ClusterInfo clusterInfo = null;
 	}
 	
 	@AfterClass
-	public static void closeConnection() throws Exception
+	public static void cleanupCluster() throws Exception
 	{
 	ClusterSetupUtils.deleteBuckets(N1QLErrorJDBCDriverHandlingTests.clusterInfo);
 	}

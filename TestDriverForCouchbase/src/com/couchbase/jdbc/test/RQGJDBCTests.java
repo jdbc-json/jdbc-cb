@@ -1,5 +1,4 @@
 package com.couchbase.jdbc.test;
-import com.couchbase.jdbc.test.TestResultAnalysis;
 import org.junit.After;
 import org.junit.AfterClass;
 
@@ -13,10 +12,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.couchbase.jdbc.test.utils.ClusterInfo;
+import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.JDBCTestUtils;
+import com.couchbase.jdbc.test.utils.TestResultAnalysis;
+
 import junit.framework.TestCase;
 import java.sql.*;
 import static org.junit.Assert.*;
-import com.couchbase.jdbc.test.JDBCTestUtils;
 
 @RunWith(JUnit4.class)
 public class RQGJDBCTests extends TestCase {

@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase.jdbc.test.utils;
 
 import java.util.HashMap;
 import org.json.simple.JSONArray;

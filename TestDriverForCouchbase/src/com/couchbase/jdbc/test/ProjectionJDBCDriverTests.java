@@ -1,10 +1,12 @@
 package com.couchbase.jdbc.test;
 
-import com.couchbase.jdbc.test.JDBCTestUtils;
 import com.couchbase.json.SQLJSON;
 import com.mysql.jdbc.ResultSetMetaData;
 import com.couchbase.CBResultSet;
-import com.couchbase.jdbc.test.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.ClusterInfo;
+import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.JDBCTestUtils;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +28,7 @@ public class ProjectionJDBCDriverTests {
 	static ClusterInfo clusterInfo = null;
 	
 	@BeforeClass
-	public static void openConnection() throws Exception
+	public static void initializeCluster() throws Exception
 	{
 		JDBCTestUtils.setConnection();
 		String clusterConfigPath = "/tmp/config.json";
@@ -38,7 +40,7 @@ public class ProjectionJDBCDriverTests {
 	}
 	
 	@AfterClass
-	public static void closeConnection() throws Exception
+	public static void cleanupCluster() throws Exception
 	{
 		ClusterSetupUtils.deleteBuckets(ProjectionJDBCDriverTests.clusterInfo);
 	}

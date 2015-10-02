@@ -1,9 +1,9 @@
-package com.couchbase.jdbc.test;
+package com.couchbase.jdbc.test.utils;
 import com.couchbase.CBResultSet;
-import com.couchbase.jdbc.test.TestResultAnalysis;
-import com.couchbase.jdbc.test.ClusterInfo;
-import com.couchbase.jdbc.test.BucketInfo;
-import com.couchbase.jdbc.test.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.BucketInfo;
+import com.couchbase.jdbc.test.utils.ClusterInfo;
+import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
+import com.couchbase.jdbc.test.utils.TestResultAnalysis;
 
 import java.awt.List;
 import java.io.BufferedInputStream;
@@ -35,9 +35,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class JDBCTestUtils {
-	static Connection con;
-    static String ConnectionURL = "jdbc:couchbase://127.0.0.1:9499";
-    static ClusterInfo clusteInfo = null;
+	public static Connection con;
+    public static String ConnectionURL = "jdbc:couchbase://127.0.0.1:9499";
+    public static ClusterInfo clusteInfo = null;
     
     public static void setConnection(){
     	try{

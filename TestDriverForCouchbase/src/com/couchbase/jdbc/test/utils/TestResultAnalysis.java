@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase.jdbc.test.utils;
 
 import java.util.LinkedList;
 
