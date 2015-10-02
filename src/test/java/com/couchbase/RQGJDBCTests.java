@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase;
 import org.junit.After;
 import org.junit.AfterClass;
 

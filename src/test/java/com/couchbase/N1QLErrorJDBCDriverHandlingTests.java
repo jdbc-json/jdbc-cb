@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase;
 
 import static org.junit.Assert.assertEquals;
 

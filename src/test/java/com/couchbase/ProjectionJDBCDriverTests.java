@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test;
+package com.couchbase;
 
 import com.couchbase.json.SQLJSON;
 import com.mysql.jdbc.ResultSetMetaData;
