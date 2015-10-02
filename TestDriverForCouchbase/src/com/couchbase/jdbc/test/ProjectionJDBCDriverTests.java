@@ -3,9 +3,9 @@ package com.couchbase.jdbc.test;
 import com.couchbase.json.SQLJSON;
 import com.mysql.jdbc.ResultSetMetaData;
 import com.couchbase.CBResultSet;
-import com.couchbase.jdbc.test.utils.ClusterInfo;
-import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
-import com.couchbase.jdbc.test.utils.JDBCTestUtils;
+import com.couchbase.jdbc.ClusterInfo;
+import com.couchbase.jdbc.ClusterSetupUtils;
+import com.couchbase.jdbc.JDBCTestUtils;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

@@ -12,10 +12,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.couchbase.jdbc.test.utils.ClusterInfo;
-import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
-import com.couchbase.jdbc.test.utils.JDBCTestUtils;
-import com.couchbase.jdbc.test.utils.TestResultAnalysis;
+import com.couchbase.jdbc.ClusterInfo;
+import com.couchbase.jdbc.ClusterSetupUtils;
+import com.couchbase.jdbc.JDBCTestUtils;
+import com.couchbase.jdbc.TestResultAnalysis;
 
 import junit.framework.TestCase;
 import java.sql.*;

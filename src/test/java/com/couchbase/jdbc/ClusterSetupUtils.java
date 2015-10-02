@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test.utils;
+package com.couchbase.jdbc;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

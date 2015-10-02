@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.couchbase.jdbc.test.utils.ClusterInfo;
-import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
-import com.couchbase.jdbc.test.utils.JDBCTestUtils;
+import com.couchbase.jdbc.ClusterInfo;
+import com.couchbase.jdbc.ClusterSetupUtils;
+import com.couchbase.jdbc.JDBCTestUtils;
 
 @RunWith(JUnit4.class)
 public class BigDataJDBCDriverTests {

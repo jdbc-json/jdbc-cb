@@ -1,4 +1,4 @@
-package com.couchbase.jdbc.test.utils;
+package com.couchbase.jdbc;
 import com.couchbase.CBResultSet;
 import com.couchbase.jdbc.test.utils.BucketInfo;
 import com.couchbase.jdbc.test.utils.ClusterInfo;
