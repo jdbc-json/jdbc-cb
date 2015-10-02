@@ -1,7 +1,6 @@
 package com.couchbase;
 
 import com.couchbase.json.SQLJSON;
-import com.mysql.jdbc.ResultSetMetaData;
 import com.couchbase.CBResultSet;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;

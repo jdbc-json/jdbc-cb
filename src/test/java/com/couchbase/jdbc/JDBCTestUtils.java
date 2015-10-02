@@ -1,9 +1,9 @@
 package com.couchbase.jdbc;
 import com.couchbase.CBResultSet;
-import com.couchbase.jdbc.test.utils.BucketInfo;
-import com.couchbase.jdbc.test.utils.ClusterInfo;
-import com.couchbase.jdbc.test.utils.ClusterSetupUtils;
-import com.couchbase.jdbc.test.utils.TestResultAnalysis;
+import com.couchbase.jdbc.BucketInfo;
+import com.couchbase.jdbc.ClusterInfo;
+import com.couchbase.jdbc.ClusterSetupUtils;
+import com.couchbase.jdbc.TestResultAnalysis;
 
 import java.awt.List;
 import java.io.BufferedInputStream;
@@ -554,11 +554,12 @@ public class JDBCTestUtils {
             jsons.add((JSONObject)array.get(i));
         }
         for(Object field:((JSONObject)array.get(0)).keySet()){
+        	final Object field_val = field;
 	        Collections.sort(jsons, new Comparator<JSONObject>() {
 	        	@Override
 	            public int compare(JSONObject lhs, JSONObject rhs) {
-	                String lid = (String) lhs.get(field);
-	                String rid = (String) rhs.get(field);
+	                String lid = (String) lhs.get(field_val);
+	                String rid = (String) rhs.get(field_val);
 	                // Here you could parse string id to integer and then compare.
 	                return lid.compareTo(rid);
 	            }

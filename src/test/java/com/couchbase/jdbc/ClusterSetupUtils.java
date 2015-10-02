@@ -12,8 +12,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.couchbase.jdbc.test.utils.ClusterInfo;
-import com.couchbase.jdbc.test.utils.NodeInfo;
+import com.couchbase.jdbc.ClusterInfo;
+import com.couchbase.jdbc.NodeInfo;
 
 
 public class ClusterSetupUtils {
