@@ -31,6 +31,7 @@ import com.couchbase.json.SQLJSON;
 import java.sql.Types;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import java.util.Properties;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -42,6 +43,14 @@ public class JDBCTestUtils {
     public static void setConnection(){
     	try{
     		JDBCTestUtils.con = DriverManager.getConnection(ConnectionURL) ;
+    	}catch(SQLException ex){
+    		System.out.println(ex.toString());
+    	}
+    }
+    
+    public static void setConnection(Properties properties){
+    	try{
+    		JDBCTestUtils.con = DriverManager.getConnection(ConnectionURL, properties) ;
     	}catch(SQLException ex){
     		System.out.println(ex.toString());
     	}
@@ -882,6 +891,16 @@ public class JDBCTestUtils {
 		TestResultAnalysis analysis = JDBCTestUtils.runQueriesFromScenarioFileQueriesWithSelectFields(scenarioFilePath);
 		analysis.publishResult();
 		return analysis;
+    }
+    
+    public static void deleteDataFromBucket(String bucket){
+    	String query = "delete from "+bucket;
+    	try{
+    		runQueryWithoutResult(query);
+    	}catch(SQLException e){
+    		e.printStackTrace();
+    	}
+    	
     }
     
     @SuppressWarnings("unchecked")

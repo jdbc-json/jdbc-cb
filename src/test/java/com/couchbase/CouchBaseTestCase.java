@@ -13,7 +13,8 @@ package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
 import junit.framework.TestCase;
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Before;
 
 import java.sql.Connection;
@@ -26,27 +27,34 @@ import java.util.Properties;
 
 public class CouchBaseTestCase extends TestCase
 {
-    Connection con;
+    
+	public static Connection con;
+	public static Properties properties;
 
-    @Before
-    public void openConnection() throws Exception
+    @BeforeClass
+    public static void initialize() throws Exception
     {
-        Properties properties = new Properties();
-
+		CouchBaseTestCase.properties = new Properties();
         properties.put(ConnectionParameters.SCAN_CONSISTENCY,"request_plus");
         properties.put(ConnectionParameters.USER,TestUtil.getUser());
         properties.put(ConnectionParameters.PASSWORD,TestUtil.getPassword());
-
-        con = DriverManager.getConnection(TestUtil.getURL(), properties);
-
-        assertNotNull(con);
+        TestUtil.resetEnvironmentProperties(null);
+        TestUtil.initializeCluster(true);
     }
-    @After
-    public void closeConnection() throws Exception
+    
+    @Before
+    public void openConnection() throws Exception
+    {
+        CouchBaseTestCase.con = DriverManager.getConnection(TestUtil.getURL(), CouchBaseTestCase.properties);
+        assertNotNull(CouchBaseTestCase.con);
+    }
+    
+    @AfterClass
+    public static void cleanup() throws Exception
     {
         assertNotNull(con);
-        if( con.isClosed()) return;
-        con.createStatement().executeUpdate("delete from default");
-        con.close();
+        TestUtil.destroyCluster();
     }
+    
+    
 }

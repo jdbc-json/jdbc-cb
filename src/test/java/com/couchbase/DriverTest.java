@@ -35,7 +35,8 @@ public class DriverTest extends TestCase
     @Before
     public void setUp() throws Exception
     {
-
+    	TestUtil.resetEnvironmentProperties(null);
+    	TestUtil.initializeCluster(false);
     }
 
     /*

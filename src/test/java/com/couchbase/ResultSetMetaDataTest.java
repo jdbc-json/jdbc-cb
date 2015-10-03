@@ -22,15 +22,14 @@ import java.sql.*;
 @RunWith(JUnit4.class)
 public class ResultSetMetaDataTest extends CouchBaseTestCase
 {
-    ResultSet resultSet;
-    ResultSetMetaData resultSetMetaData;
+    static ResultSet resultSet;
+    static ResultSetMetaData resultSetMetaData;
 
-    @Override
+
     @Before
     public void openConnection() throws Exception
     {
-        super.openConnection();
-        Statement statement = con.createStatement();
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
         resultSet = statement.executeQuery("SELECT true as c1, 1 as c2, 3.14 as c3,  'Hello World!' as c4, [1,2,3,5,8] as c5, { 'a1': 'Object' } as c6");
@@ -39,14 +38,13 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
 
     }
 
-    @Override
     @After
     public void closeConnection() throws Exception
     {
         assertNotNull(resultSet);
         resultSet.close();
-        assertNotNull(con);
-        con.close();
+        assertNotNull(CouchBaseTestCase.con);
+        CouchBaseTestCase.con.close();
     }
 
     @Test

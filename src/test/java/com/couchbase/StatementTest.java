@@ -30,14 +30,14 @@ public class StatementTest extends CouchBaseTestCase
     @Test
     public void createStatement() throws Exception
     {
-        Statement statement = con.createStatement();
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
     }
     @Test
     public void emptyResult() throws Exception
     {
-        Statement statement = con.createStatement();
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
         ResultSet rs = statement.executeQuery("select * from default");
@@ -47,7 +47,7 @@ public class StatementTest extends CouchBaseTestCase
     @Test
     public void simpleSelect() throws Exception
     {
-        Statement statement = con.createStatement();
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
         ResultSet rs = statement.executeQuery("select 1");
@@ -60,8 +60,8 @@ public class StatementTest extends CouchBaseTestCase
     @Test
     public void simpleInsert() throws Exception
     {
-        assertNotNull(con);
-        Statement statement = con.createStatement();
+        assertNotNull(CouchBaseTestCase.con);
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
         for (int i = 0; i++< 100;)
@@ -115,7 +115,7 @@ public class StatementTest extends CouchBaseTestCase
         Map object = new HashMap();
         object.put("a1","Object");
 
-        Statement statement = con.createStatement();
+        Statement statement = CouchBaseTestCase.con.createStatement();
         assertNotNull(statement);
 
         ResultSet resultSet = statement.executeQuery("SELECT true as c1, 1 as c2, 3.14 as c3,  'Hello World!' as c4, [1,2,3,5,8] as c5, { 'a1': 'Object' } as c6");

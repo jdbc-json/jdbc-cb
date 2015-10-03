@@ -2,7 +2,7 @@ package com.couchbase;
 
 import static org.junit.Assert.assertEquals;
 
-
+import com.couchbase.jdbc.TestUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -16,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import com.couchbase.CBResultSet;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;
@@ -25,22 +24,17 @@ import com.couchbase.json.SQLJSON;
 
 @RunWith(JUnit4.class)
 public class N1QLErrorJDBCDriverHandlingTests {
-static ClusterInfo clusterInfo = null;
 	@BeforeClass
 	public static void initializeCluster() throws Exception
 	{
-	JDBCTestUtils.setConnection();
-	String clusterConfigPath = "/tmp/config.json";
-	N1QLErrorJDBCDriverHandlingTests.clusterInfo = ClusterSetupUtils.readConfigFile(clusterConfigPath);
-	ClusterSetupUtils.initializeCluster(N1QLErrorJDBCDriverHandlingTests.clusterInfo);
-	ClusterSetupUtils.createBuckets(N1QLErrorJDBCDriverHandlingTests.clusterInfo);
-	Thread.sleep(5000);
+		TestUtil.resetEnvironmentProperties(null);
+		TestUtil.initializeCluster(false);
 	}
 	
 	@AfterClass
 	public static void cleanupCluster() throws Exception
 	{
-	ClusterSetupUtils.deleteBuckets(N1QLErrorJDBCDriverHandlingTests.clusterInfo);
+		TestUtil.destroyCluster();
 	}
 	
 	@Test
@@ -93,7 +87,7 @@ static ClusterInfo clusterInfo = null;
 	} catch (InterruptedException e1) {
 	e1.printStackTrace();
 	}
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	String query = "crap this is wrong syntax";
 	JDBCTestUtils.setConnection();
 	        try ( Connection con = JDBCTestUtils.con)
@@ -119,7 +113,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -193,7 +187,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -244,7 +238,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -295,7 +289,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -346,7 +340,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -397,7 +391,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -448,7 +442,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -499,7 +493,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -550,7 +544,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -601,7 +595,7 @@ static ClusterInfo clusterInfo = null;
 	{
 	JDBCTestUtils.setConnection();
 	String drop_primary_index = "drop primary index on default";
-	JDBCTestUtils.createPrimaryIndexes(N1QLErrorJDBCDriverHandlingTests.clusterInfo.bucketInformation.keySet());
+	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
 	String deleteData = "delete from default";
 	JDBCTestUtils.runQueryWithoutResult(deleteData);

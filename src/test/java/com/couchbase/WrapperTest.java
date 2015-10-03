@@ -38,19 +38,18 @@ public class WrapperTest extends CouchBaseTestCase
     @Before
     public void setup() throws Exception
     {
-        super.openConnection();
-        statement=con.createStatement();
+        statement=CouchBaseTestCase.con.createStatement();
     }
         
 
     @Test
     public void testConnectionIsWrapperForPrivate() throws SQLException {
-        assertFalse(con.isWrapperFor(PrivateInterface.class));
+        assertFalse(CouchBaseTestCase.con.isWrapperFor(PrivateInterface.class));
     }
 
     @Test
     public void testConnectionIsWrapperForConnection() throws SQLException {
-        assertTrue(con.isWrapperFor(Connection.class));
+        assertTrue(CouchBaseTestCase.con.isWrapperFor(Connection.class));
     }
 
     @Test
@@ -71,14 +70,14 @@ public class WrapperTest extends CouchBaseTestCase
 
     @Test
     public void testConnectionUnwrapConnection() throws SQLException {
-        Object v = con.unwrap(Connection.class);
+        Object v = CouchBaseTestCase.con.unwrap(Connection.class);
         assertNotNull(v);
         assertTrue(v instanceof Connection);
     }
 
     @Test
     public void testConnectionUnwrapCBConnection() throws SQLException {
-        Object v = con.unwrap(CBConnection.class);
+        Object v = CouchBaseTestCase.con.unwrap(CBConnection.class);
         assertNotNull(v);
         assertTrue(v instanceof CBConnection);
     }

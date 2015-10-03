@@ -11,31 +11,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;
 import com.couchbase.jdbc.JDBCTestUtils;
+import com.couchbase.jdbc.TestUtil;
 
 @RunWith(JUnit4.class)
-public class BigDataJDBCDriverTests {
-	static ClusterInfo clusterInfo = null;
-	
+public class BigDataJDBCDriverTests {	
 	@BeforeClass
 	public static void initializeCluster() throws Exception
 	{
-		JDBCTestUtils.setConnection();
-		String clusterConfigPath = "/tmp/config.json";
-		BigDataJDBCDriverTests.clusterInfo = ClusterSetupUtils.readConfigFile(clusterConfigPath);
-		ClusterSetupUtils.initializeCluster(BigDataJDBCDriverTests.clusterInfo);
-		ClusterSetupUtils.createBuckets(BigDataJDBCDriverTests.clusterInfo);
-		Thread.sleep(5000);
-		JDBCTestUtils.createPrimaryIndexes(BigDataJDBCDriverTests.clusterInfo.bucketInformation.keySet());
+		TestUtil.resetEnvironmentProperties(null);
+		TestUtil.initializeCluster(true);
 	}
 	
 	@AfterClass
 	public static void cleanupCluster() throws Exception
 	{
-		ClusterSetupUtils.deleteBuckets(BigDataJDBCDriverTests.clusterInfo);
+		TestUtil.destroyCluster();
 	}
 	
 	@SuppressWarnings("unchecked")

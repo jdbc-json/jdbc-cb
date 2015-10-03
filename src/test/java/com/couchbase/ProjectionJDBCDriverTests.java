@@ -5,7 +5,7 @@ import com.couchbase.CBResultSet;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;
 import com.couchbase.jdbc.JDBCTestUtils;
-
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,15 +20,17 @@ import java.sql.Types;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import com.couchbase.jdbc.TestUtil;
 
 @RunWith(JUnit4.class)
 public class ProjectionJDBCDriverTests {
 
-	static ClusterInfo clusterInfo = null;
+	
 	
 	@BeforeClass
 	public static void initializeCluster() throws Exception
 	{
+		/*
 		JDBCTestUtils.setConnection();
 		String clusterConfigPath = "/tmp/config.json";
 		ProjectionJDBCDriverTests.clusterInfo = ClusterSetupUtils.readConfigFile(clusterConfigPath);
@@ -36,12 +38,21 @@ public class ProjectionJDBCDriverTests {
 		ClusterSetupUtils.createBuckets(ProjectionJDBCDriverTests.clusterInfo);
 		Thread.sleep(5000);
 		JDBCTestUtils.createPrimaryIndexes(ProjectionJDBCDriverTests.clusterInfo.bucketInformation.keySet());
+		*/
+		TestUtil.resetEnvironmentProperties(null);
+		TestUtil.initializeCluster(true);
 	}
 	
 	@AfterClass
 	public static void cleanupCluster() throws Exception
 	{
-		ClusterSetupUtils.deleteBuckets(ProjectionJDBCDriverTests.clusterInfo);
+		TestUtil.destroyCluster();
+	}
+	
+	@After
+	public void cleanupBucket() throws Exception
+	{
+		JDBCTestUtils.deleteDataFromBucket("default");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,7 +73,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testSimpleData", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
@@ -83,7 +94,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testNulls", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
@@ -104,7 +115,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testSimpleDataWithNull", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
@@ -129,7 +140,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testSimpleDataDifferentDataTypesAsFields", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select name,specialchars,int,double,data_time from default";
@@ -184,7 +195,7 @@ public class ProjectionJDBCDriverTests {
 		obj.put("nested", nestedobj);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testNestedOperator", obj);
 		expectedArray.add(nestedobj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select default.nested.* from default";
@@ -205,7 +216,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testNestedOperator", obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default where x=1234";
 		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
@@ -242,7 +253,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testQueryAggregate", obj);
 		JSONObject expectedObject = new JSONObject();
 		expectedObject.put("$1", "1");
 		expectedArray.add(expectedObject);
@@ -269,7 +280,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testQueryAggregateWithAlias", obj);
 		JSONObject expectedObject = new JSONObject();
 		expectedObject.put("alias_count", "1");
 		expectedArray.add(expectedObject);
@@ -297,7 +308,7 @@ public class ProjectionJDBCDriverTests {
 		obj.put("nested_data", nestedObject);
 		obj.putAll(map);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testNestedSelectAllData", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
@@ -327,7 +338,7 @@ public class ProjectionJDBCDriverTests {
 		obj.put("nested_data_2", nestedObject2);
 		obj.putAll(map);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testSeriesOfObjectsWithDifferentFields", obj);
 		JSONObject expectedJSONObject = new JSONObject();
 		expectedJSONObject.put("nested_data_1", nestedObject1);
 		expectedJSONObject.put("nested_data_2", nestedObject2);
@@ -382,7 +393,7 @@ public class ProjectionJDBCDriverTests {
 		obj.put("nested_data_2", nestedObject2);
 		obj.putAll(map);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testSeriesOfObjectsWithSimilarFields", obj);
 		JSONObject expectedJSONObject = new JSONObject();
 		expectedJSONObject.put("nested_data_1", nestedObject1);
 		expectedJSONObject.put("nested_data_2", nestedObject2);
@@ -439,7 +450,7 @@ public class ProjectionJDBCDriverTests {
 		obj.put("nested_data", nestedObject);
 		obj.putAll(map);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testArrayAndNestedSelectAllData", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
@@ -463,7 +474,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_testFieldAlias", obj);
 		JSONObject jObject = new JSONObject();
 		jObject.put("alias_name", "test_name");
 		jObject.put("alias_id", 12345);
@@ -496,7 +507,7 @@ public class ProjectionJDBCDriverTests {
 		JSONArray expectedArray = new JSONArray();
 		expectedArray.add(obj);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);;
+		objMap.put("1_testArray", obj);;
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select * from default";
 		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
@@ -517,7 +528,7 @@ public class ProjectionJDBCDriverTests {
 		obj.putAll(map);
 		array.add(obj);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1", obj);
+		objMap.put("1_unchecked", obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select name from default";
 		JSONArray array1 = JDBCTestUtils.runQueryAndExtractMap(query);

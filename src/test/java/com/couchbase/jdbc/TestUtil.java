@@ -10,26 +10,69 @@ import java.util.*;
  */
 public class TestUtil
 {
-    static Properties environment=new Properties();
+    public static Properties environment=new Properties();
+    public static ClusterInfo clusterInfo;
 
     static {
-        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream( "environment.properties");
-        try
-
-        {
-            environment.load( stream );
-        }
-        catch (Exception ex )
-        {
-            ex.printStackTrace(System.err);
-        }
+    	resetEnvironmentProperties("environment.properties");
     }
-    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+    
+    public static void resetEnvironmentProperties(String propertPath){
+    	environment=new Properties();
+    	InputStream stream = null;
+    	if (propertPath == null){
+    		propertPath = "environment.properties";
+    	}
+    	if(propertPath != null){
+    		 stream = ClassLoader.getSystemClassLoader().getResourceAsStream(propertPath);
+    	 }
+    	 try
+         {
+         	if( stream != null ){
+         		environment.load( stream );
+         	}
+         }
+         catch (Exception ex )
+         {
+             ex.printStackTrace(System.err);
+         }
+    	
+    }
+    
+    public static String getConfig() { return environment.getProperty("couchbasedb.test.config", "/tmp/config.json");}
 
-    public static String getSSLUrl() { return environment.getProperty("couchbasedb.test.sslurl", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:18093");}
+    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:9499");}
 
-    public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://ec2-54-146-69-136.compute-1.amazonaws.com:8093");}
+    public static String getSSLUrl() { return environment.getProperty("couchbasedb.test.sslurl", "jdbc:couchbase://127.0.0.1:19499");}
 
+    public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:9499");}
+
+    public static void initializeCluster(boolean createPrimaryIndex){
+    	try{
+		    	String clusterConfigPath = TestUtil.getConfig();
+		    	TestUtil.clusterInfo =  ClusterSetupUtils.readConfigFile(clusterConfigPath);
+		    	ClusterSetupUtils.initializeCluster(TestUtil.clusterInfo);
+		    	JDBCTestUtils.setConnection();
+		    	ClusterSetupUtils.createBuckets(TestUtil.clusterInfo);
+		    	Thread.sleep(5000);
+	    	if(createPrimaryIndex){
+	    		JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
+	    	}
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static void destroyCluster(){
+    	try{
+    		ClusterSetupUtils.deleteBuckets(TestUtil.clusterInfo);
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    }
+    
+   
+    
     public static String getServer() {
         return System.getProperty("couchbasedb.test.server", "ec2-54-146-69-136.compute-1.amazonaws.com");
     }
@@ -53,11 +96,11 @@ public class TestUtil
     }
 
     public static String getUser() {
-        return environment.getProperty("couchbasedb.test.user", "pgjdbc");
+        return environment.getProperty("couchbasedb.test.user", "Adminisrator");
     }
 
     public static String getPassword() {
-        return environment.getProperty("couchbasedb.test.password", "test");
+        return environment.getProperty("couchbasedb.test.password", "password");
     }
 
     public static Credentials getCredentials() {

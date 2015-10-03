@@ -38,7 +38,6 @@ public class SSLConnectionTest extends TestCase
         properties.put(ConnectionParameters.USER, TestUtil.getUser());
         properties.put(ConnectionParameters.PASSWORD,TestUtil.getPassword());
         properties.put(ConnectionParameters.ENABLE_SSL,"true");
-
         Connection con = DriverManager.getConnection(TestUtil.getSSLUrl(), properties);
 
         assertNotNull(con);

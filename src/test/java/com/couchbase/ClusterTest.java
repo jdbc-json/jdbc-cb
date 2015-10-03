@@ -41,6 +41,7 @@ public class ClusterTest extends TestCase
     public void openConnection() throws Exception
     {
         Properties properties = new Properties();
+        TestUtil.resetEnvironmentProperties(null);
         properties.put(ConnectionParameters.CONNECTION_TIMEOUT,"1000");
         properties.put(ConnectionParameters.USER,TestUtil.getUser());
         properties.put(ConnectionParameters.PASSWORD,TestUtil.getPassword());

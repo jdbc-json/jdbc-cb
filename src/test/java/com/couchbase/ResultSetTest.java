@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import com.couchbase.jdbc.TestUtil;
 
 import java.io.InputStream;
 import java.io.Reader;
