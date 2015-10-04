@@ -12,9 +12,11 @@
 package com.couchbase;
 
 import org.junit.Test;
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
+import com.couchbase.jdbc.TestUtil;
+import com.couchbase.jdbc.JDBCTestUtils;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -27,6 +29,12 @@ import java.util.Map;
 @RunWith(JUnit4.class)
 public class StatementTest extends CouchBaseTestCase
 {
+	@After
+	public void cleanupBucket() throws Exception
+	{
+		JDBCTestUtils.deleteDataFromBucket("default");
+	}
+	
     @Test
     public void createStatement() throws Exception
     {
@@ -135,8 +143,6 @@ public class StatementTest extends CouchBaseTestCase
         assertEquals("Hello World!",resultSet.getString(4));
         assertEquals("Hello World!",resultSet.getString("c4"));
 
-
-
         assertTrue(Arrays.equals(foo, (Object[]) resultSet.getArray(5).getArray()));
         assertTrue(Arrays.equals(foo, (Object[]) resultSet.getArray("c5").getArray()));
 
@@ -147,20 +153,5 @@ public class StatementTest extends CouchBaseTestCase
 
     }
 
-    /*
-    @Test
-    public void batchInsert() throws Exception
-    {
-        assertNotNull(con);
-        Statement statement = con.createStatement();
-        assertNotNull(statement);
 
-        for (int i = 0; i++ < 2; )
-        {
-
-            statement.addBatch("INSERT INTO default  (KEY, VALUE) VALUES ( 'K" + i + "'," + i + ")");
-        }
-        statement.executeBatch();
-    }
-    */
 }

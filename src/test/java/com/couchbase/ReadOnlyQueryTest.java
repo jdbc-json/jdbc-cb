@@ -45,41 +45,7 @@ public class ReadOnlyQueryTest extends TestCase
         assertNotNull(con);
         con.close();
     }
-    @Test
-    public void select() throws Exception
-    {
-        con = DriverManager.getConnection(TestUtil.getURL(), TestUtil.getUser(), TestUtil.getPassword());
-        Statement statement = con.createStatement();
-        assertNotNull(statement);
 
-        ResultSet rs = statement.executeQuery("SELECT children[0].fname AS cname "
-                + "FROM contacts "
-                + "WHERE age > 30 AND children IS NOT NULL");
-
-        assertTrue(rs.next());
-
-
-        rs = statement.executeQuery("SELECT fname, children "
-                + " FROM contacts "
-                + " WHERE ANY child IN contacts.children "
-                + " SATISFIES child.age > 10  END ");
-
-        rs = statement.executeQuery("SELECT fname, ARRAY child.fname FOR child IN c.children"
-                + " END AS children_names"
-                + " FROM contacts c"
-                + " WHERE children IS NOT NULL");
-
-        rs = statement.executeQuery("SELECT email, children"
-                + " FROM contacts USE keys [ 'dave', 'earl', 'fred' ]"
-                + " WHERE ANY child IN contacts.children SATISFIES child.age < 21  END");
-
-        rs = statement.executeQuery("SELECT contacts.email, child"
-                + " FROM contacts UNNEST contacts.children AS child");
-
-        rs = statement.executeQuery("SELECT DISTINCT ccInfo.cardType"
-                + " FROM customer");
-
-    }
     @Test
     public void testAuthentication() throws Exception
     {
@@ -93,81 +59,74 @@ public class ReadOnlyQueryTest extends TestCase
         Statement statement = con.createStatement();
         assertNotNull(statement);
 
-        System.err.println(" executing query with product");
-        /*
-        ResultSet rs = statement.executeQuery("SELECT product.name, product.unitPrice"
-        +" FROM product"
-        +" WHERE ANY cat IN product.categories SATISFIES lower(cat) = 'golf' END"
-        +" ORDER BY product.unitPrice DESC"
-        +" LIMIT 5");
-         */
+        System.err.println(" executing query with default");
 
-        System.err.println(" executing query with product 2");
-        ResultSet rs = statement.executeQuery("SELECT product.name, count(reviewID) AS  numReviews"
-        +" FROM product UNNEST reviewList AS reviewID"
-        +" GROUP BY product.productId, product.name"
+        System.err.println(" executing query with default 2");
+        ResultSet rs = statement.executeQuery("SELECT default.name, count(reviewID) AS  numReviews"
+        +" FROM default UNNEST reviewList AS reviewID"
+        +" GROUP BY default.defaultId, default.name"
         +" HAVING count(reviewID) >= 20"
         +" ORDER BY numReviews desc");
 
-        System.err.println(" executing query with product 3");
-        rs = statement.executeQuery("SELECT product.name, ARRAY_LENGTH(reviewList) as numReviews"
-        +" FROM product"
+        System.err.println(" executing query with default 3");
+        rs = statement.executeQuery("SELECT default.name, ARRAY_LENGTH(reviewList) as numReviews"
+        +" FROM default"
         +" WHERE array_length(reviewList) >= 20"
         +" ORDER BY numReviews desc");
 
-        System.err.println(" executing query with product 4");
-        rs = statement.executeQuery("SELECT product.name, product.categories, reviews"
-        +" FROM product"
-        +" JOIN reviews ON KEYS product.reviewList"
+        System.err.println(" executing query with default 4");
+        rs = statement.executeQuery("SELECT default.name, default.categories, reviews"
+        +" FROM default"
+        +" JOIN reviews ON KEYS default.reviewList"
         +" LIMIT 5");
 
-        System.err.println(" executing query with product 5");
-        rs = statement.executeQuery("SELECT product.name, AVG(reviews.rating) AS avg_rating"
+        System.err.println(" executing query with default 5");
+        rs = statement.executeQuery("SELECT default.name, AVG(reviews.rating) AS avg_rating"
         +" FROM reviews"
-        +" JOIN product ON KEYS reviews.productId"
-        +" GROUP BY product.name"
+        +" JOIN default ON KEYS reviews.defaultId"
+        +" GROUP BY default.name"
         +" ORDER BY avg_rating DESC"
         +" LIMIT 5");
 
-        System.err.println(" executing query with product 6");
-        rs = statement.executeQuery("SELECT product.name, reviews"
-        +" FROM product"
-        +" NEST reviews ON KEYS product.reviewList"
+        System.err.println(" executing query with default 6");
+        rs = statement.executeQuery("SELECT default.name, reviews"
+        +" FROM default"
+        +" NEST reviews ON KEYS default.reviewList"
         +" LIMIT 5");
 
-        System.err.println(" executing query with product 7");
-        rs = statement.executeQuery("SELECT product.name,"
+        System.err.println(" executing query with default 7");
+        rs = statement.executeQuery("SELECT default.name,"
         +"  ARRAY review.rating FOR review IN reviews END AS ratings"
-        +" FROM product"
-        +" NEST reviews ON KEYS product.reviewList"
+        +" FROM default"
+        +" NEST reviews ON KEYS default.reviewList"
         +" LIMIT 5");
 
-        System.err.println(" executing query with product 8");
-        rs = statement.executeQuery("SELECT cat, product, reviews"
-        +" FROM product UNNEST product.categories AS cat"
-        +" JOIN reviews ON KEYS product.reviewList"
+        System.err.println(" executing query with default 8");
+        rs = statement.executeQuery("SELECT cat, default, reviews"
+        +" FROM default UNNEST default.categories AS cat"
+        +" JOIN reviews ON KEYS default.reviewList"
         +" LIMIT 5");
 
         rs = statement.executeQuery("SELECT cat, AVG(reviews.rating) as avg_rating,"
         +"  COUNT(reviews.rating) as num_ratings"
-        +" FROM product UNNEST product.categories AS cat"
-        +" JOIN reviews ON KEYS product.reviewList"
+        +" FROM default UNNEST default.categories AS cat"
+        +" JOIN reviews ON KEYS default.reviewList"
         +" WHERE substr(reviews.reviewedAt, 0, 4) = '2014'"
         +" GROUP BY cat"
         +" ORDER BY avg_rating desc");
 
-        rs = statement.executeQuery("SELECT cat, SUM(lineItems.count * product.unitPrice) AS revenue,"
-        +" AVG(lineItems.count * product.unitPrice) AS avg_revenue,"
+        rs = statement.executeQuery("SELECT cat, SUM(lineItems.count * default.unitPrice) AS revenue,"
+        +" AVG(lineItems.count * default.unitPrice) AS avg_revenue,"
         +" SUM(lineItems.count) AS units_sold"
         +" FROM purchases UNNEST lineItems"
-        +" JOIN product ON KEYS lineItems.product UNNEST product.categories AS cat"
+        +" JOIN default ON KEYS lineItems.default UNNEST default.categories AS cat"
         +" WHERE purchases.purchasedAt IS NOT NULL"
         +" AND SUBSTR(purchases.purchasedAt, 0, 4) = '2013'"
         +" GROUP BY cat ORDER BY cat desc");
 
-        rs = statement.executeQuery("SELECT p_sample.product.name,"
-        +"  ARRAY_LENGTH(p_sample.product.reviewList) as numReviews"
-        +" FROM (select p from product p limit 50) as p_sample"
+        rs = statement.executeQuery("SELECT p_sample.default.name,"
+        +"  ARRAY_LENGTH(p_sample.default.reviewList) as numReviews"
+        +" FROM (select p from default p limit 50) as p_sample"
         +" ORDER BY numReviews desc"
         +" LIMIT 5");
 

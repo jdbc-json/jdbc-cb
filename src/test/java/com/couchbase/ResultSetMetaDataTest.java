@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.junit.Test;
 
 import java.sql.*;
 
@@ -24,8 +25,7 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
 {
     static ResultSet resultSet;
     static ResultSetMetaData resultSetMetaData;
-
-
+    
     @Before
     public void openConnection() throws Exception
     {

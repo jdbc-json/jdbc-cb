@@ -19,8 +19,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
+import org.junit.After;
 import java.math.BigDecimal;
+import com.couchbase.jdbc.JDBCTestUtils;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -35,7 +36,12 @@ public class TestSQLJson extends CouchBaseTestCase
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-
+    @After
+	public void cleanupBucket() throws Exception
+	{
+		JDBCTestUtils.deleteDataFromBucket("default");
+	}
+    
     @Test
     public void getSqlJson() throws Exception
     {

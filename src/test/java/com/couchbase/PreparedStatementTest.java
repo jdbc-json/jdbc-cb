@@ -18,10 +18,11 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
+import org.junit.After;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import com.couchbase.jdbc.JDBCTestUtils;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -35,7 +36,12 @@ public class PreparedStatementTest extends CouchBaseTestCase
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
-
+    @After
+	public void cleanupBucket() throws Exception
+	{
+		JDBCTestUtils.deleteDataFromBucket("default");
+	}
+    
     @Test
     public void createStatement() throws Exception
     {

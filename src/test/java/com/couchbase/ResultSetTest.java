@@ -12,8 +12,10 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
+import com.couchbase.jdbc.JDBCTestUtils;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.After;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -36,6 +38,12 @@ public class ResultSetTest extends CouchBaseTestCase
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
+	@After
+	public void cleanupBucket() throws Exception
+	{
+		JDBCTestUtils.deleteDataFromBucket("default");
+	}
+	
     @Test
     public void testAbsoluteNotImplemented() throws Exception
     {

@@ -30,15 +30,6 @@ public class ProjectionJDBCDriverTests {
 	@BeforeClass
 	public static void initializeCluster() throws Exception
 	{
-		/*
-		JDBCTestUtils.setConnection();
-		String clusterConfigPath = "/tmp/config.json";
-		ProjectionJDBCDriverTests.clusterInfo = ClusterSetupUtils.readConfigFile(clusterConfigPath);
-		ClusterSetupUtils.initializeCluster(ProjectionJDBCDriverTests.clusterInfo);
-		ClusterSetupUtils.createBuckets(ProjectionJDBCDriverTests.clusterInfo);
-		Thread.sleep(5000);
-		JDBCTestUtils.createPrimaryIndexes(ProjectionJDBCDriverTests.clusterInfo.bucketInformation.keySet());
-		*/
 		TestUtil.resetEnvironmentProperties(null);
 		TestUtil.initializeCluster(true);
 	}
