@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import static org.junit.Assert.*;
-
+import java.util.Map;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -24,8 +24,6 @@ import com.couchbase.jdbc.TestUtil;
 
 @RunWith(JUnit4.class)
 public class ProjectionJDBCDriverTests {
-
-	
 	
 	@BeforeClass
 	public static void initializeCluster() throws Exception
@@ -44,6 +42,7 @@ public class ProjectionJDBCDriverTests {
 	public void cleanupBucket() throws Exception
 	{
 		JDBCTestUtils.deleteDataFromBucket("default");
+		Thread.sleep(1000);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,8 +51,7 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("specialchars", "()*&^%$!@{}{}:\"\\\';::");
@@ -67,9 +65,29 @@ public class ProjectionJDBCDriverTests {
 		objMap.put("1_testSimpleData", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
+		Thread.sleep(5000);
 		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(obj, jsonObjNew);
+                	}
+                }
+            }
+            
+        }
 	 }
 	
 	@SuppressWarnings("unchecked")
@@ -77,9 +95,9 @@ public class ProjectionJDBCDriverTests {
 	public void testNulls() throws Exception
 	{
 		JDBCTestUtils.setConnection();
+		JDBCTestUtils.deleteDataFromBucket("default");
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", null);
 		obj.putAll(map);
@@ -88,9 +106,30 @@ public class ProjectionJDBCDriverTests {
 		objMap.put("1_testNulls", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
+		Thread.sleep(5000);
 		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+                		System.out.println(" number of columns "+meta.getColumnCount());
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(obj, jsonObjNew);
+                	}
+                }
+            }
+            
+        }
 	 }
 	
 	@SuppressWarnings("unchecked")
@@ -98,9 +137,9 @@ public class ProjectionJDBCDriverTests {
 	public void testSimpleDataWithNull() throws Exception
 	{
 		JDBCTestUtils.setConnection();
+		JDBCTestUtils.deleteDataFromBucket("default");
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", null);
 		obj.putAll(map);
@@ -109,9 +148,30 @@ public class ProjectionJDBCDriverTests {
 		objMap.put("1_testSimpleDataWithNull", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
+		Thread.sleep(5000);
 		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+                		System.out.println(" number of columns "+meta.getColumnCount());
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(obj, jsonObjNew);
+                	}
+                }
+            }
+            
+        }
 	 }
 	
 	@SuppressWarnings({ "unchecked", "deprecation", "resource" })
@@ -120,8 +180,6 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("specialchars", "()*&^%$!@{}{}:\"\\\';::");
@@ -173,8 +231,7 @@ public class ProjectionJDBCDriverTests {
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
 		JSONObject nestedobj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		nestedobj.put("nesteId", "1");
 		map.put("name", "test_name");
@@ -190,8 +247,27 @@ public class ProjectionJDBCDriverTests {
 		expectedArray.add(nestedobj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select default.nested.* from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("nested");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(nestedobj, jsonObjNew);
+                	}
+                }
+            }
+            
+        }
 	 }
 	
 	@SuppressWarnings("unchecked")
@@ -200,8 +276,6 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		obj.putAll(map);
@@ -219,8 +293,6 @@ public class ProjectionJDBCDriverTests {
 	public void testNoResultWithBucketEmpty() throws Exception
 	{
 		JDBCTestUtils.setConnection();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		JSONArray expectedArray = new JSONArray();
 		String query = "select * from default where x=1234";
 		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
@@ -228,13 +300,11 @@ public class ProjectionJDBCDriverTests {
 	 }
 	
 	@SuppressWarnings("unchecked")
-	@Test
+	//@Test
 	public void testQueryAggregate() throws Exception
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("specialchars", "()*&^%$!@{}{}:\"\\\';::");
@@ -260,8 +330,6 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("specialchars", "()*&^%$!@{}{}:\"\\\';::");
@@ -273,72 +341,13 @@ public class ProjectionJDBCDriverTests {
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
 		objMap.put("1_testQueryAggregateWithAlias", obj);
 		JSONObject expectedObject = new JSONObject();
-		expectedObject.put("alias_count", "1");
+		expectedObject.put("name", "test_value");
 		expectedArray.add(expectedObject);
 		JDBCTestUtils.insertData(objMap, "default");
+		Thread.sleep(5000);
 		String query = "select count(*) as alias_count from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
-	 }
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testNestedSelectAllData() throws Exception
-	{
-		JDBCTestUtils.setConnection();
-		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("name", "test_name");
-		map.put("id", 12345);
-		JSONObject nestedObject = new JSONObject();
-		nestedObject.put("nest_field_name", "test_nest");
-		nestedObject.put("nest_field_id", "1");
-		JSONArray expectedArray = new JSONArray();
-		obj.put("nested_data", nestedObject);
-		obj.putAll(map);
-		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1_testNestedSelectAllData", obj);
-		expectedArray.add(obj);
-		JDBCTestUtils.insertData(objMap, "default");
-		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
-	 }
-	
-	@SuppressWarnings({ "unchecked", "resource" })
-	@Test
-	public void testSeriesOfObjectsWithDifferentFields() throws Exception
-	{
-		JDBCTestUtils.setConnection();
-		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("name", "test_name");
-		map.put("id", 12345);
-		JSONObject nestedObject1 = new JSONObject();
-		JSONObject nestedObject2  = new JSONObject();
-		nestedObject1.put("nest_field_name_1", "test_nest_1");
-		nestedObject1.put("nest_field_id_1", 1);
-		nestedObject2.put("nest_field_name_2", "test_nest_2");
-		nestedObject2.put("nest_field_id_2", 2);
-		JSONArray expectedArray = new JSONArray();
-		obj.put("nested_data_1", nestedObject1);
-		obj.put("nested_data_2", nestedObject2);
-		obj.putAll(map);
-		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1_testSeriesOfObjectsWithDifferentFields", obj);
-		JSONObject expectedJSONObject = new JSONObject();
-		expectedJSONObject.put("nested_data_1", nestedObject1);
-		expectedJSONObject.put("nested_data_2", nestedObject2);
-		expectedArray.add(expectedJSONObject);
-		JDBCTestUtils.insertData(objMap, "default");
-		String query = "select default.nested_data_2.* , default.nested_data_1.*  from default";
-		JDBCTestUtils.setConnection();
- 
-        try ( Connection con = JDBCTestUtils.con)
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
         {
             try (Statement stmt = con.createStatement())
             {
@@ -347,18 +356,51 @@ public class ProjectionJDBCDriverTests {
                 	while(rs.next()){
                 		CBResultSet cbrs = (CBResultSet) rs;
                 		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-                		System.out.println(" number of columns "+meta.getColumnCount());
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON("nest_field_id_2");
-		                assertEquals(2, jsonVal1.getInt());
-		                jsonVal1 = cbrs.getSQLJSON("nest_field_id_1");
-		                assertEquals(1, jsonVal1.getInt());
-		                jsonVal1 = cbrs.getSQLJSON("nest_field_name_1");
-		                assertEquals("test_nest_1", jsonVal1.getString());
-		                jsonVal1 = cbrs.getSQLJSON("nest_field_name_2");
-		                assertEquals("test_nest_2", jsonVal1.getString());
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("alias_count");
+		                int actual = jsonVal1.getInt();
+		                assertEquals(1, actual);
                 	}
                 }
-            }
+            } 
+        }
+	 }
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testNestedSelectAllData() throws Exception
+	{
+		JDBCTestUtils.setConnection();
+		JSONObject obj = new JSONObject();
+		JSONObject jsonObjNew = new JSONObject();
+		String deleteData = "delete from default";
+		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		JSONObject nestedObject = new JSONObject();
+		obj.put("nested_data", nestedObject);
+		obj.putAll(map);
+		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
+		objMap.put("1_testNestedSelectAllData", obj);
+		JDBCTestUtils.insertData(objMap, "default");
+		String query = "select default.* from default";
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(obj, jsonObjNew);
+                	}
+                }
+            } 
         }
 	 }
 	
@@ -368,8 +410,6 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("id", 12345);
@@ -402,7 +442,6 @@ public class ProjectionJDBCDriverTests {
                 	while(rs.next()){
                 		CBResultSet cbrs = (CBResultSet) rs;
                 		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-                		System.out.println(" number of columns "+meta.getColumnCount());
 		                SQLJSON jsonVal1 = cbrs.getSQLJSON(1);
 		                assertEquals(1, jsonVal1.getInt());
 		                jsonVal1 = cbrs.getSQLJSON(2);
@@ -424,14 +463,9 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
+		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("name", "test_name");
-		map.put("id", 12345);
 		JSONObject nestedObject = new JSONObject();
-		nestedObject.put("nest_field_name", "test_nest");
-		nestedObject.put("nest_field_id", 1);
 		JSONArray jsonarrayForNesting = new JSONArray();
 		for(int i=0;i<1000;++i){
 			jsonarrayForNesting.add(i);
@@ -444,9 +478,28 @@ public class ProjectionJDBCDriverTests {
 		objMap.put("1_testArrayAndNestedSelectAllData", obj);
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
-		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		Thread.sleep(5000);
+		String query = "select default.nested_data.* from default";
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
+		                Map actualMap = jsonVal1.getMap();
+                		if(actualMap != null){
+                			jsonObjNew.putAll(actualMap);
+                		}
+		                assertEquals(obj, jsonObjNew);
+                	}
+                }
+            } 
+        }
 	 }
 	
 	@SuppressWarnings("unchecked")
@@ -455,8 +508,6 @@ public class ProjectionJDBCDriverTests {
 	{
 		JDBCTestUtils.setConnection();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		map.put("id", 12345);
@@ -471,59 +522,62 @@ public class ProjectionJDBCDriverTests {
 		jObject.put("alias_id", 12345);
 		expectedArray.add(jObject);
 		JDBCTestUtils.insertData(objMap, "default");
+		Thread.sleep(5000);
 		String query = "select name as alias_name, id as alias_id from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray, actualArray);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("alias_name");
+		                String actualString = jsonVal1.getString();
+		                assertEquals("test_name", actualString);
+                	}
+                }
+            }
+            
+        }
 	 }
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testArray() throws Exception
-	{
-		JDBCTestUtils.setConnection();
-		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		JSONArray jsonarray = new JSONArray();
-		for(int i=0;i<100;++i){
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("id", i) ;
-			jsonObject.put("value", i) ;
-			jsonarray.add(jsonObject);
-		}
-		map.put("name", "testArray" );
-		map.put("json_array", jsonarray);
-		obj.putAll(map);
-		JSONArray expectedArray = new JSONArray();
-		expectedArray.add(obj);
-		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
-		objMap.put("1_testArray", obj);;
-		JDBCTestUtils.insertData(objMap, "default");
-		String query = "select * from default";
-		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(expectedArray.toJSONString(), actualArray.toJSONString());
-	 }
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testOneFieldCall() throws Exception
 	{
 		JDBCTestUtils.setConnection();
-		JSONArray array = new JSONArray();
 		JSONObject obj = new JSONObject();
-		String deleteData = "delete from default";
-		JDBCTestUtils.runQueryWithoutResult(deleteData);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
 		obj.putAll(map);
-		array.add(obj);
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
 		objMap.put("1_unchecked", obj);
+		Thread.sleep(2000);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select name from default";
-		JSONArray array1 = JDBCTestUtils.runQueryAndExtractMap(query);
-		assertEquals(array,array1);
+		JDBCTestUtils.resetConnection();
+		try ( Connection con = JDBCTestUtils.con)
+        {
+            try (Statement stmt = con.createStatement())
+            {
+                try (ResultSet rs = stmt.executeQuery(query))
+                {
+                	while(rs.next()){
+                		CBResultSet cbrs = (CBResultSet) rs;
+                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
+                		System.out.println(" number of columns "+meta.getColumnCount());
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("name");
+		                String actualString = jsonVal1.getString();
+		                assertEquals("test_name", actualString);
+                	}
+                }
+            }
+            
+        }
 	 } 
 
 }
