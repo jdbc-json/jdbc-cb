@@ -41,11 +41,11 @@ public class TestUtil
     
     public static String getConfig() { return environment.getProperty("couchbasedb.test.config", "/tmp/config.json");}
 
-    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:9499");}
+    public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:8093");}
 
-    public static String getSSLUrl() { return environment.getProperty("couchbasedb.test.sslurl", "jdbc:couchbase://127.0.0.1:19499");}
+    public static String getSSLUrl() { return environment.getProperty("couchbasedb.test.sslurl", "jdbc:couchbase://127.0.0.1:18093");}
 
-    public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:9499");}
+    public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:8093");}
 
     public static void initializeCluster(boolean createPrimaryIndex){
     	try{
