@@ -37,7 +37,7 @@ import org.json.simple.parser.ParseException;
 
 public class JDBCTestUtils {
 	public static Connection con;
-    public static String ConnectionURL = "jdbc:couchbase://127.0.0.1:9499";
+    public static String ConnectionURL = "jdbc:couchbase://127.0.0.1:8093";
     public static ClusterInfo clusteInfo = null;
     
     public static void setConnection(){
