@@ -49,7 +49,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testSimpleData() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -94,7 +94,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testNulls() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JDBCTestUtils.deleteDataFromBucket("default");
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
@@ -136,7 +136,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testSimpleDataWithNull() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JDBCTestUtils.deleteDataFromBucket("default");
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
@@ -178,7 +178,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testSimpleDataDifferentDataTypesAsFields() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -193,7 +193,7 @@ public class ProjectionJDBCDriverTests {
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select name,specialchars,int,double,data_time from default";
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		 
         try ( Connection con = JDBCTestUtils.con)
         {
@@ -228,7 +228,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testNestedOperator() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		JSONObject nestedobj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
@@ -274,7 +274,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testNoResult() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -292,7 +292,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testNoResultWithBucketEmpty() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONArray expectedArray = new JSONArray();
 		String query = "select * from default where x=1234";
 		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
@@ -303,7 +303,7 @@ public class ProjectionJDBCDriverTests {
 	//@Test
 	public void testQueryAggregate() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -328,7 +328,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testQueryAggregateWithAlias() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -369,7 +369,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testNestedSelectAllData() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
 		String deleteData = "delete from default";
@@ -408,7 +408,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testSeriesOfObjectsWithSimilarFields() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -431,7 +431,7 @@ public class ProjectionJDBCDriverTests {
 		expectedArray.add(expectedJSONObject);
 		JDBCTestUtils.insertData(objMap, "default");
 		String query = "select default.nested_data_2.* , default.nested_data_1.*  from default";
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
  
         try ( Connection con = JDBCTestUtils.con)
         {
@@ -461,7 +461,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testArrayAndNestedSelectAllData() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -506,7 +506,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testFieldAlias() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");
@@ -549,7 +549,7 @@ public class ProjectionJDBCDriverTests {
 	@Test
 	public void testOneFieldCall() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("name", "test_name");

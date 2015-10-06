@@ -10,6 +10,7 @@ public class ClusterInfo {
 	public HashMap<String, NodeInfo> nodeInformation;
 	public HashMap<String, BucketInfo> bucketInformation;
 	
+	
 	/***
 	 * Constructor
 	 */

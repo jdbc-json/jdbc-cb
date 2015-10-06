@@ -43,7 +43,7 @@ public class ConnectionTest extends CouchBaseTestCase
         assertNotNull(array);
         con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.createArrayOf("int",attributes);
+        con.createArrayOf("int",attributes);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ConnectionTest extends CouchBaseTestCase
         Object [] attributes = {"1", "2"};
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        CouchBaseTestCase.con.createStruct("sometype", attributes);
+        con.createStruct("sometype", attributes);
 
     }
     @Test
@@ -73,7 +73,7 @@ public class ConnectionTest extends CouchBaseTestCase
         assertNotNull(con.createStatement());
         con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.createStatement();
+        con.createStatement();
     }
 
     @Test
@@ -82,23 +82,23 @@ public class ConnectionTest extends CouchBaseTestCase
         assertNotNull(con.prepareStatement("select 1"));
         con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement("");
+        con.prepareStatement("");
     }
 
     @Test
     public void testPrepareCall() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        CouchBaseTestCase.con.prepareCall("SELECT foo");
+        con.prepareCall("SELECT foo");
     }
 
     @Test
     public void testNativeSQL() throws Exception
     {
         assertSame(con.nativeSQL("select * from foo"), "select * from foo");
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.nativeSQL("");
+        con.nativeSQL("");
     }
 
     @Test
@@ -106,9 +106,9 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         // this is a no-op just make sure it doesn't fail
         con.setAutoCommit(true);
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setAutoCommit(false);
+        con.setAutoCommit(false);
 
     }
 
@@ -116,39 +116,39 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testGetAutoCommit() throws Exception
     {
         assertFalse(con.getAutoCommit());
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.getAutoCommit();
+        con.getAutoCommit();
     }
 
     @Test
     public void testCommit() throws Exception
     {
-    	CouchBaseTestCase.con.close();
+    	con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.commit();
+        con.commit();
     }
 
     @Test
     public void testRollback() throws Exception
     {
-    	CouchBaseTestCase.con.close();
+    	con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.rollback();
+        con.rollback();
     }
 
     @Test
     public void testClose() throws Exception
     {
         // should do nothing for both of these
-    	CouchBaseTestCase.con.close();
-    	CouchBaseTestCase.con.close();
+    	con.close();
+    	con.close();
     }
 
     @Test
     public void testIsClosed() throws Exception
     {
-    	CouchBaseTestCase.con.close();
+    	con.close();
         assertTrue(con.isClosed());
     }
 
@@ -156,9 +156,9 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testGetMetaData() throws Exception
     {
         assertNotNull(con.getMetaData());
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.getMetaData();
+        con.getMetaData();
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         con.setReadOnly(true);
 
-        Statement statement = CouchBaseTestCase.con.createStatement();
+        Statement statement = con.createStatement();
         try
         {
             statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K1', 1)");
@@ -177,13 +177,13 @@ public class ConnectionTest extends CouchBaseTestCase
         }
         finally
         {
-        	CouchBaseTestCase.con.setReadOnly(true);
+        	con.setReadOnly(true);
         }
 
-        CouchBaseTestCase.con.close();
+        con.close();
         try
         {
-        	CouchBaseTestCase.con.setReadOnly(true);
+        	con.setReadOnly(true);
         }
         catch (SQLException ex)
         {
@@ -195,9 +195,9 @@ public class ConnectionTest extends CouchBaseTestCase
     @Test
     public void testIsReadOnly() throws Exception
     {
-    	CouchBaseTestCase.con.setReadOnly(false);
+    	con.setReadOnly(false);
         assertFalse(con.isReadOnly());
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
         con.isReadOnly();
     }
@@ -205,20 +205,20 @@ public class ConnectionTest extends CouchBaseTestCase
     @Test
     public void testSetCatalog() throws Exception
     {
-    	CouchBaseTestCase.con.close();
+    	con.close();
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Connection is closed");
-        CouchBaseTestCase.con.setCatalog("system");
+        con.setCatalog("system");
 
     }
 
     @Test
     public void testGetCatalog() throws Exception
     {
-    	CouchBaseTestCase.con.setCatalog("system");
+    	con.setCatalog("system");
         assertEquals(con.getCatalog(),"system");
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expectMessage("Connection is closed");
         expectedException.expect(SQLException.class);
 
@@ -228,8 +228,8 @@ public class ConnectionTest extends CouchBaseTestCase
     @Test
     public void testSetTransactionIsolation() throws Exception
     {
-    	CouchBaseTestCase.con.setTransactionIsolation(Connection.TRANSACTION_NONE);
-    	CouchBaseTestCase. con.close();
+    	con.setTransactionIsolation(Connection.TRANSACTION_NONE);
+    	con.close();
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Connection is closed");
         con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
@@ -238,10 +238,10 @@ public class ConnectionTest extends CouchBaseTestCase
     @Test
     public void testGetTransactionIsolation() throws Exception
     {
-    	CouchBaseTestCase.con.setTransactionIsolation(Connection.TRANSACTION_NONE);
+    	con.setTransactionIsolation(Connection.TRANSACTION_NONE);
         assertEquals(con.getTransactionIsolation(), Connection.TRANSACTION_NONE);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Connection is closed");
 
@@ -251,23 +251,23 @@ public class ConnectionTest extends CouchBaseTestCase
     @Test
     public void testGetWarnings() throws Exception
     {
-    	CouchBaseTestCase.con.getWarnings();
-    	CouchBaseTestCase.con.close();
+    	con.getWarnings();
+    	con.close();
 
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Connection is closed");
-        CouchBaseTestCase.con.getWarnings();
+        con.getWarnings();
     }
 
     @Test
     public void testClearWarnings() throws Exception
     {
-    	CouchBaseTestCase.con.clearWarnings();
-    	CouchBaseTestCase.con.close();
+    	con.clearWarnings();
+    	con.close();
 
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Connection is closed");
-        CouchBaseTestCase.con.clearWarnings();
+        con.clearWarnings();
 
     }
 
@@ -277,17 +277,17 @@ public class ConnectionTest extends CouchBaseTestCase
         assertNotNull(con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_UPDATABLE);
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY,ResultSet.CONCUR_UPDATABLE);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
     }
 
@@ -299,19 +299,19 @@ public class ConnectionTest extends CouchBaseTestCase
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
     }
 
@@ -322,11 +322,11 @@ public class ConnectionTest extends CouchBaseTestCase
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
-        CouchBaseTestCase.con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
     }
 
@@ -335,11 +335,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.getTypeMap");
-        CouchBaseTestCase.con.getTypeMap();
+        con.getTypeMap();
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.getTypeMap();
+        con.getTypeMap();
     }
 
 
@@ -348,11 +348,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.setTypeMap");
-        CouchBaseTestCase.con.setTypeMap(new HashMap<String, Class<?>>());
+        con.setTypeMap(new HashMap<String, Class<?>>());
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setTypeMap(new HashMap<String, Class<?>>());
+        con.setTypeMap(new HashMap<String, Class<?>>());
 
     }
 
@@ -361,11 +361,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.setHoldability");
-        CouchBaseTestCase.con.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        con.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        con.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
 
     }
 
@@ -374,9 +374,9 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         assertEquals(con.getHoldability(), ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setHoldability(ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.setHoldability(ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
     }
 
@@ -385,11 +385,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.setSavepoint");
-        CouchBaseTestCase.con.setSavepoint();
+        con.setSavepoint();
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setSavepoint();
+        con.setSavepoint();
     }
 
     @Test
@@ -397,11 +397,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.setSavepoint");
-        CouchBaseTestCase.con.setSavepoint("foo");
+        con.setSavepoint("foo");
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setSavepoint("foo");
+        con.setSavepoint("foo");
     }
 
     @Test
@@ -409,11 +409,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.rollback");
-        CouchBaseTestCase.con.rollback(null);
+        con.rollback(null);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.rollback(null);
+        con.rollback(null);
 
     }
 
@@ -422,11 +422,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.releaseSavepoint");
-        CouchBaseTestCase.con.releaseSavepoint(null);
+        con.releaseSavepoint(null);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.releaseSavepoint(null);
+        con.releaseSavepoint(null);
 
     }
 
@@ -435,11 +435,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createStatement");
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
     }
 
@@ -449,11 +449,11 @@ public class ConnectionTest extends CouchBaseTestCase
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
     }
 
     @Test
@@ -462,11 +462,11 @@ public class ConnectionTest extends CouchBaseTestCase
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
-        CouchBaseTestCase.con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
     }
 
@@ -476,11 +476,11 @@ public class ConnectionTest extends CouchBaseTestCase
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
     }
 
@@ -492,11 +492,11 @@ public class ConnectionTest extends CouchBaseTestCase
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
-        CouchBaseTestCase.con.prepareStatement(sql, columns);
+        con.prepareStatement(sql, columns);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement(sql,columns );
+        con.prepareStatement(sql,columns );
 
     }
 
@@ -508,9 +508,9 @@ public class ConnectionTest extends CouchBaseTestCase
 
         assertNotNull(con.prepareStatement(sql, columns));
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.prepareStatement(sql,columns );
+        con.prepareStatement(sql,columns );
 
     }
 
@@ -519,7 +519,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createClob");
-        CouchBaseTestCase.con.createClob();
+        con.createClob();
     }
 
     @Test
@@ -527,7 +527,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createBlob");
-        CouchBaseTestCase.con.createBlob();
+        con.createBlob();
 
     }
 
@@ -536,7 +536,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createNClob");
-        CouchBaseTestCase.con.createNClob();
+        con.createNClob();
 
     }
 
@@ -545,7 +545,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createSQLXML");
-        CouchBaseTestCase.con.createSQLXML();
+        con.createSQLXML();
 
     }
 
@@ -553,7 +553,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testIsValid() throws Exception
     {
         assertTrue(con.isValid(0));
-        CouchBaseTestCase.con.close();
+        con.close();
         assertFalse(con.isValid(0));
     }
 
@@ -587,11 +587,11 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
         expectedException.expectMessage("com.couchbase.CBConnection.createStruct");
-        CouchBaseTestCase.con.createStruct(null, null);
+        con.createStruct(null, null);
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.createStruct(null, null);
+        con.createStruct(null, null);
 
     }
 
@@ -610,21 +610,21 @@ public class ConnectionTest extends CouchBaseTestCase
             }
         }
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.setSchema("SYSTEM");
+        con.setSchema("SYSTEM");
     }
 
     @Test
     public void testGetSchema() throws Exception
     {
-    	CouchBaseTestCase.con.setSchema("SYSTEM");
+    	con.setSchema("SYSTEM");
 
         assertEquals("SYSTEM",con.getSchema());
 
-        CouchBaseTestCase.con.close();
+        con.close();
         expectedException.expect(SQLException.class);
-        CouchBaseTestCase.con.getSchema();
+        con.getSchema();
 
     }
 
@@ -632,11 +632,11 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testAbort() throws Exception
     {
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        CouchBaseTestCase.con.abort(executor);
+        con.abort(executor);
 
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("Executor is null");
-        CouchBaseTestCase.con.abort(null);
+        con.abort(null);
     }
 
     @Test

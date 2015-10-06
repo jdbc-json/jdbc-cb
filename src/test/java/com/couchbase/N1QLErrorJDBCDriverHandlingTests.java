@@ -40,7 +40,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testQueryMissingBucket(){
 	String query = "select * from does_not_exist_bucket";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	        try ( Connection con = JDBCTestUtils.con)
 	        {
 	            try (Statement stmt = con.createStatement())
@@ -55,7 +55,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testQueryWithoutAnyDependentIndex(){
 	String query = "select * from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	        try ( Connection con = JDBCTestUtils.con)
 	        {
 	            try (Statement stmt = con.createStatement())
@@ -89,7 +89,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	}
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	String query = "crap this is wrong syntax";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	        try ( Connection con = JDBCTestUtils.con)
 	        {
 	            try (Statement stmt = con.createStatement())
@@ -111,7 +111,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testNumberNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -127,7 +127,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -185,7 +185,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testStringNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -201,7 +201,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select num_1 from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -236,7 +236,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testMapNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -252,7 +252,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -287,7 +287,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testArrayNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -303,7 +303,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -338,7 +338,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testDateNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -354,7 +354,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -389,7 +389,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testTimeNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -405,7 +405,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -440,7 +440,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testTimeStampNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -456,7 +456,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -491,7 +491,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testByteNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -507,7 +507,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -542,7 +542,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testBytesNotPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -558,7 +558,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))
@@ -593,7 +593,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	@Test
 	public void testBooleanPresent() throws Exception
 	{
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	String drop_primary_index = "drop primary index on default";
 	JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	JSONObject obj = new JSONObject();
@@ -609,7 +609,7 @@ public class N1QLErrorJDBCDriverHandlingTests {
 	JDBCTestUtils.insertData(objMap, "default");
 	Thread.sleep(1000);
 	String query = "select name from default";
-	JDBCTestUtils.setConnection();
+	JDBCTestUtils.setConnection(null);
 	            try (Statement stmt = JDBCTestUtils.con.createStatement())
 	            {
 	                try (ResultSet rs = stmt.executeQuery(query))

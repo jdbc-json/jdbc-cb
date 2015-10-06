@@ -27,9 +27,9 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
     static ResultSetMetaData resultSetMetaData;
     
     @Before
-    public void openConnection() throws Exception
+    public void open() throws Exception
     {
-        Statement statement = CouchBaseTestCase.con.createStatement();
+        Statement statement = con.createStatement();
         assertNotNull(statement);
 
         resultSet = statement.executeQuery("SELECT true as c1, 1 as c2, 3.14 as c3,  'Hello World!' as c4, [1,2,3,5,8] as c5, { 'a1': 'Object' } as c6");
@@ -43,8 +43,8 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
     {
         assertNotNull(resultSet);
         resultSet.close();
-        assertNotNull(CouchBaseTestCase.con);
-        CouchBaseTestCase.con.close();
+        assertNotNull(con);
+        con.close();
     }
 
     @Test

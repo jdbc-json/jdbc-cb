@@ -99,6 +99,7 @@ public class ClusterSetupUtils {
 		 */
 	    public static ClusterInfo readConfigFile(String filePath) 
 	    		throws FileNotFoundException, IOException, ParseException{
+	    	filePath = "target/test-classes/"+filePath;
 	    	JSONParser parser = new JSONParser();
 	    	ClusterInfo clusterInfo = new ClusterInfo(); 
 	    	Object obj = parser.parse(new FileReader(filePath));

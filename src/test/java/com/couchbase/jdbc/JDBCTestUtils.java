@@ -40,17 +40,23 @@ public class JDBCTestUtils {
     public static String ConnectionURL = "jdbc:couchbase://127.0.0.1:8093";
     public static ClusterInfo clusteInfo = null;
     
-    public static void setConnection(){
+    public static void setConnection(String url){
     	try{
+    		if(url != null){
+    			JDBCTestUtils.ConnectionURL = url;
+    		}
     		JDBCTestUtils.con = DriverManager.getConnection(ConnectionURL) ;
     	}catch(SQLException ex){
     		System.out.println(ex.toString());
     	}
     }
     
-    public static void setConnection(Properties properties){
+    public static void setConnection(String url, Properties properties){
     	try{
-    		JDBCTestUtils.con = DriverManager.getConnection(ConnectionURL, properties) ;
+    		if(url != null){
+    			JDBCTestUtils.ConnectionURL = url;
+    		}
+    		JDBCTestUtils.con = DriverManager.getConnection(ConnectionURL) ;
     	}catch(SQLException ex){
     		System.out.println(ex.toString());
     	}
@@ -69,7 +75,7 @@ public class JDBCTestUtils {
     		if(JDBCTestUtils.con != null){
 	    		JDBCTestUtils.con.close();
     		}
-	    		JDBCTestUtils.setConnection();
+	    		JDBCTestUtils.setConnection(null);
     	}catch(SQLException ex){
     		System.out.println(ex.toString());
     	}
@@ -84,7 +90,7 @@ public class JDBCTestUtils {
      */
     public static LinkedList<String> runQuery(String query) throws SQLException
     {	
-        JDBCTestUtils.setConnection();
+        JDBCTestUtils.setConnection(null);
         LinkedList<String> objList = new LinkedList<String>();
         try ( Connection con = JDBCTestUtils.con)
         {
@@ -112,7 +118,7 @@ public class JDBCTestUtils {
      */
     public static JSONArray runQueryAndExtractMap(String query) throws SQLException
     {	
-        JDBCTestUtils.setConnection();
+        JDBCTestUtils.setConnection(null);
         JSONArray objList = new JSONArray();
         try ( Connection con = JDBCTestUtils.con)
         {

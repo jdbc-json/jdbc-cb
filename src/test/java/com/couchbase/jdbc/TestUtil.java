@@ -39,7 +39,7 @@ public class TestUtil
     	
     }
     
-    public static String getConfig() { return environment.getProperty("couchbasedb.test.config", "/tmp/config.json");}
+    public static String getConfig() { return environment.getProperty("couchbasedb.test.config", "config.json");}
 
     public static String getURL() { return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:8093");}
 
@@ -52,9 +52,10 @@ public class TestUtil
 		    	String clusterConfigPath = TestUtil.getConfig();
 		    	TestUtil.clusterInfo =  ClusterSetupUtils.readConfigFile(clusterConfigPath);
 		    	ClusterSetupUtils.initializeCluster(TestUtil.clusterInfo);
-		    	JDBCTestUtils.setConnection();
+		    	System.out.println(TestUtil.clusterInfo.toString());
 		    	ClusterSetupUtils.createBuckets(TestUtil.clusterInfo);
 		    	Thread.sleep(5000);
+		    	JDBCTestUtils.setConnection(TestUtil.clusterInfo.masterNodeInfo.getQueryServerURL());
 	    	if(createPrimaryIndex){
 	    		JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	    	}

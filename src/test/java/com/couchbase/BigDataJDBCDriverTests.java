@@ -35,7 +35,7 @@ public class BigDataJDBCDriverTests {
 	@Test
 	public void testLargeDataSize() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		String deleteData = "delete from default";
 		JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -61,7 +61,7 @@ public class BigDataJDBCDriverTests {
 	@Test
 	public void testLargeNumberOfFields() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		String deleteData = "delete from default";
 		JDBCTestUtils.runQueryWithoutResult(deleteData);
@@ -84,7 +84,7 @@ public class BigDataJDBCDriverTests {
 	@Test
 	public void testLargeNumberOfObjects() throws Exception
 	{
-		JDBCTestUtils.setConnection();
+		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		String deleteData = "delete from default";
 		JDBCTestUtils.runQueryWithoutResult(deleteData);

@@ -67,6 +67,14 @@ public class NodeInfo {
 		this.services = services;
 	}
 	
+	public String getServerURL(){
+		return String.format("http://%s:%s",this.ip,this.port);
+	}
+	
+	public String getQueryServerURL(){
+		return String.format("jdbc:couchbase://%s:%s",this.ip,this.n1qlPort);
+	}
+	
 	/***
 	 * Create JSON Object from the current object 
 	 * @return

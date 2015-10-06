@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Before;
-
+import org.junit.runner.RunWith;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -25,10 +25,15 @@ import java.util.Properties;
  * Created by davec on 2015-09-08.
  */
 
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+@RunWith(Suite.class)
+@SuiteClasses({CBDatabaseMetaDataTest.class, ConnectionTest.class, PreparedStatementTest.class, ResultSetMetaDataTest.class, ResultSetTest.class, SqlParserTest.class, StatementTest.class, Test16017.class, TestSQLJson.class, WrapperTest.class})
 public class CouchBaseTestCase extends TestCase
 {
     
-	public static Connection con;
+	public Connection con;
 	public static Properties properties;
 
     @BeforeClass
@@ -45,14 +50,13 @@ public class CouchBaseTestCase extends TestCase
     @Before
     public void openConnection() throws Exception
     {
-        CouchBaseTestCase.con = DriverManager.getConnection(TestUtil.getURL(), CouchBaseTestCase.properties);
-        assertNotNull(CouchBaseTestCase.con);
+        con = DriverManager.getConnection(TestUtil.getURL(), CouchBaseTestCase.properties);
+        assertNotNull(con);
     }
     
     @AfterClass
     public static void cleanup() throws Exception
     {
-        assertNotNull(con);
         TestUtil.destroyCluster();
     }
     
