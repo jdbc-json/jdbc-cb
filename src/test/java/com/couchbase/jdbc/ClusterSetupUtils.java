@@ -253,7 +253,7 @@ public class ClusterSetupUtils {
 			
 			FileWriter file;
 			try {
-				 file = new FileWriter("/tmp/config.json");
+				 file = new FileWriter("config.json");
 				 file.write(info.createJSONObject().toJSONString());
 		         System.out.println("Successfully Copied JSON Object to File...");
 		         file.close();
