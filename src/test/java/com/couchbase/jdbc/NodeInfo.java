@@ -26,8 +26,8 @@ public class NodeInfo {
 		this.machinePassword  = "couchbase";
 		this.membaseUserId = "Administrator";
 		this.membasePassword = "password";
-		this.n1qlPort = 9499;
-		this.port = 9000;
+		this.n1qlPort = 8093;
+		this.port = 8091;
 		services = new ArrayList<String>();
 		services.add("kv");
 		services.add("n1ql");

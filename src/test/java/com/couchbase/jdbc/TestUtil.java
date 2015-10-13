@@ -55,7 +55,7 @@ public class TestUtil
 		    	System.out.println(TestUtil.clusterInfo.toString());
 		    	ClusterSetupUtils.createBuckets(TestUtil.clusterInfo);
 		    	Thread.sleep(5000);
-		    	JDBCTestUtils.setConnection(TestUtil.clusterInfo.masterNodeInfo.getQueryServerURL());
+		    	JDBCTestUtils.setConnection(TestUtil.getURL());
 	    	if(createPrimaryIndex){
 	    		JDBCTestUtils.createPrimaryIndexes(TestUtil.clusterInfo.bucketInformation.keySet());
 	    	}
@@ -75,7 +75,7 @@ public class TestUtil
    
     
     public static String getServer() {
-        return System.getProperty("couchbasedb.test.server", "ec2-54-146-69-136.compute-1.amazonaws.com");
+        return System.getProperty("couchbasedb.test.server", "127.0.0.1");
     }
 
     public static String getPort() {

@@ -11,6 +11,7 @@ public class ClusterInfo {
 	public HashMap<String, BucketInfo> bucketInformation;
 	
 	
+	
 	/***
 	 * Constructor
 	 */
@@ -20,6 +21,7 @@ public class ClusterInfo {
 		this.nodeInformation = new HashMap<String, NodeInfo>();
 		this.bucketInformation = new HashMap<String, BucketInfo>();
 	}
+	
 
 	/***
 	 * Add Node information
