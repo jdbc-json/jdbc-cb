@@ -262,7 +262,7 @@ public class ClusterSetupUtils {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			String path = "/tmp/config.json";
+			String path = "config.json";
 			try {
 				ClusterInfo clusterInfo  = ClusterSetupUtils.readConfigFile(path);
 				ClusterSetupUtils.initializeCluster(clusterInfo);
