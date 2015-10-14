@@ -5,26 +5,120 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.Proxy;
+import java.net.InetSocketAddress;
+import java.io.OutputStreamWriter;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.NodeInfo;
 
 
 public class ClusterSetupUtils {
+	
+			/***
+			 * Rebalance-In Nodes
+			 */
+			public static void rebalanceIn(ClusterInfo clusterInfo){
+				NodeInfo masterNodeInfo = null;
+				try{
+					// Node addition Phase
+					for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
+						if(nodeInfo.isMasterNode){
+							masterNodeInfo = nodeInfo;
+						}
+					}
+					for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
+						if(!nodeInfo.isMasterNode){
+							String services = nodeInfo.getServices();
+							String curlCommand  = String.format("curl  -u %s:%s -v -X POST http://%s:%d/controller/addNode  -d hostname=%s:%s&password=%s&user=%s&services=%s",nodeInfo.membaseUserId,nodeInfo.membasePassword,masterNodeInfo.ip,masterNodeInfo.port,nodeInfo.ip,nodeInfo.port,nodeInfo.membasePassword,nodeInfo.membaseUserId,services);
+							ClusterSetupUtils.runCommand(curlCommand);
+							Thread.sleep(10000);
+						}
+					}
+					// Cluster Rebalance Phase
+					StringBuffer rebalanceIps = new StringBuffer();
+					String masterNodeIP = "";
+					int count = 0;
+					for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
+						if(nodeInfo.isMasterNode){
+							masterNodeIP = String.format("n_0FORTY%s",nodeInfo.ip);
+						}else{
+							++count;
+							rebalanceIps.append(String.format("TWENTYn_%dFORTY%s",count,nodeInfo.ip));
+						}
+						
+					}
+					String url = String.format("http://%s:%d/controller/rebalance",masterNodeInfo.ip,masterNodeInfo.port);
+					String curlCommand = String.format("ejectedNodes=&knownNodes=%s%s", masterNodeIP, rebalanceIps.toString());
+					ClusterSetupUtils.runCURLCommand(curlCommand.replace("FORTY","%40").replace("TWENTY","%2C"),  url,masterNodeInfo.membaseUserId,masterNodeInfo.membasePassword);
+					Thread.sleep(6000);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
+			/***
+			 * Rebalance-Out Nodes
+			 */
+			public static void rebalanceOut(ClusterInfo clusterInfo){
+				NodeInfo masterNodeInfo = null;
+				try{
+					// Node addition Phase
+					for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
+						if(nodeInfo.isMasterNode){
+							masterNodeInfo = nodeInfo;
+						}
+					}
+					
+					// Cluster Rebalance Phase
+					StringBuffer rebalanceOut = new StringBuffer();
+					StringBuffer rebalanceIps = new StringBuffer();
+					
+					String masterNodeIP = "";
+					int count = 0;
+					for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
+						if(nodeInfo.isMasterNode){
+							masterNodeIP = String.format("n_0FORTY%s",nodeInfo.ip);
+						}else{
+							++count;
+							if(count == 1){
+								rebalanceOut.append(String.format("n_%dFORTY%s",count,nodeInfo.ip));
+							}else{
+								rebalanceOut.append(String.format("TWENTYn_%dFORTY%s",count,nodeInfo.ip));
+							}
+							rebalanceIps.append(String.format("TWENTYn_%dFORTY%s",count,nodeInfo.ip));
+						}
+						
+					}
+					String url = String.format("http://%s:%d/controller/rebalance",masterNodeInfo.ip,masterNodeInfo.port);
+					String curlCommand = String.format("ejectedNodes=%s&knownNodes=%s%s", rebalanceOut.toString(), masterNodeIP, rebalanceIps.toString() );
+					ClusterSetupUtils.runCURLCommand(curlCommand.replace("FORTY","%40").replace("TWENTY","%2C"),  url,masterNodeInfo.membaseUserId,masterNodeInfo.membasePassword);
+					Thread.sleep(6000);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+
+	
 		/***
 		 * Initialize Clusters
 		 * @param clusterInfo
 		 */
 		public static void initializeCluster(ClusterInfo clusterInfo){
-			int count = 0;
 			for(NodeInfo nodeInfo:clusterInfo.nodeInformation.values()){
-				if(count ==  0){
+				if(nodeInfo.isMasterNode){
 					clusterInfo.masterNodeInfo = nodeInfo;
 					String services = nodeInfo.getServices();
 					String curlCommand  = String.format("curl -X POST -u %s:%s -d username=%s -d password=%s -d services=%s http://%s:%s//node/controller/setupServices", nodeInfo.membaseUserId, nodeInfo.membasePassword, nodeInfo.membaseUserId, nodeInfo.membasePassword, services,nodeInfo.ip,nodeInfo.port);
@@ -32,7 +126,6 @@ public class ClusterSetupUtils {
 					curlCommand  = String.format("curl  -u %s:%s -v -X POST http://%s:%d/settings/web  -d password=%s&username=%s&port=SAME",nodeInfo.membaseUserId,nodeInfo.membasePassword,nodeInfo.ip,nodeInfo.port,nodeInfo.membasePassword,nodeInfo.membaseUserId);
 					ClusterSetupUtils.runCommand(curlCommand);
 				}
-				count++;
 			}
 		}
 		
@@ -175,6 +268,9 @@ public class ClusterSetupUtils {
 	        	NodeInfo info = new NodeInfo();
 	        	JSONObject nodeInfo = (JSONObject) nodeInformation.get(i);
 	        	info.ip = (String) nodeInfo.get("ip");
+	        	if(info.ip.equals("127.0.0.1") || info.ip.equals("localhost")){
+	        		info.ip = getLocalHostIPAdress(); 
+	        	}
 	        	info.machineUserId = machineUserId;
 	        	info.machinePassword = machinePassword;
 	        	info.machinePassword = (String) nodeInfo.get("machinePassword");
@@ -188,6 +284,9 @@ public class ClusterSetupUtils {
 	        		info.port = (int) (long) nodeInfo.get("port");
 	        	}else{
 	        		info.port = port;
+	        	}
+	        	if(nodeInfo.containsKey("isMasterNode")){
+	        		info.isMasterNode = Boolean.parseBoolean((String)nodeInfo.get("isMasterNode"));
 	        	}
 	        	if(nodeInfo.containsKey("indexPort")){
 	        		info.indexPort = (int) (long) nodeInfo.get("indexPort");
@@ -222,10 +321,12 @@ public class ClusterSetupUtils {
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = null; 
-
 			     try {
 			        while ((line = input.readLine()) != null)
 			            System.out.println(line);
@@ -237,7 +338,84 @@ public class ClusterSetupUtils {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
+		}
+		
+		/***
+	     * Run curl command
+	     * @param command
+	     */
+		public static void runCommandArray(String[] command){
+			Process p = null;
+			try {
+				p = Runtime.getRuntime().exec(command);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line = null; 
+			     try {
+			        while ((line = input.readLine()) != null)
+			            System.out.println(line);
+			     } catch (IOException e) {
+			            e.printStackTrace();
+			     }
+			try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+		/***
+		 * Get Local IP Address
+		 */
+		private static String getLocalHostIPAdress(){
+			String ipAddr = "";
+			try{
+				InetAddress inetAddr = InetAddress.getLocalHost();
+				byte[] addr = inetAddr.getAddress();
+				// Convert to dot representation
+				
+				for (int i = 0; i < addr.length; i++) {
+					 if (i > 0) {
+						 ipAddr += ".";
+					 }
+					 ipAddr += addr[i] & 0xFF;
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			return ipAddr;
+		}
+		
+		/***
+		 * Run Curl command by creating a script
+		 */
+		public static void runCURLCommand(String params, String url, String user, String password){
+			try {
+					String command = String.format("curl -X POST -u %s:%s '%s' -d '%s'",user, password, url, params);
+					System.out.println(command);
+					PrintWriter writer = new PrintWriter("/tmp/runCurlCommand.sh", "UTF-8");
+					writer.println(command);
+					writer.close(); 
+					runCommand("chmod 777 /tmp/runCurlCommand.sh");
+					runCommand("/tmp/runCurlCommand.sh");
+					runCommand("rm -f /tmp/runCurlCommand.sh");
+			    } catch (Exception e) {
+			    	e.printStackTrace();
+			    }
 		}
 		
 		public static void main(String[] args){
@@ -279,5 +457,7 @@ public class ClusterSetupUtils {
 				e.printStackTrace();
 			}
 		}
+		
+		
 
 }

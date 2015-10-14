@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 public class NodeInfo {
 	public String ip;
 	public int port;
+	public boolean isMasterNode;
 	public int n1qlPort;
 	public int indexPort;
 	public String membaseUserId;
@@ -22,6 +23,7 @@ public class NodeInfo {
 	public NodeInfo(){
 		this.ip = "127.0.0.1";
 		this.indexPort = 9102;
+		this.isMasterNode = false;
 		this.machineUserId = "root";
 		this.machinePassword  = "couchbase";
 		this.membaseUserId = "Administrator";

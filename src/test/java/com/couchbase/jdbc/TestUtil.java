@@ -47,11 +47,21 @@ public class TestUtil
 
     public static String getBadURL() {return environment.getProperty("couchbasedb.test.url", "jdbc:couchbase://127.0.0.1:8093");}
 
+    public static void rebalanceInAdditionalNodes(){
+    	try{
+    		 ClusterSetupUtils.rebalanceIn(TestUtil.clusterInfo);
+    	}catch(Exception e){
+		e.printStackTrace();
+    	}
+    }
+    
     public static void initializeCluster(boolean createPrimaryIndex){
     	try{
 		    	String clusterConfigPath = TestUtil.getConfig();
 		    	TestUtil.clusterInfo =  ClusterSetupUtils.readConfigFile(clusterConfigPath);
 		    	ClusterSetupUtils.initializeCluster(TestUtil.clusterInfo);
+		    	Thread.sleep(5000);
+		    	rebalanceInAdditionalNodes();
 		    	System.out.println(TestUtil.clusterInfo.toString());
 		    	ClusterSetupUtils.createBuckets(TestUtil.clusterInfo);
 		    	Thread.sleep(5000);
@@ -67,6 +77,7 @@ public class TestUtil
     public static void destroyCluster(){
     	try{
     		ClusterSetupUtils.deleteBuckets(TestUtil.clusterInfo);
+    		ClusterSetupUtils.rebalanceOut(TestUtil.clusterInfo);
     	}catch(Exception e){
     		e.printStackTrace();
     	}
@@ -75,7 +86,7 @@ public class TestUtil
    
     
     public static String getServer() {
-        return System.getProperty("couchbasedb.test.server", "127.0.0.1");
+        return System.getProperty("couchbasedb.test.server", "127.0.0.1:8091");
     }
 
     public static String getPort() {
