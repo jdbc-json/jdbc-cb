@@ -107,10 +107,10 @@ public class SqlJsonImplementation implements SQLJSON
                 isNull = true;
                 return null;
 
+            // let the default implementation of toString figure it out
             case JSONTypes.JSON_BOOLEAN:
-                return Boolean.toString((boolean)jsonObject);
             case JSONTypes.JSON_NUMBER:
-                return Long.toString((long)jsonObject);
+                return jsonObject.toString();
             default:
                 return "";
         }
