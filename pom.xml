@@ -8,7 +8,14 @@
 
   <packaging>jar</packaging>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+   </parent>
+
   <name>jdbc</name>
+
   <url>http://maven.apache.org</url>
 
   <properties>
