@@ -27,7 +27,7 @@ public class Query {
     public static void main(String[] args) throws SQLException
     {
 
-        String query = "SELECT * FROM simple_table_1 limit 1";
+        String query = "SELECT * FROM default limit 1";
 
         try ( Connection con = DriverManager.getConnection(ConnectionURL) )
         {

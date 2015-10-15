@@ -106,7 +106,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
         // get the query identifier
         parameters.put(PREPARED, preparedStatement.getName());
-        // add the encoded plan as well
+        // TODO add the encoded plan as well
         //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
         if (fields!=null && fields.length >0)
@@ -145,7 +145,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         logger.trace( "Using {}\n Encoded Plan {}", preparedStatement.getName(),preparedStatement.getEncodedPlan());
 
         parameters.put(PREPARED,  preparedStatement.getName() );
-        // add the encoded plan as well
+        // TODO add the encoded plan as well
         //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
         if (fields!=null && fields.length>0)
@@ -746,7 +746,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
         parameters.put(PREPARED, preparedStatement.getName());
 
-        // add the encoded plan as well
+        // TODO add the encoded plan as well
         //parameters.put("encoded_plan", preparedStatement.getEncodedPlan() );
 
         if (fields!=null && fields.length>0)
