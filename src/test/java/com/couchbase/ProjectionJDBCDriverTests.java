@@ -479,7 +479,7 @@ public class ProjectionJDBCDriverTests {
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		Thread.sleep(5000);
-		String query = "select default.nested_data.* from default";
+		String query = "select nested_data.* from default";
 		JDBCTestUtils.resetConnection();
 		try ( Connection con = JDBCTestUtils.con)
         {
@@ -490,12 +490,10 @@ public class ProjectionJDBCDriverTests {
                 	while(rs.next()){
                 		CBResultSet cbrs = (CBResultSet) rs;
                 		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON("default");
-		                Map actualMap = jsonVal1.getMap();
-                		if(actualMap != null){
-                			jsonObjNew.putAll(actualMap);
-                		}
-		                assertEquals(obj, jsonObjNew);
+		                SQLJSON jsonVal1 = cbrs.getSQLJSON("nested_array");
+		                Object obj1 = jsonVal1.getObject();
+                		
+		                assertEquals(jsonarrayForNesting.toString().replace(" ",""), obj1.toString().replace(" ",""));
                 	}
                 }
             } 
