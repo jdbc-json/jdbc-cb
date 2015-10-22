@@ -29,6 +29,7 @@ public class ClusterAwareTests {
 	public static void initializeCluster() throws Exception
 	{
 		TestUtil.resetEnvironmentProperties(null);
+		TestUtil.setRebalancePermission();
 		TestUtil.initializeCluster(true);
 	}
 	

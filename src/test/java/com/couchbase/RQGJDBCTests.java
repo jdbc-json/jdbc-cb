@@ -28,7 +28,8 @@ public class RQGJDBCTests extends TestCase {
 	public static void initializeCluster() throws Exception
 	{
 		TestUtil.resetEnvironmentProperties(null);
-		TestUtil.initializeCluster(true);
+		TestUtil.loadRQGProperties();
+		TestUtil.initializeCluster(false);
 	}
 	
 	@AfterClass
@@ -47,7 +48,7 @@ public class RQGJDBCTests extends TestCase {
     @Test
     public void testAggregateMethods() throws Exception
     {
-    	String inputPath  = "/tmp/aggregate_datadump";
+    	String inputPath  = TestUtil.getRQGAggregateDir();
     	TestResultAnalysis analysis = JDBCTestUtils.runTestsWithAggregateFunctionQueries(TestUtil.clusterInfo, inputPath);
     	assertTrue(analysis.isTestPassing());
     }
@@ -55,7 +56,7 @@ public class RQGJDBCTests extends TestCase {
     @Test
     public void testFields() throws Exception
     {
-    	String inputPath  = "/tmp/field_datadump";
+    	String inputPath  = TestUtil.getRQGFieldsDir();
     	TestResultAnalysis analysis = JDBCTestUtils.runTestsWithFieldProjectionQueries(TestUtil.clusterInfo,inputPath);
     	assertTrue(analysis.isTestPassing());
     }
@@ -63,7 +64,7 @@ public class RQGJDBCTests extends TestCase {
     @Test
     public void testJoins() throws Exception
     {	
-    	String inputPath  = "/tmp/joins_datadump";
+    	String inputPath  = TestUtil.getRQGJOINSDir();
     	TestResultAnalysis analysis = JDBCTestUtils.runTestsWithFieldProjectionQueries(TestUtil.clusterInfo, inputPath);
     	assertTrue(analysis.isTestPassing());
     }

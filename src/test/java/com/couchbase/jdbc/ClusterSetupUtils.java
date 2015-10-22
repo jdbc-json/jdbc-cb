@@ -254,7 +254,7 @@ public class ClusterSetupUtils {
 	        	port = (int) (long) global.get("port");
 	        }
 	        if(global.containsKey("n1qlPort")){
-	        	index_port = (int) (long) global.get("n1qlPort");
+	        	n1ql_port = (int) (long) global.get("n1qlPort");
 	        }
 	        if(global.containsKey("services")){
 	        	JSONArray services_array = (JSONArray) global.get("services");
@@ -277,6 +277,7 @@ public class ClusterSetupUtils {
 	        	info.membaseUserId = membaseUserId;
 	        	info.membasePassword = membasePassword;
 	        	if(nodeInfo.containsKey("n1qlPort")){
+	        		info.n1qlPort = (int) (long) nodeInfo.get("n1qlPort");
 	        	}else{
 	        		info.n1qlPort  = n1ql_port;
 	        	}
