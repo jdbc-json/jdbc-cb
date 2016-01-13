@@ -9,8 +9,8 @@
 
 Steps:
 
-    git clone git@github.com:couchbaselabs/jdbc_n1ql.git
-    cd jdbc_n1ql
+    git clone https://github.com/jdbc-json/jdbc-cb
+    cd jdbc-cb
     mvn -Dmaven.test.skip=true package
 
 the jar file will be in the target directory.
