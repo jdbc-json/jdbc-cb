@@ -95,16 +95,16 @@ public class StatementTest extends CouchBaseTestCase
             assertTrue(resultSet.getInt(1)>0);
         }
 
-        boolean hasResultSet = statement.execute("update default set default=0 returning default");
-        if ( hasResultSet )
-        {
-            resultSet = statement.getResultSet();
-            for (int i=0; resultSet.next(); i++)
-            {
-                assertEquals(0, resultSet.getInt(1));
-            }
-
-        }
+//        boolean hasResultSet = statement.execute("update default set default=0 returning default");
+//        if ( hasResultSet )
+//        {
+//            resultSet = statement.getResultSet();
+//            for (int i=0; resultSet.next(); i++)
+//            {
+//                assertEquals(0, resultSet.getInt(1));
+//            }
+//
+//        }
 
         statement.executeUpdate("delete from default");
 
