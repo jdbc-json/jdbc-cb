@@ -15,15 +15,26 @@ Steps:
 
 the jar file will be in the target directory.
 
-Tests can be run using
+##Test instructions
+
+The unit tests assume an instance of Couchbase is set up and accessible on
+the local machine. The administrator and password should be "Administrator" and "password",
+respectively. The "beer-sample" default data bucket (created at installation time)
+should be present.
+
+Run all the tests with this command:
+
+    mvn test
+
+Run a specific test with a command like this:
 
     mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
 
-for instance
+##Prebuilt JARs
 
 jars can be found at http://ec2-54-237-21-240.compute-1.amazonaws.com/index.html
 
-Usage:
+##Usage
 
 The driver url is jdbc:couchbase://\<host\>:\<port\>
 
