@@ -37,8 +37,8 @@ public class ReadOnlyQueryTest extends TestCase
     public void openConnection() throws Exception
     {
     	TestUtil.resetEnvironmentProperties(null);
-    	TestUtil.initializeCluster(true);
     }
+
     @After
     public void closeConnection() throws Exception
     {
@@ -55,7 +55,7 @@ public class ReadOnlyQueryTest extends TestCase
         Properties props = new Properties();
         props.setProperty("credentials", credentials.toString());
 
-        con = DriverManager.getConnection(TestUtil.getURL(), props);
+        con = DriverManager.getConnection(TestUtil.getURL());
         Statement statement = con.createStatement();
         assertNotNull(statement);
 

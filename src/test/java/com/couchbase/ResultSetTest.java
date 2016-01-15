@@ -1400,11 +1400,11 @@ public class ResultSetTest extends CouchBaseTestCase
                 date = rs.getDate(1);
                 assertNotNull(date);
 
-                date = (Date)rs.getObject("cur_time");
-                assertNotNull(date);
+                String s = (String)rs.getObject("cur_time");
+                assertNotNull(s);
 
-                date = (Date)rs.getObject(1);
-                assertNotNull(date);
+                s = (String)rs.getObject(1);
+                assertNotNull(s);
 
                 date=rs.getObject(1, Date.class);
                 assertNotNull(date);

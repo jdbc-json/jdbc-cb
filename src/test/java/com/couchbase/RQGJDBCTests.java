@@ -29,19 +29,11 @@ public class RQGJDBCTests extends TestCase {
 	{
 		TestUtil.resetEnvironmentProperties(null);
 		TestUtil.loadRQGProperties();
-		TestUtil.initializeCluster(false);
 	}
 	
-	@AfterClass
-	public static void cleanupCluster() throws Exception
-	{
-		TestUtil.destroyCluster();
-	}
-
     @After
     public void cleanupData() throws Exception
     {
-    	TestUtil.destroyCluster();
     	TestUtil.clusterInfo.resetBucketInformation();
     }
     
@@ -68,5 +60,4 @@ public class RQGJDBCTests extends TestCase {
     	TestResultAnalysis analysis = JDBCTestUtils.runTestsWithFieldProjectionQueries(TestUtil.clusterInfo, inputPath);
     	assertTrue(analysis.isTestPassing());
     }
-    
 }

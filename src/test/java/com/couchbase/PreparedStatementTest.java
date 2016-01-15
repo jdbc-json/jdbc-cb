@@ -35,7 +35,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
-
+ 
     @After
 	public void cleanupBucket() throws Exception
 	{
@@ -56,14 +56,12 @@ public class PreparedStatementTest extends CouchBaseTestCase
     @Test
     public void emptyResult() throws Exception
     {
-
-        try(PreparedStatement preparedStatement = con.prepareStatement("select * from default"))
+        try(PreparedStatement preparedStatement = con.prepareStatement("select * from default where nonexistentfield = 'does not exist'"))
         {
             assertNotNull(preparedStatement);
 
             ResultSet rs = preparedStatement.executeQuery();
             assertFalse(rs.next());
-
         }
 
     }
@@ -759,21 +757,8 @@ public class PreparedStatementTest extends CouchBaseTestCase
                     assertEquals(cal.get(Calendar.HOUR_OF_DAY),cal2.get(Calendar.HOUR_OF_DAY));
                     assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
-
-
-                    Calendar differentTimezone = Calendar.getInstance();
-
-                    differentTimezone.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    time1 = rs.getTime(1,differentTimezone);
-
-                    cal2.setTime(time1);
-
-                    int offset  = cal2.getTimeZone().getRawOffset()/1000/60/60;
-                    assertEquals(cal.get(Calendar.HOUR_OF_DAY), cal2.get(Calendar.HOUR_OF_DAY)+offset);
-                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
-                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
-
                 }
+                
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {
                     assertTrue(rs.next());
@@ -834,27 +819,6 @@ public class PreparedStatementTest extends CouchBaseTestCase
                     assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
 
                     assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
-
-                    Calendar differentTimezone = Calendar.getInstance();
-
-                    differentTimezone.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    timeStamp1 = rs.getTimestamp(1, differentTimezone);
-
-                    cal2.setTime(timeStamp1);
-
-                    // there is no timezone information in the timestamp
-                    int offset  = (cal2.getTimeZone().getRawOffset()+cal2.getTimeZone().getDSTSavings())/1000/60/60;
-                    cal2.add(Calendar.HOUR,offset);
-                    assertEquals(cal.get(Calendar.HOUR), cal2.get(Calendar.HOUR));
-                    assertEquals(cal.get(Calendar.MINUTE), cal2.get(Calendar.MINUTE));
-                    assertEquals(cal.get(Calendar.SECOND),cal2.get(Calendar.SECOND));
-
-                    assertEquals(cal.get(Calendar.YEAR), cal2.get(Calendar.YEAR));
-                    assertEquals(cal.get(Calendar.MONTH), cal2.get(Calendar.MONTH));
-                    assertEquals(cal.get(Calendar.DAY_OF_MONTH),cal2.get(Calendar.DAY_OF_MONTH));
-
-                    assertEquals(cal.get(Calendar.MILLISECOND),cal2.get(Calendar.MILLISECOND));
-
                 }
                 try (ResultSet rs = statement.executeQuery("select * from default where meta(default).id='val3'"))
                 {

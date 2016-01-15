@@ -44,7 +44,6 @@ public class CouchBaseTestCase extends TestCase
         properties.put(ConnectionParameters.USER,TestUtil.getUser());
         properties.put(ConnectionParameters.PASSWORD,TestUtil.getPassword());
         TestUtil.resetEnvironmentProperties(null);
-        TestUtil.initializeCluster(true);
     }
     
     @Before
@@ -53,12 +52,4 @@ public class CouchBaseTestCase extends TestCase
         con = DriverManager.getConnection(TestUtil.getURL(), CouchBaseTestCase.properties);
         assertNotNull(con);
     }
-    
-    @AfterClass
-    public static void cleanup() throws Exception
-    {
-        TestUtil.destroyCluster();
-    }
-    
-    
 }

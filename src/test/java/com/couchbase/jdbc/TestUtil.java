@@ -39,7 +39,6 @@ public class TestUtil
          {
              ex.printStackTrace(System.err);
          }
-    	
     }
     
     public static String getRQGConfig() { return environment.getProperty("couchbasedb.test.rqg_config", "do_not_use");}
@@ -159,7 +158,7 @@ public class TestUtil
     	rebalanceInAllowed = true;
     }
     public static String getUser() {
-        return environment.getProperty("couchbasedb.test.user", "Adminisrator");
+        return environment.getProperty("couchbasedb.test.user", "Administrator");
     }
 
     public static String getPassword() {

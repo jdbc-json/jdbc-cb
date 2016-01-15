@@ -26,29 +26,15 @@ import com.couchbase.jdbc.TestUtil;
 public class ProjectionJDBCDriverTests {
 	
 	@BeforeClass
-	public static void initializeCluster() throws Exception
+	public static void init() throws Exception
 	{
 		TestUtil.resetEnvironmentProperties(null);
-		TestUtil.initializeCluster(true);
 	}
 	
-	@AfterClass
-	public static void cleanupCluster() throws Exception
-	{
-		TestUtil.destroyCluster();
-	}
-	
-	@After
-	public void cleanupBucket() throws Exception
-	{
-		JDBCTestUtils.deleteDataFromBucket("default");
-		Thread.sleep(1000);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleData() throws Exception
-	{
+	{ 
 		JDBCTestUtils.setConnection(null);
 		JSONObject obj = new JSONObject();
 		JSONObject jsonObjNew = new JSONObject();
@@ -59,6 +45,7 @@ public class ProjectionJDBCDriverTests {
 		map.put("double", 12345.333);
 		map.put("boolean", true);
 		map.put("data_time", "2001-01-01 01:01:01.00");
+		map.put("testid", "ProjectionJDBCDriverTests.testSimpleData");
 		obj.putAll(map);
 		JSONArray expectedArray = new JSONArray();
 		HashMap<String,JSONObject> objMap = new HashMap<String,JSONObject>();
@@ -66,7 +53,7 @@ public class ProjectionJDBCDriverTests {
 		expectedArray.add(obj);
 		JDBCTestUtils.insertData(objMap, "default");
 		Thread.sleep(5000);
-		String query = "select * from default";
+		String query = "select * from default where testid = 'ProjectionJDBCDriverTests.testSimpleData'";
 		JDBCTestUtils.resetConnection();
 		try ( Connection con = JDBCTestUtils.con)
         {
@@ -430,6 +417,7 @@ public class ProjectionJDBCDriverTests {
 		expectedJSONObject.put("nested_data_2", nestedObject2);
 		expectedArray.add(expectedJSONObject);
 		JDBCTestUtils.insertData(objMap, "default");
+		
 		String query = "select default.nested_data_2.* , default.nested_data_1.*  from default";
 		JDBCTestUtils.setConnection(null);
  

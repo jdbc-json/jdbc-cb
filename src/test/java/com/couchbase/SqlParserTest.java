@@ -297,15 +297,12 @@ public class SqlParserTest extends CouchBaseTestCase
         //      QUARTER => backend assume there are 1 quarter even in 270 days...
         rs = stmt.executeQuery("select {fn timestampdiff(SQL_TSI_QUARTER,{fn now()},{fn timestampadd(SQL_TSI_QUARTER,3,{fn now()})})} ");
         assertTrue(rs.next());
-        //TODO this is a bug in the backend, should be 3
-        assertEquals(0,rs.getInt(1));
+        assertEquals(3,rs.getInt(1));
 
         //      MONTH => backend assume there are 0 month in an interval of 92 days...
         rs = stmt.executeQuery("select {fn timestampdiff(SQL_TSI_MONTH,{fn now()},{fn timestampadd(SQL_TSI_MONTH,3,{fn now()})})} ");
         assertTrue(rs.next());
-
-        //TODO this is a bug in the backend, should be 3
-        assertEquals(0,rs.getInt(1));
+        assertEquals(3,rs.getInt(1));
     }
 
 }
