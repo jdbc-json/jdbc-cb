@@ -17,10 +17,22 @@ the jar file will be in the target directory.
 
 ##Test instructions
 
-The unit tests assume an instance of Couchbase is set up and accessible on
+The unit tests assume an instance of Couchbase Enterprise Edition is set up and accessible on
 the local machine. The administrator and password should be "Administrator" and "password",
-respectively. The "beer-sample" default data bucket (created at installation time)
-should be present.
+respectively. The *beer-sample* and *default* data buckets
+should be present. The *default* bucket is always present; *beer-sample* is created on request at installation time.
+
+The beer-sample and default buckets must be indexed for the tests to run correctly.
+You can index them by running these two commands in the
+[CBQ shell](http://developer.couchbase.com/documentation/server/4.0/n1ql/n1ql-intro/cbq.html).
+
+    create primary index on default;
+    create primary index on `beer-sample`;
+    
+Note the back-ticks in the second line.
+
+If the Couchbase instance is Community Edition, the SSLConnectionTest will fail because
+Community Edition instances are not accessible over SSL.
 
 Run all the tests with this command:
 
