@@ -47,7 +47,7 @@ public class TestSQLJson extends CouchBaseTestCase
     @Test
     public void getSqlJson() throws Exception
     {
-        String query = "SELECT * FROM customer limit 10";
+        String query = "SELECT * FROM default limit 10";
 
         try (Statement stmt= con.createStatement())
         {
@@ -62,6 +62,7 @@ public class TestSQLJson extends CouchBaseTestCase
             }
         }
     }
+
     @Test
     public void setSqlJson() throws Exception
     {
@@ -97,6 +98,7 @@ public class TestSQLJson extends CouchBaseTestCase
             assertEquals(1,pstmt.executeUpdate());
         }
     }
+
     @Test
     public void testFree() throws Exception
     {
