@@ -12,6 +12,8 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -595,8 +597,29 @@ public class ConnectionTest extends CouchBaseTestCase
 
     }
 
+    @Ignore("Known problem. Issue #14.")
     @Test
-    public void testSetGetSchema() throws Exception
+    public void testSetSchema() throws Exception
+    {
+        con.setSchema("SYSTEM");
+
+        try (Statement statement=con.createStatement())
+        {
+            try (ResultSet rs = statement.executeQuery("select * from keyspaces where name ='default'"))
+            {
+                assertTrue(rs.next());
+                Map map = (Map)rs.getObject("keyspaces");
+                assertEquals(map.get("name"),"default");
+            }
+        }
+
+        con.close();
+        expectedException.expect(SQLException.class);
+        con.setSchema("SYSTEM");
+    }
+
+    @Test
+    public void testGetSchema() throws Exception
     {
     	con.setSchema("SYSTEM");
 
@@ -605,6 +628,7 @@ public class ConnectionTest extends CouchBaseTestCase
         con.close();
         expectedException.expect(SQLException.class);
         con.getSchema();
+
     }
 
     @Test
