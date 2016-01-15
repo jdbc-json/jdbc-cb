@@ -596,27 +596,7 @@ public class ConnectionTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSetSchema() throws Exception
-    {
-        con.setSchema("SYSTEM");
-
-        try (Statement statement=con.createStatement())
-        {
-            try (ResultSet rs = statement.executeQuery("select * from keyspaces where name ='default'"))
-            {
-                assertTrue(rs.next());
-                Map map = (Map)rs.getObject("keyspaces");
-                assertEquals(map.get("name"),"default");
-            }
-        }
-
-        con.close();
-        expectedException.expect(SQLException.class);
-        con.setSchema("SYSTEM");
-    }
-
-    @Test
-    public void testGetSchema() throws Exception
+    public void testSetGetSchema() throws Exception
     {
     	con.setSchema("SYSTEM");
 
@@ -625,7 +605,6 @@ public class ConnectionTest extends CouchBaseTestCase
         con.close();
         expectedException.expect(SQLException.class);
         con.getSchema();
-
     }
 
     @Test
