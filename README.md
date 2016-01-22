@@ -42,10 +42,6 @@ Run a specific test with a command like this:
 
     mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
 
-##Prebuilt JARs
-
-jars can be found at http://ec2-54-237-21-240.compute-1.amazonaws.com/index.html
-
 ##Usage
 
 The driver url is jdbc:couchbase://\<host\>:\<port\>
