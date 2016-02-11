@@ -5,11 +5,10 @@
 These instructions assume you are conversant with the Java ecosystem, and therefore
 know your way around Eclipse and Maven. You need to be running at least Java 7.
 
-* Setup Couchbase on your local machine. 
-    * You should be able to access the administration interface at http://localhost:8091.
-    * The *beer-sample* sample data bucket should be present and accessible without a password.
-* Create a new Maven project in Eclipse.
-* Add this dependency to the pom.xml file:
+Install Couchbase on your local machine. You should be able to access the administration interface at http://localhost:8091. The *beer-sample* sample data bucket should be present and accessible without a password.
+
+Create a new Maven project in Eclipse. Add this dependency to the pom.xml file:
+
     <dependencies>
       <dependency>
         <groupId>com.github.jdbc-json</groupId>
@@ -17,7 +16,9 @@ know your way around Eclipse and Maven. You need to be running at least Java 7.
         <version>0.4.0</version>
       </dependency>
     </dependencies>
-* Add a new Java class to the src/main/java directory of the project:
+
+Add a new Java class to the src/main/java directory of the project:
+
     package testing;
     import java.sql.Connection;
     import java.sql.DriverManager;
@@ -36,8 +37,8 @@ know your way around Eclipse and Maven. You need to be running at least Java 7.
             }
         }
     }
-    
-* Run the new class as a Java Application. You should see this output:
+
+Run the new class as a Java Application. You should see this output:
 
     12:35:18.397 [main] INFO  com.couchbase.CBDriver - Constructor called
     12:35:18.401 [main] INFO  com.couchbase.CBDriver - Constructor called
