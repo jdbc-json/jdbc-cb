@@ -68,11 +68,11 @@ public class CBDriver implements java.sql.Driver
      * of driver to connect to the given URL.  This will be common, as when
      * the JDBC driver manager is asked to connect to a given URL it passes
      * the URL to each loaded driver in turn.
-     * <p/>
+     * 
      * <P>The driver should throw an <code>SQLException</code> if it is the right
      * driver to connect to the given URL but has trouble connecting to
      * the database.
-     * <p/>
+     * 
      * <P>The <code>java.util.Properties</code> argument can be used to pass
      * arbitrary string tag/value pairs as connection arguments.
      * Normally at least "user" and "password" properties should be
@@ -121,7 +121,7 @@ public class CBDriver implements java.sql.Driver
 
     /**
      * Gets information about the possible properties for this driver.
-     * <p/>
+     * 
      * The <code>getPropertyInfo</code> method is intended to allow a generic
      * GUI tool to discover what properties it should prompt
      * a human for in order to get
@@ -168,14 +168,14 @@ public class CBDriver implements java.sql.Driver
 
     /**
      * Reports whether this driver is a genuine JDBC
-     * Compliant<sup><font size=-2>TM</font></sup> driver.
+     * Compliant(TM) driver.
      * A driver may only report <code>true</code> here if it passes the JDBC
      * compliance tests; otherwise it is required to return <code>false</code>.
-     * <p/>
+     * 
      * JDBC compliance requires full support for the JDBC API and full support
      * for SQL 92 Entry Level.  It is expected that JDBC compliant drivers will
      * be available for all the major commercial databases.
-     * <p/>
+     * 
      * This method is not intended to encourage the development of non-JDBC
      * compliant drivers, but is a recognition of the fact that some vendors
      * are interested in using the JDBC API and framework for lightweight
@@ -227,7 +227,7 @@ public class CBDriver implements java.sql.Driver
      * In the worst case, this may be the root Logger.
      *
      * @return the parent Logger for this driver
-     * @throws java.sql.SQLFeatureNotSupportedException if the driver does not use <code>java.util.logging<code>.
+     * @throws java.sql.SQLFeatureNotSupportedException if the driver does not use <code>java.util.logging</code>.
      * @since 1.7
      */
     @Override

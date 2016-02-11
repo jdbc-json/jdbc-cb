@@ -143,7 +143,7 @@ public class EscapedFunctions
     }
 
     // ** numeric functions translations **
-    /** ceiling to ceil translation */
+    /* ceiling to ceil translation */
     public static String sqlceiling(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -156,7 +156,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** log to ln translation */
+    /* log to ln translation */
     public static String sqllog(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -180,7 +180,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
 
     }
-    /** log10 to log translation */
+    /* log10 to log translation */
     public static String sqllog10(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -192,7 +192,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** power to pow translation */
+    /* power to pow translation */
     public static String sqlpower(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=2){
@@ -205,7 +205,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** truncate to trunc translation */
+    /* truncate to trunc translation */
     public static String sqltruncate(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=2){
@@ -219,7 +219,7 @@ public class EscapedFunctions
     }
 
     // ** string functions translations **
-    /** char to chr translation */
+    /* char to chr translation */
     public static String sqlchar(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -232,7 +232,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** concat translation */
+    /* concat translation */
     public static String sqlconcat(List parsedArgs){
         StringBuilder buf = new StringBuilder();
         buf.append("concat(");
@@ -244,7 +244,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** insert to overlay translation */
+    /* insert to overlay translation */
     public static String sqlinsert(List <StringBuilder> parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=4){
@@ -264,7 +264,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** lcase to lower translation */
+    /* lcase to lower translation */
     public static String sqllcase(List parsedArgs) throws SQLException
     {
 
@@ -279,7 +279,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** left to substring translation */
+    /* left to substring translation */
     public static String sqlleft(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=2){
@@ -292,7 +292,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** length translation */
+    /* length translation */
     public static String sqllength(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -305,7 +305,7 @@ public class EscapedFunctions
         return buf.append("))").toString();
     }
 
-    /** locate translation */
+    /* locate translation */
     public static String sqllocate(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()==2){
@@ -317,7 +317,7 @@ public class EscapedFunctions
         }
     }
 
-    /** ltrim translation */
+    /* ltrim translation */
     public static String sqlltrim(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -330,7 +330,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** right to substring translation */
+    /* right to substring translation */
     public static String sqlright(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=2){
@@ -343,7 +343,7 @@ public class EscapedFunctions
         return buf.append(")").toString();
     }
 
-    /** rtrim translation */
+    /* rtrim translation */
     public static String sqlrtrim(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()!=1){
@@ -356,7 +356,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** space translation */
+    /* space translation */
     public static String sqlspace(List parsedArgs) throws SQLException
     {
         StringBuilder buf = new StringBuilder();
@@ -368,7 +368,7 @@ public class EscapedFunctions
         return buf.append(')').toString();
     }
 
-    /** substring to substr translation */
+    /* substring to substr translation */
     public static String sqlsubstring(List parsedArgs) throws SQLException
     {
         if (parsedArgs.size()==2){
@@ -380,7 +380,7 @@ public class EscapedFunctions
         }
     }
 
-    /** ucase to upper translation */
+    /* ucase to upper translation */
     public static String sqlucase(List parsedArgs) throws SQLException{
         StringBuilder buf = new StringBuilder();
         buf.append("upper(");
@@ -397,7 +397,7 @@ public class EscapedFunctions
         return "clock_str()";
 
     }
-    /** curdate to current_date translation */
+    /* curdate to current_date translation */
     public static String sqlcurdate(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","curdate"));
@@ -405,7 +405,7 @@ public class EscapedFunctions
         return "clock_str('2006-01-01')";
     }
 
-    /** curtime to current_time translation */
+    /* curtime to current_time translation */
     public static String sqlcurtime(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","curtime"));
@@ -414,7 +414,7 @@ public class EscapedFunctions
     }
 
     //TODO replace this with correct function when it becomes available
-    /** dayname translation */
+    /* dayname translation */
     public static String sqldayname(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayname"));
@@ -422,7 +422,7 @@ public class EscapedFunctions
         return "(case date_part_str("+parsedArgs.get(0)+",'dow') when 0 then 'SUN' WHEN 1 THEN 'MON' WHEN 2 THEN 'TUE' WHEN 3 THEN 'WED' WHEN 4 THEN 'THU' WHEN 5 THEN 'FRI' WHEN 6 THEN 'SAT' END)";
     }
 
-    /** dayofmonth translation */
+    /* dayofmonth translation */
     public static String sqldayofmonth(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayofmonth"));
@@ -430,7 +430,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'day')";
     }
 
-    /** dayofweek translation
+    /* dayofweek translation
      * adding 1 to  function since we expect values from 1 to 7 */
     public static String sqldayofweek(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
@@ -439,7 +439,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'iso_dow') ";
     }
 
-    /** dayofyear translation */
+    /* dayofyear translation */
     public static String sqldayofyear(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","dayofyear"));
@@ -447,7 +447,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'doy')";
     }
 
-    /** hour translation */
+    /* hour translation */
     public static String sqlhour(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","hour"));
@@ -455,7 +455,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'hour')";
     }
 
-    /** minute translation */
+    /* minute translation */
     public static String sqlminute(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","minute"));
@@ -463,7 +463,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'minute')";
     }
 
-    /** month translation */
+    /* month translation */
     public static String sqlmonth(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","month"));
@@ -472,7 +472,7 @@ public class EscapedFunctions
     }
 
     //TODO replace this with correct function when it becomes available
-    /** monthname translation */
+    /* monthname translation */
     public static String sqlmonthname(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","monthname"));
@@ -482,7 +482,7 @@ public class EscapedFunctions
 
     }
 
-    /** quarter translation */
+    /* quarter translation */
     public static String sqlquarter(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","quarter"));
@@ -490,7 +490,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'quarter')";
     }
 
-    /** second translation */
+    /* second translation */
     public static String sqlsecond(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","second"));
@@ -498,7 +498,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'second')";
     }
 
-    /** week translation */
+    /* week translation */
     public static String sqlweek(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","week"));
@@ -506,7 +506,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'week')";
     }
 
-    /** year translation */
+    /* year translation */
     public static String sqlyear(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=1){
             throw new CouchBaseSQLException(String.format("{0} function takes one and only one argument.","year"));
@@ -514,7 +514,7 @@ public class EscapedFunctions
         return "date_part_str("+parsedArgs.get(0)+",'year')";
     }
 
-    /** time stamp add */
+    /* time stamp add */
     public static String sqltimestampadd(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=3){
             throw new CouchBaseSQLException(String.format("{0} function takes three and only three arguments.","timestampadd"));
@@ -552,7 +552,7 @@ public class EscapedFunctions
     }
 
 
-    /** time stamp diff */
+    /* time stamp diff */
     public static String sqltimestampdiff(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=3){
             throw new CouchBaseSQLException(String.format("{0} function takes three and only three arguments.","timestampdiff"));
@@ -590,7 +590,7 @@ public class EscapedFunctions
         else throw new CouchBaseSQLException(String.format("Interval {0} not yet implemented",type));
     }
 
-    /** database translation */
+    /* database translation */
     public static String sqldatabase(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","database"));
@@ -598,7 +598,7 @@ public class EscapedFunctions
         return "current_database()";
     }
 
-    /** ifnull translation */
+    /* ifnull translation */
     public static String sqlifnull(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=2){
             throw new CouchBaseSQLException(String.format("{0} function takes two and only two arguments.","ifnull"));
@@ -606,7 +606,7 @@ public class EscapedFunctions
         return "coalesce("+parsedArgs.get(0)+","+parsedArgs.get(1)+")";
     }
 
-    /** user translation */
+    /* user translation */
     public static String sqluser(List parsedArgs) throws SQLException{
         if (parsedArgs.size()!=0){
             throw new CouchBaseSQLException(String.format("{0} function doesn''t take any argument.","user"));

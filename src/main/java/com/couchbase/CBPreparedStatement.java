@@ -159,7 +159,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
 
     /**
      * Sets the designated parameter to SQL <code>NULL</code>.
-     * <p/>
+     * 
      * <P><B>Note:</B> You must specify the parameter's SQL type.
      *
      * @param parameterIndex the first parameter is 1, the second is 2, ...
@@ -453,7 +453,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.InputStream</code>. Data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from ASCII to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -477,16 +477,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
     /**
      * Sets the designated parameter to the given input stream, which
      * will have the specified number of bytes.
-     * <p/>
+     * 
      * When a very large Unicode value is input to a <code>LONGVARCHAR</code>
      * parameter, it may be more practical to send it via a
      * <code>java.io.InputStream</code> object. The data will be read from the
      * stream as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from Unicode to the database char format.
-     * <p/>
+     * 
      * The byte format of the Unicode stream must be a Java UTF-8, as defined in the
      * Java Virtual Machine Specification.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -518,7 +518,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * parameter, it may be more practical to send it via a
      * <code>java.io.InputStream</code> object. The data will be read from the
      * stream as needed until end-of-file is reached.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -621,16 +621,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <p>Sets the value of the designated parameter using the given object.
      * The second parameter must be of type <code>Object</code>; therefore, the
      * <code>java.lang</code> equivalent objects should be used for built-in types.
-     * <p/>
+     * 
      * <p>The JDBC specification specifies a standard mapping from
      * Java <code>Object</code> types to SQL types.  The given argument
      * will be converted to the corresponding SQL type before being
      * sent to the database.
-     * <p/>
+     * 
      * <p>Note that this method may be used to pass datatabase-
      * specific abstract data types, by using a driver-specific Java
      * type.
-     * <p/>
+     * 
      * If the object is of a class implementing the interface <code>SQLData</code>,
      * the JDBC driver should call the method <code>SQLData.writeSQL</code>
      * to write it to the SQL data stream.
@@ -639,13 +639,13 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>Struct</code>, <code>java.net.URL</code>, <code>RowId</code>, <code>SQLXML</code>
      * or <code>Array</code>, the driver should pass it to the database as a
      * value of the corresponding SQL type.
-     * <p/>
+     * 
      * <b>Note:</b> Not all databases allow for a non-typed Null to be sent to
      * the backend. For maximum portability, the <code>setNull</code> or the
      * <code>setObject(int parameterIndex, Object x, int sqlType)</code>
      * method should be used
      * instead of <code>setObject(int parameterIndex, Object x)</code>.
-     * <p/>
+     * 
      * <b>Note:</b> This method throws an exception if there is an ambiguity, for example, if the
      * object is of a class implementing more than one of the interfaces named above.
      *
@@ -716,7 +716,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * method handles these complex statements as well as the simpler
      * form of statements handled by the methods <code>executeQuery</code>
      * and <code>executeUpdate</code>.
-     * <p/>
+     * 
      * The <code>execute</code> method returns a <code>boolean</code> to
      * indicate the form of the first result.  You must call either the method
      * <code>getResultSet</code> or <code>getUpdateCount</code>
@@ -792,7 +792,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.Reader</code> object. The data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -935,7 +935,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * information about the columns of the <code>ResultSet</code> object
      * that will be returned when this <code>PreparedStatement</code> object
      * is executed.
-     * <p/>
+     * 
      * Because a <code>PreparedStatement</code> object is precompiled, it is
      * possible to know about the <code>ResultSet</code> object that it will
      * return without having to execute it.  Consequently, it is possible
@@ -943,7 +943,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>PreparedStatement</code> object rather than waiting to execute
      * it and then invoking the <code>ResultSet.getMetaData</code> method
      * on the <code>ResultSet</code> object that is returned.
-     * <p/>
+     * 
      * <B>NOTE:</B> Using this method may be expensive for some drivers due
      * to the lack of underlying DBMS support.
      *
@@ -1088,7 +1088,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * be used for user-defined types and REF type parameters.  Examples
      * of user-defined types include: STRUCT, DISTINCT, JAVA_OBJECT, and
      * named array types.
-     * <p/>
+     * 
      * <P><B>Note:</B> To be portable, applications must give the
      * SQL type code and the fully-qualified SQL type name when specifying
      * a NULL user-defined or REF parameter.  In the case of a user-defined type
@@ -1096,7 +1096,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * parameter, the name is the type name of the referenced type.  If
      * a JDBC driver does not need the type code or type name information,
      * it may ignore it.
-     * <p/>
+     * 
      * Although it is intended for user-defined and Ref parameters,
      * this method may be used to set a null parameter of any JDBC type.
      * If the parameter does not have a user-defined or REF type, the given
@@ -1356,7 +1356,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * Sets the designated parameter to the given <code>java.sql.SQLXML</code> object.
      * The driver converts this to an
      * SQL <code>XML</code> value when it sends it to the database.
-     * <p/>
+     * 
      *
      * @param parameterIndex index of the first parameter is 1, the second is 2, ...
      * @param xmlObject      a <code>SQLXML</code> object that maps an SQL <code>XML</code> value
@@ -1379,16 +1379,16 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <p>Sets the value of the designated parameter with the given object. The second
      * argument must be an object type; for integral values, the
      * <code>java.lang</code> equivalent objects should be used.
-     * <p/>
+     * 
      * If the second argument is an <code>InputStream</code> then the stream must contain
      * the number of bytes specified by scaleOrLength.  If the second argument is a
      * <code>Reader</code> then the reader must contain the number of characters specified
      * by scaleOrLength. If these conditions are not true the driver will generate a
      * <code>SQLException</code> when the prepared statement is executed.
-     * <p/>
+     * 
      * <p>The given Java object will be converted to the given targetSqlType
      * before being sent to the database.
-     * <p/>
+     * 
      * If the object has a custom mapping (is of a class implementing the
      * interface <code>SQLData</code>),
      * the JDBC driver should call the method <code>SQLData.writeSQL</code> to
@@ -1398,12 +1398,12 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>Struct</code>, <code>java.net.URL</code>,
      * or <code>Array</code>, the driver should pass it to the database as a
      * value of the corresponding SQL type.
-     * <p/>
+     * 
      * <p>Note that this method may be used to pass database-specific
      * abstract data types.
      *
      * @param parameterIndex the first parameter is 1, the second is 2, ...
-     * @param x              the object containing the input parameter value
+     * @param in              the object containing the input parameter value
      * @param targetSqlType  the SQL type (as defined in java.sql.Types) to be
      *                       sent to the database. The scale argument may further qualify this type.
      * @param scaleOrLength  for <code>java.sql.Types.DECIMAL</code>
@@ -1735,7 +1735,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.InputStream</code>. Data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from ASCII to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1771,7 +1771,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * parameter, it may be more practical to send it via a
      * <code>java.io.InputStream</code> object. The data will be read from the
      * stream as needed until end-of-file is reached.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1807,7 +1807,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.Reader</code> object. The data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1843,7 +1843,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.InputStream</code>. Data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from ASCII to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1872,7 +1872,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * parameter, it may be more practical to send it via a
      * <code>java.io.InputStream</code> object. The data will be read from the
      * stream as needed until end-of-file is reached.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1902,7 +1902,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>java.io.Reader</code> object. The data will be read from the stream
      * as needed until end-of-file is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1931,7 +1931,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * <code>Reader</code> reads the data till end-of-file is reached. The
      * driver does the necessary conversion from Java character format to
      * the national character set in the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> This stream object can either be a standard
      * Java stream object or your own subclass that implements the
      * standard interface.
@@ -1963,7 +1963,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * the server as a <code>CLOB</code>.  When the <code>setCharacterStream</code> method is used, the
      * driver may have to do extra work to determine whether the parameter
      * data should be sent to the server as a <code>LONGVARCHAR</code> or a <code>CLOB</code>
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>setClob</code> which takes a length parameter.
@@ -1990,7 +1990,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
      * sent to the server as a <code>BLOB</code>.  When the <code>setBinaryStream</code> method is used,
      * the driver may have to do extra work to determine whether the parameter
      * data should be sent to the server as a <code>LONGVARBINARY</code> or a <code>BLOB</code>
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>setBlob</code> which takes a length parameter.

@@ -26,13 +26,16 @@ package com.couchbase.jdbc.core;
  */
 public class Parser {
 
-    /**
+    /*
      * Find the end of the single-quoted string starting at the given offset.
      *
      * Note: for <tt>'single '' quote in string'</tt>, this method currently
      * returns the offset of first <tt>'</tt> character after the initial
      * one. The caller must call the method a second time for the second
      * part of the quoted string.
+     * @param query
+     * @param offset
+     * @return
      */
     public static int parseSingleQuotes(final char[] query, int offset)
     {
@@ -55,13 +58,16 @@ public class Parser {
         return query.length;
     }
 
-    /**
+    /*
      * Find the end of the double-quoted string starting at the given offset.
      *
      * Note: for <tt>&quot;double &quot;&quot; quote in string&quot;</tt>,
      * this method currently returns the offset of first <tt>&quot;</tt>
      * character after the initial one. The caller must call the method a
      * second time for the second part of the quoted string.
+     * @param query
+     * @param offset
+     * @return
      */
     public static int parseDoubleQuotes(final char[] query, int offset)
     {
@@ -69,10 +75,13 @@ public class Parser {
         return offset;
     }
 
-    /**
+    /*
      * Test if the dollar character (<tt>$</tt>) at the given offset starts
      * a dollar-quoted string and return the offset of the ending dollar
      * character.
+     * @param query
+     * @param offset
+     * @return
      */
     public static int parseDollarQuotes(final char[] query, int offset) {
         if (offset + 1 < query.length
@@ -113,10 +122,13 @@ public class Parser {
         return offset;
     }
 
-    /**
+    /*
      * Test if the <tt>-</tt> character at <tt>offset</tt> starts a
      * <tt>--</tt> style line comment, and return the position of the first
      * <tt>\r</tt> or <tt>\n</tt> character.
+     * @param query
+     * @param offset
+     * @return
      */
     public static int parseLineComment(final char[] query, int offset) {
         if (offset + 1 < query.length && query[offset + 1] == '-')
@@ -131,9 +143,12 @@ public class Parser {
         return offset;
     }
 
-    /**
+    /*
      * Test if the <tt>/</tt> character at <tt>offset</tt> starts a block
      * comment, and return the position of the last <tt>/</tt> character.
+     * @param query
+     * @param offset
+     * @return
      */
     public static int parseBlockComment(final char[] query, int offset) {
         if (offset + 1 < query.length && query[offset + 1] == '*')
@@ -233,7 +248,8 @@ public class Parser {
         return buf.toString();
     }
 
-    /**
+    /*
+     * @param c
      * @return true if the character is a whitespace character as defined
      *         in the backend's parser
      */
@@ -241,7 +257,8 @@ public class Parser {
         return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f';
     }
 
-    /**
+    /*
+     * @param c
      * @return true if the given character is a valid character for an
      *         operator in the backend's parser
      */
@@ -284,7 +301,8 @@ public class Parser {
                 || c == '$';
     }
 
-    /**
+    /*
+     * @param c
      * @return true if the character terminates an identifier
      */
     public static boolean charTerminatesIdentifier(char c) {

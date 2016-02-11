@@ -734,7 +734,7 @@ public class SqlJsonImplementation implements SQLJSON
         }
     }
 
-    /**
+    /*
      * @param columnName
      * @return if the SQLJSON object is a JSON object.
      * Get the given object with the given fieldName,
@@ -755,7 +755,7 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
 
-    /**
+    /*
      * Set the given object with the given fieldName, if the SQLJSON object is a JSON object.
      *
      * @param columnName
@@ -778,7 +778,7 @@ public class SqlJsonImplementation implements SQLJSON
     }
 
 
-    /**
+    /*
      * Return the object at the given index, if the SQLJSON object is a JSON array.
      * Return NULL if the SQLJSON object is not a JSON array
      * or if the SQLJSON object is a JSON array and does not have an element at the given index.
@@ -799,12 +799,11 @@ public class SqlJsonImplementation implements SQLJSON
         }
     }
 
-    /**
+    /*
      * Set the given index with the given element, if the SQLJSON object is a JSON array.
      *
      * @param index
      * @param object
-     * @return
      */
     @Override
     public void set(int index, Object object) throws SQLException

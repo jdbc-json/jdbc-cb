@@ -450,7 +450,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * This is the string that can be used to escape '_' or '%' in
      * the catalog search parameters that are a pattern (and therefore use one
      * of the wildcard characters).
-     * <p/>
+     * 
      * <P>The '_' character represents any single character;
      * the '%' character represents any sequence of zero or
      * more characters.
@@ -505,7 +505,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
 
     /**
      * Retrieves whether this database supports column aliasing.
-     * <p/>
+     * 
      * <P>If so, the SQL AS clause can be used to provide names for
      * computed columns or to provide alias names for columns as
      * required.
@@ -1628,32 +1628,32 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the stored procedures available in the given
      * catalog.
-     * <p/>
+     * 
      * Only procedure descriptions matching the schema and
      * procedure name criteria are returned.  They are ordered by
      * <code>PROCEDURE_CAT</code>, <code>PROCEDURE_SCHEM</code>,
      * <code>PROCEDURE_NAME</code> and <code>SPECIFIC_ NAME</code>.
-     * <p/>
+     * 
      * <P>Each procedure description has the the following columns:
      * <OL>
-     * <LI><B>PROCEDURE_CAT</B> String => procedure catalog (may be <code>null</code>)
-     * <LI><B>PROCEDURE_SCHEM</B> String => procedure schema (may be <code>null</code>)
-     * <LI><B>PROCEDURE_NAME</B> String => procedure name
+     * <LI><B>PROCEDURE_CAT</B> String =&gt; procedure catalog (may be <code>null</code>)
+     * <LI><B>PROCEDURE_SCHEM</B> String =&gt; procedure schema (may be <code>null</code>)
+     * <LI><B>PROCEDURE_NAME</B> String =&gt; procedure name</LI>
      * <LI> reserved for future use
      * <LI> reserved for future use
      * <LI> reserved for future use
-     * <LI><B>REMARKS</B> String => explanatory comment on the procedure
-     * <LI><B>PROCEDURE_TYPE</B> short => kind of procedure:
+     * <LI><B>REMARKS</B> String =&gt; explanatory comment on the procedure
+     * <LI><B>PROCEDURE_TYPE</B> short =&gt; kind of procedure:
      * <UL>
      * <LI> procedureResultUnknown - Cannot determine if  a return value
      * will be returned
      * <LI> procedureNoResult - Does not return a return value
      * <LI> procedureReturnsResult - Returns a return value
      * </UL>
-     * <LI><B>SPECIFIC_NAME</B> String  => The name which uniquely identifies this
+     * <LI><B>SPECIFIC_NAME</B> String  =&gt; The name which uniquely identifies this
      * procedure within its schema.
      * </OL>
-     * <p/>
+     * 
      * A user may not have permissions to execute any of the procedures that are
      * returned by <code>getProcedures</code>
      *
@@ -1680,21 +1680,21 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the given catalog's stored procedure parameter
      * and result columns.
-     * <p/>
+     * 
      * <P>Only descriptions matching the schema, procedure and
      * parameter name criteria are returned.  They are ordered by
      * PROCEDURE_CAT, PROCEDURE_SCHEM, PROCEDURE_NAME and SPECIFIC_NAME. Within this, the return value,
      * if any, is first. Next are the parameter descriptions in call
      * order. The column descriptions follow in column number order.
-     * <p/>
+     * 
      * <P>Each row in the <code>ResultSet</code> is a parameter description or
      * column description with the following fields:
      * <OL>
-     * <LI><B>PROCEDURE_CAT</B> String => procedure catalog (may be <code>null</code>)
-     * <LI><B>PROCEDURE_SCHEM</B> String => procedure schema (may be <code>null</code>)
-     * <LI><B>PROCEDURE_NAME</B> String => procedure name
-     * <LI><B>COLUMN_NAME</B> String => column/parameter name
-     * <LI><B>COLUMN_TYPE</B> Short => kind of column/parameter:
+     * <LI><B>PROCEDURE_CAT</B> String =&gt; procedure catalog (may be <code>null</code>)
+     * <LI><B>PROCEDURE_SCHEM</B> String =&gt; procedure schema (may be <code>null</code>)
+     * <LI><B>PROCEDURE_NAME</B> String =&gt; procedure name
+     * <LI><B>COLUMN_NAME</B> String =&gt; column/parameter name
+     * <LI><B>COLUMN_TYPE</B> Short =&gt; kind of column/parameter:
      * <UL>
      * <LI> procedureColumnUnknown - nobody knows
      * <LI> procedureColumnIn - IN parameter
@@ -1703,49 +1703,49 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> procedureColumnReturn - procedure return value
      * <LI> procedureColumnResult - result column in <code>ResultSet</code>
      * </UL>
-     * <LI><B>DATA_TYPE</B> int => SQL type from java.sql.Types
-     * <LI><B>TYPE_NAME</B> String => SQL type name, for a UDT type the
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL type from java.sql.Types
+     * <LI><B>TYPE_NAME</B> String =&gt; SQL type name, for a UDT type the
      * type name is fully qualified
-     * <LI><B>PRECISION</B> int => precision
-     * <LI><B>LENGTH</B> int => length in bytes of data
-     * <LI><B>SCALE</B> short => scale -  null is returned for data types where
+     * <LI><B>PRECISION</B> int =&gt; precision
+     * <LI><B>LENGTH</B> int =&gt; length in bytes of data
+     * <LI><B>SCALE</B> short =&gt; scale -  null is returned for data types where
      * SCALE is not applicable.
-     * <LI><B>RADIX</B> short => radix
-     * <LI><B>NULLABLE</B> short => can it contain NULL.
+     * <LI><B>RADIX</B> short =&gt; radix
+     * <LI><B>NULLABLE</B> short =&gt; can it contain NULL.
      * <UL>
      * <LI> procedureNoNulls - does not allow NULL values
      * <LI> procedureNullable - allows NULL values
      * <LI> procedureNullableUnknown - nullability unknown
      * </UL>
-     * <LI><B>REMARKS</B> String => comment describing parameter/column
-     * <LI><B>COLUMN_DEF</B> String => default value for the column, which should be interpreted as a string when the value is enclosed in single quotes (may be <code>null</code>)
+     * <LI><B>REMARKS</B> String =&gt; comment describing parameter/column
+     * <LI><B>COLUMN_DEF</B> String =&gt; default value for the column, which should be interpreted as a string when the value is enclosed in single quotes (may be <code>null</code>)
      * <UL>
      * <LI> The string NULL (not enclosed in quotes) - if NULL was specified as the default value
      * <LI> TRUNCATE (not enclosed in quotes)        - if the specified default value cannot be represented without truncation
      * <LI> NULL                                     - if a default value was not specified
      * </UL>
-     * <LI><B>SQL_DATA_TYPE</B> int  => reserved for future use
-     * <LI><B>SQL_DATETIME_SUB</B> int  => reserved for future use
-     * <LI><B>CHAR_OCTET_LENGTH</B> int  => the maximum length of binary and character based columns.  For any other datatype the returned value is a
+     * <LI><B>SQL_DATA_TYPE</B> int  =&gt; reserved for future use
+     * <LI><B>SQL_DATETIME_SUB</B> int  =&gt; reserved for future use
+     * <LI><B>CHAR_OCTET_LENGTH</B> int  =&gt; the maximum length of binary and character based columns.  For any other datatype the returned value is a
      * NULL
-     * <LI><B>ORDINAL_POSITION</B> int  => the ordinal position, starting from 1, for the input and output parameters for a procedure. A value of 0
+     * <LI><B>ORDINAL_POSITION</B> int  =&gt; the ordinal position, starting from 1, for the input and output parameters for a procedure. A value of 0
      * is returned if this row describes the procedure's return value.  For result set columns, it is the
      * ordinal position of the column in the result set starting from 1.  If there are
      * multiple result sets, the column ordinal positions are implementation
      * defined.
-     * <LI><B>IS_NULLABLE</B> String  => ISO rules are used to determine the nullability for a column.
+     * <LI><B>IS_NULLABLE</B> String  =&gt; ISO rules are used to determine the nullability for a column.
      * <UL>
      * <LI> YES           --- if the column can include NULLs
      * <LI> NO            --- if the column cannot include NULLs
      * <LI> empty string  --- if the nullability for the
      * column is unknown
      * </UL>
-     * <LI><B>SPECIFIC_NAME</B> String  => the name which uniquely identifies this procedure within its schema.
+     * <LI><B>SPECIFIC_NAME</B> String  =&gt; the name which uniquely identifies this procedure within its schema.
      * </OL>
-     * <p/>
+     * 
      * <P><B>Note:</B> Some databases may not return the column
      * descriptions for a procedure.
-     * <p/>
+     * 
      * <p>The PRECISION column represents the specified column size for the given column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -1782,26 +1782,26 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * name and type criteria are returned.  They are ordered by
      * <code>TABLE_TYPE</code>, <code>TABLE_CAT</code>,
      * <code>TABLE_SCHEM</code> and <code>TABLE_NAME</code>.
-     * <p/>
+     * 
      * Each table description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>TABLE_TYPE</B> String => table type.  Typical types are "TABLE",
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>TABLE_TYPE</B> String =&gt; table type.  Typical types are "TABLE",
      * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
      * "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
-     * <LI><B>REMARKS</B> String => explanatory comment on the table
-     * <LI><B>TYPE_CAT</B> String => the types catalog (may be <code>null</code>)
-     * <LI><B>TYPE_SCHEM</B> String => the types schema (may be <code>null</code>)
-     * <LI><B>TYPE_NAME</B> String => type name (may be <code>null</code>)
-     * <LI><B>SELF_REFERENCING_COL_NAME</B> String => name of the designated
+     * <LI><B>REMARKS</B> String =&gt; explanatory comment on the table
+     * <LI><B>TYPE_CAT</B> String =&gt; the types catalog (may be <code>null</code>)
+     * <LI><B>TYPE_SCHEM</B> String =&gt; the types schema (may be <code>null</code>)
+     * <LI><B>TYPE_NAME</B> String =&gt; type name (may be <code>null</code>)
+     * <LI><B>SELF_REFERENCING_COL_NAME</B> String =&gt; name of the designated
      * "identifier" column of a typed table (may be <code>null</code>)
-     * <LI><B>REF_GENERATION</B> String => specifies how values in
+     * <LI><B>REF_GENERATION</B> String =&gt; specifies how values in
      * SELF_REFERENCING_COL_NAME are created. Values are
      * "SYSTEM", "USER", "DERIVED". (may be <code>null</code>)
      * </OL>
-     * <p/>
+     * 
      * <P><B>Note:</B> Some databases may not return information for
      * all tables.
      *
@@ -1855,11 +1855,11 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves the schema names available in this database.  The results
      * are ordered by <code>TABLE_CATALOG</code> and
      * <code>TABLE_SCHEM</code>.
-     * <p/>
+     * 
      * <P>The schema columns are:
      * <OL>
-     * <LI><B>TABLE_SCHEM</B> String => schema name
-     * <LI><B>TABLE_CATALOG</B> String => catalog name (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; schema name
+     * <LI><B>TABLE_CATALOG</B> String =&gt; catalog name (may be <code>null</code>)
      * </OL>
      *
      * @return a <code>ResultSet</code> object in which each row is a
@@ -1875,10 +1875,10 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves the catalog names available in this database.  The results
      * are ordered by catalog name.
-     * <p/>
+     * 
      * <P>The catalog column is:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => catalog name
+     * <LI><B>TABLE_CAT</B> String =&gt; catalog name
      * </OL>
      *
      * @return a <code>ResultSet</code> object in which each row has a
@@ -1898,10 +1898,10 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves the table types available in this database.  The results
      * are ordered by table type.
-     * <p/>
+     * 
      * <P>The table type is:
      * <OL>
-     * <LI><B>TABLE_TYPE</B> String => table type.  Typical types are "TABLE",
+     * <LI><B>TABLE_TYPE</B> String =&gt; table type.  Typical types are "TABLE",
      * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
      * "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
      * </OL>
@@ -1951,70 +1951,70 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of table columns available in
      * the specified catalog.
-     * <p/>
+     * 
      * <P>Only column descriptions matching the catalog, schema, table
      * and column name criteria are returned.  They are ordered by
      * <code>TABLE_CAT</code>,<code>TABLE_SCHEM</code>,
      * <code>TABLE_NAME</code>, and <code>ORDINAL_POSITION</code>.
-     * <p/>
+     * 
      * <P>Each column description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>DATA_TYPE</B> int => SQL type from java.sql.Types
-     * <LI><B>TYPE_NAME</B> String => Data source dependent type name,
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL type from java.sql.Types
+     * <LI><B>TYPE_NAME</B> String =&gt; Data source dependent type name,
      * for a UDT the type name is fully qualified
-     * <LI><B>COLUMN_SIZE</B> int => column size.
+     * <LI><B>COLUMN_SIZE</B> int =&gt; column size.
      * <LI><B>BUFFER_LENGTH</B> is not used.
-     * <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits. Null is returned for data types where
+     * <LI><B>DECIMAL_DIGITS</B> int =&gt; the number of fractional digits. Null is returned for data types where
      * DECIMAL_DIGITS is not applicable.
-     * <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     * <LI><B>NULLABLE</B> int => is NULL allowed.
+     * <LI><B>NUM_PREC_RADIX</B> int =&gt; Radix (typically either 10 or 2)
+     * <LI><B>NULLABLE</B> int =&gt; is NULL allowed.
      * <UL>
      * <LI> columnNoNulls - might not allow <code>NULL</code> values
      * <LI> columnNullable - definitely allows <code>NULL</code> values
      * <LI> columnNullableUnknown - nullability unknown
      * </UL>
-     * <LI><B>REMARKS</B> String => comment describing column (may be <code>null</code>)
-     * <LI><B>COLUMN_DEF</B> String => default value for the column, which should be interpreted as a string when the value is enclosed in single quotes (may be <code>null</code>)
-     * <LI><B>SQL_DATA_TYPE</B> int => unused
-     * <LI><B>SQL_DATETIME_SUB</B> int => unused
-     * <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     * <LI><B>REMARKS</B> String =&gt; comment describing column (may be <code>null</code>)
+     * <LI><B>COLUMN_DEF</B> String =&gt; default value for the column, which should be interpreted as a string when the value is enclosed in single quotes (may be <code>null</code>)
+     * <LI><B>SQL_DATA_TYPE</B> int =&gt; unused
+     * <LI><B>SQL_DATETIME_SUB</B> int =&gt; unused
+     * <LI><B>CHAR_OCTET_LENGTH</B> int =&gt; for char types the
      * maximum number of bytes in the column
-     * <LI><B>ORDINAL_POSITION</B> int => index of column in table
+     * <LI><B>ORDINAL_POSITION</B> int =&gt; index of column in table
      * (starting at 1)
-     * <LI><B>IS_NULLABLE</B> String  => ISO rules are used to determine the nullability for a column.
+     * <LI><B>IS_NULLABLE</B> String  =&gt; ISO rules are used to determine the nullability for a column.
      * <UL>
      * <LI> YES           --- if the column can include NULLs
      * <LI> NO            --- if the column cannot include NULLs
      * <LI> empty string  --- if the nullability for the
      * column is unknown
      * </UL>
-     * <LI><B>SCOPE_CATALOG</B> String => catalog of table that is the scope
+     * <LI><B>SCOPE_CATALOG</B> String =&gt; catalog of table that is the scope
      * of a reference attribute (<code>null</code> if DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_SCHEMA</B> String => schema of table that is the scope
+     * <LI><B>SCOPE_SCHEMA</B> String =&gt; schema of table that is the scope
      * of a reference attribute (<code>null</code> if the DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_TABLE</B> String => table name that this the scope
+     * <LI><B>SCOPE_TABLE</B> String =&gt; table name that this the scope
      * of a reference attribute (<code>null</code> if the DATA_TYPE isn't REF)
-     * <LI><B>SOURCE_DATA_TYPE</B> short => source type of a distinct type or user-generated
+     * <LI><B>SOURCE_DATA_TYPE</B> short =&gt; source type of a distinct type or user-generated
      * Ref type, SQL type from java.sql.Types (<code>null</code> if DATA_TYPE
      * isn't DISTINCT or user-generated REF)
-     * <LI><B>IS_AUTOINCREMENT</B> String  => Indicates whether this column is auto incremented
+     * <LI><B>IS_AUTOINCREMENT</B> String  =&gt; Indicates whether this column is auto incremented
      * <UL>
      * <LI> YES           --- if the column is auto incremented
      * <LI> NO            --- if the column is not auto incremented
      * <LI> empty string  --- if it cannot be determined whether the column is auto incremented
      * </UL>
-     * <LI><B>IS_GENERATEDCOLUMN</B> String  => Indicates whether this is a generated column
+     * <LI><B>IS_GENERATEDCOLUMN</B> String  =&gt; Indicates whether this is a generated column
      * <UL>
      * <LI> YES           --- if this a generated column
      * <LI> NO            --- if this not a generated column
      * <LI> empty string  --- if it cannot be determined whether this is a generated column
      * </UL>
      * </OL>
-     * <p/>
+     * 
      * <p>The COLUMN_SIZE column specifies the column size for the given column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -2046,21 +2046,21 @@ public class CBDatabaseMetaData implements DatabaseMetaData
 
     /**
      * Retrieves a description of the access rights for a table's columns.
-     * <p/>
+     * 
      * <P>Only privileges matching the column name criteria are
      * returned.  They are ordered by COLUMN_NAME and PRIVILEGE.
-     * <p/>
+     * 
      * <P>Each privilige description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>GRANTOR</B> String => grantor of access (may be <code>null</code>)
-     * <LI><B>GRANTEE</B> String => grantee of access
-     * <LI><B>PRIVILEGE</B> String => name of access (SELECT,
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>GRANTOR</B> String =&gt; grantor of access (may be <code>null</code>)
+     * <LI><B>GRANTEE</B> String =&gt; grantee of access
+     * <LI><B>PRIVILEGE</B> String =&gt; name of access (SELECT,
      * INSERT, UPDATE, REFRENCES, ...)
-     * <LI><B>IS_GRANTABLE</B> String => "YES" if grantee is permitted
+     * <LI><B>IS_GRANTABLE</B> String =&gt; "YES" if grantee is permitted
      * to grant to others; "NO" if not; <code>null</code> if unknown
      * </OL>
      *
@@ -2092,23 +2092,23 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * more columns in the table. It would be wrong to assume that
      * this privilege applies to all columns (this may be true for
      * some systems but is not true for all.)
-     * <p/>
+     * 
      * <P>Only privileges matching the schema and table name
      * criteria are returned.  They are ordered by
      * <code>TABLE_CAT</code>,
      * <code>TABLE_SCHEM</code>, <code>TABLE_NAME</code>,
      * and <code>PRIVILEGE</code>.
-     * <p/>
+     * 
      * <P>Each privilige description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>GRANTOR</B> String => grantor of access (may be <code>null</code>)
-     * <LI><B>GRANTEE</B> String => grantee of access
-     * <LI><B>PRIVILEGE</B> String => name of access (SELECT,
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>GRANTOR</B> String =&gt; grantor of access (may be <code>null</code>)
+     * <LI><B>GRANTEE</B> String =&gt; grantee of access
+     * <LI><B>PRIVILEGE</B> String =&gt; name of access (SELECT,
      * INSERT, UPDATE, REFRENCES, ...)
-     * <LI><B>IS_GRANTABLE</B> String => "YES" if grantee is permitted
+     * <LI><B>IS_GRANTABLE</B> String =&gt; "YES" if grantee is permitted
      * to grant to others; "NO" if not; <code>null</code> if unknown
      * </OL>
      *
@@ -2135,24 +2135,24 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of a table's optimal set of columns that
      * uniquely identifies a row. They are ordered by SCOPE.
-     * <p/>
+     * 
      * <P>Each column description has the following columns:
      * <OL>
-     * <LI><B>SCOPE</B> short => actual scope of result
+     * <LI><B>SCOPE</B> short =&gt; actual scope of result
      * <UL>
      * <LI> bestRowTemporary - very temporary, while using row
      * <LI> bestRowTransaction - valid for remainder of current transaction
      * <LI> bestRowSession - valid for remainder of current session
      * </UL>
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>DATA_TYPE</B> int => SQL data type from java.sql.Types
-     * <LI><B>TYPE_NAME</B> String => Data source dependent type name,
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL data type from java.sql.Types
+     * <LI><B>TYPE_NAME</B> String =&gt; Data source dependent type name,
      * for a UDT the type name is fully qualified
-     * <LI><B>COLUMN_SIZE</B> int => precision
-     * <LI><B>BUFFER_LENGTH</B> int => not used
-     * <LI><B>DECIMAL_DIGITS</B> short  => scale - Null is returned for data types where
+     * <LI><B>COLUMN_SIZE</B> int =&gt; precision
+     * <LI><B>BUFFER_LENGTH</B> int =&gt; not used
+     * <LI><B>DECIMAL_DIGITS</B> short  =&gt; scale - Null is returned for data types where
      * DECIMAL_DIGITS is not applicable.
-     * <LI><B>PSEUDO_COLUMN</B> short => is this a pseudo column
+     * <LI><B>PSEUDO_COLUMN</B> short =&gt; is this a pseudo column
      * like an Oracle ROWID
      * <UL>
      * <LI> bestRowUnknown - may or may not be pseudo column
@@ -2160,7 +2160,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> bestRowPseudo - is a pseudo column
      * </UL>
      * </OL>
-     * <p/>
+     * 
      * <p>The COLUMN_SIZE column represents the specified column size for the given column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -2193,18 +2193,18 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves a description of a table's columns that are automatically
      * updated when any value in a row is updated.  They are
      * unordered.
-     * <p/>
+     * 
      * <P>Each column description has the following columns:
      * <OL>
-     * <LI><B>SCOPE</B> short => is not used
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>DATA_TYPE</B> int => SQL data type from <code>java.sql.Types</code>
-     * <LI><B>TYPE_NAME</B> String => Data source-dependent type name
-     * <LI><B>COLUMN_SIZE</B> int => precision
-     * <LI><B>BUFFER_LENGTH</B> int => length of column value in bytes
-     * <LI><B>DECIMAL_DIGITS</B> short  => scale - Null is returned for data types where
+     * <LI><B>SCOPE</B> short =&gt; is not used
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL data type from <code>java.sql.Types</code>
+     * <LI><B>TYPE_NAME</B> String =&gt; Data source-dependent type name
+     * <LI><B>COLUMN_SIZE</B> int =&gt; precision
+     * <LI><B>BUFFER_LENGTH</B> int =&gt; length of column value in bytes
+     * <LI><B>DECIMAL_DIGITS</B> short  =&gt; scale - Null is returned for data types where
      * DECIMAL_DIGITS is not applicable.
-     * <LI><B>PSEUDO_COLUMN</B> short => whether this is pseudo column
+     * <LI><B>PSEUDO_COLUMN</B> short =&gt; whether this is pseudo column
      * like an Oracle ROWID
      * <UL>
      * <LI> versionColumnUnknown - may or may not be pseudo column
@@ -2212,7 +2212,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> versionColumnPseudo - is a pseudo column
      * </UL>
      * </OL>
-     * <p/>
+     * 
      * <p>The COLUMN_SIZE column represents the specified column size for the given column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -2243,17 +2243,17 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the given table's primary key columns.  They
      * are ordered by COLUMN_NAME.
-     * <p/>
+     * 
      * <P>Each primary key column description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>KEY_SEQ</B> short => sequence number within primary key( a value
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>KEY_SEQ</B> short =&gt; sequence number within primary key( a value
      * of 1 represents the first column of the primary key, a value of 2 would
      * represent the second column within the primary key).
-     * <LI><B>PK_NAME</B> String => primary key name (may be <code>null</code>)
+     * <LI><B>PK_NAME</B> String =&gt; primary key name (may be <code>null</code>)
      * </OL>
      *
      * @param catalog a catalog name; must match the catalog name as it
@@ -2294,25 +2294,25 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * referenced by the given table's foreign key columns (the primary keys
      * imported by a table).  They are ordered by PKTABLE_CAT,
      * PKTABLE_SCHEM, PKTABLE_NAME, and KEY_SEQ.
-     * <p/>
+     * 
      * <P>Each primary key column description has the following columns:
      * <OL>
-     * <LI><B>PKTABLE_CAT</B> String => primary key table catalog
+     * <LI><B>PKTABLE_CAT</B> String =&gt; primary key table catalog
      * being imported (may be <code>null</code>)
-     * <LI><B>PKTABLE_SCHEM</B> String => primary key table schema
+     * <LI><B>PKTABLE_SCHEM</B> String =&gt; primary key table schema
      * being imported (may be <code>null</code>)
-     * <LI><B>PKTABLE_NAME</B> String => primary key table name
+     * <LI><B>PKTABLE_NAME</B> String =&gt; primary key table name
      * being imported
-     * <LI><B>PKCOLUMN_NAME</B> String => primary key column name
+     * <LI><B>PKCOLUMN_NAME</B> String =&gt; primary key column name
      * being imported
-     * <LI><B>FKTABLE_CAT</B> String => foreign key table catalog (may be <code>null</code>)
-     * <LI><B>FKTABLE_SCHEM</B> String => foreign key table schema (may be <code>null</code>)
-     * <LI><B>FKTABLE_NAME</B> String => foreign key table name
-     * <LI><B>FKCOLUMN_NAME</B> String => foreign key column name
-     * <LI><B>KEY_SEQ</B> short => sequence number within a foreign key( a value
+     * <LI><B>FKTABLE_CAT</B> String =&gt; foreign key table catalog (may be <code>null</code>)
+     * <LI><B>FKTABLE_SCHEM</B> String =&gt; foreign key table schema (may be <code>null</code>)
+     * <LI><B>FKTABLE_NAME</B> String =&gt; foreign key table name
+     * <LI><B>FKCOLUMN_NAME</B> String =&gt; foreign key column name
+     * <LI><B>KEY_SEQ</B> short =&gt; sequence number within a foreign key( a value
      * of 1 represents the first column of the foreign key, a value of 2 would
      * represent the second column within the foreign key).
-     * <LI><B>UPDATE_RULE</B> short => What happens to a
+     * <LI><B>UPDATE_RULE</B> short =&gt; What happens to a
      * foreign key when the primary key is updated:
      * <UL>
      * <LI> importedNoAction - do not allow update of primary
@@ -2326,7 +2326,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeyRestrict - same as importedKeyNoAction
      * (for ODBC 2.x compatibility)
      * </UL>
-     * <LI><B>DELETE_RULE</B> short => What happens to
+     * <LI><B>DELETE_RULE</B> short =&gt; What happens to
      * the foreign key when primary is deleted.
      * <UL>
      * <LI> importedKeyNoAction - do not allow delete of primary
@@ -2339,9 +2339,9 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeySetDefault - change imported key to default if
      * its primary key has been deleted
      * </UL>
-     * <LI><B>FK_NAME</B> String => foreign key name (may be <code>null</code>)
-     * <LI><B>PK_NAME</B> String => primary key name (may be <code>null</code>)
-     * <LI><B>DEFERRABILITY</B> short => can the evaluation of foreign key
+     * <LI><B>FK_NAME</B> String =&gt; foreign key name (may be <code>null</code>)
+     * <LI><B>PK_NAME</B> String =&gt; primary key name (may be <code>null</code>)
+     * <LI><B>DEFERRABILITY</B> short =&gt; can the evaluation of foreign key
      * constraints be deferred until commit
      * <UL>
      * <LI> importedKeyInitiallyDeferred - see SQL92 for definition
@@ -2375,25 +2375,25 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * given table's primary key columns (the foreign keys exported by a
      * table).  They are ordered by FKTABLE_CAT, FKTABLE_SCHEM,
      * FKTABLE_NAME, and KEY_SEQ.
-     * <p/>
+     * 
      * <P>Each foreign key column description has the following columns:
      * <OL>
-     * <LI><B>PKTABLE_CAT</B> String => primary key table catalog (may be <code>null</code>)
-     * <LI><B>PKTABLE_SCHEM</B> String => primary key table schema (may be <code>null</code>)
-     * <LI><B>PKTABLE_NAME</B> String => primary key table name
-     * <LI><B>PKCOLUMN_NAME</B> String => primary key column name
-     * <LI><B>FKTABLE_CAT</B> String => foreign key table catalog (may be <code>null</code>)
+     * <LI><B>PKTABLE_CAT</B> String =&gt; primary key table catalog (may be <code>null</code>)
+     * <LI><B>PKTABLE_SCHEM</B> String =&gt; primary key table schema (may be <code>null</code>)
+     * <LI><B>PKTABLE_NAME</B> String =&gt; primary key table name
+     * <LI><B>PKCOLUMN_NAME</B> String =&gt; primary key column name
+     * <LI><B>FKTABLE_CAT</B> String =&gt; foreign key table catalog (may be <code>null</code>)
      * being exported (may be <code>null</code>)
-     * <LI><B>FKTABLE_SCHEM</B> String => foreign key table schema (may be <code>null</code>)
+     * <LI><B>FKTABLE_SCHEM</B> String =&gt; foreign key table schema (may be <code>null</code>)
      * being exported (may be <code>null</code>)
-     * <LI><B>FKTABLE_NAME</B> String => foreign key table name
+     * <LI><B>FKTABLE_NAME</B> String =&gt; foreign key table name
      * being exported
-     * <LI><B>FKCOLUMN_NAME</B> String => foreign key column name
+     * <LI><B>FKCOLUMN_NAME</B> String =&gt; foreign key column name
      * being exported
-     * <LI><B>KEY_SEQ</B> short => sequence number within foreign key( a value
+     * <LI><B>KEY_SEQ</B> short =&gt; sequence number within foreign key( a value
      * of 1 represents the first column of the foreign key, a value of 2 would
      * represent the second column within the foreign key).
-     * <LI><B>UPDATE_RULE</B> short => What happens to
+     * <LI><B>UPDATE_RULE</B> short =&gt; What happens to
      * foreign key when primary is updated:
      * <UL>
      * <LI> importedNoAction - do not allow update of primary
@@ -2407,7 +2407,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeyRestrict - same as importedKeyNoAction
      * (for ODBC 2.x compatibility)
      * </UL>
-     * <LI><B>DELETE_RULE</B> short => What happens to
+     * <LI><B>DELETE_RULE</B> short =&gt; What happens to
      * the foreign key when primary is deleted.
      * <UL>
      * <LI> importedKeyNoAction - do not allow delete of primary
@@ -2420,9 +2420,9 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeySetDefault - change imported key to default if
      * its primary key has been deleted
      * </UL>
-     * <LI><B>FK_NAME</B> String => foreign key name (may be <code>null</code>)
-     * <LI><B>PK_NAME</B> String => primary key name (may be <code>null</code>)
-     * <LI><B>DEFERRABILITY</B> short => can the evaluation of foreign key
+     * <LI><B>FK_NAME</B> String =&gt; foreign key name (may be <code>null</code>)
+     * <LI><B>PK_NAME</B> String =&gt; primary key name (may be <code>null</code>)
+     * <LI><B>DEFERRABILITY</B> short =&gt; can the evaluation of foreign key
      * constraints be deferred until commit
      * <UL>
      * <LI> importedKeyInitiallyDeferred - see SQL92 for definition
@@ -2459,25 +2459,25 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * columns that make up the foreign key.  They
      * are ordered by FKTABLE_CAT, FKTABLE_SCHEM, FKTABLE_NAME, and
      * KEY_SEQ.
-     * <p/>
+     * 
      * <P>Each foreign key column description has the following columns:
      * <OL>
-     * <LI><B>PKTABLE_CAT</B> String => parent key table catalog (may be <code>null</code>)
-     * <LI><B>PKTABLE_SCHEM</B> String => parent key table schema (may be <code>null</code>)
-     * <LI><B>PKTABLE_NAME</B> String => parent key table name
-     * <LI><B>PKCOLUMN_NAME</B> String => parent key column name
-     * <LI><B>FKTABLE_CAT</B> String => foreign key table catalog (may be <code>null</code>)
+     * <LI><B>PKTABLE_CAT</B> String =&gt; parent key table catalog (may be <code>null</code>)
+     * <LI><B>PKTABLE_SCHEM</B> String =&gt; parent key table schema (may be <code>null</code>)
+     * <LI><B>PKTABLE_NAME</B> String =&gt; parent key table name
+     * <LI><B>PKCOLUMN_NAME</B> String =&gt; parent key column name
+     * <LI><B>FKTABLE_CAT</B> String =&gt; foreign key table catalog (may be <code>null</code>)
      * being exported (may be <code>null</code>)
-     * <LI><B>FKTABLE_SCHEM</B> String => foreign key table schema (may be <code>null</code>)
+     * <LI><B>FKTABLE_SCHEM</B> String =&gt; foreign key table schema (may be <code>null</code>)
      * being exported (may be <code>null</code>)
-     * <LI><B>FKTABLE_NAME</B> String => foreign key table name
+     * <LI><B>FKTABLE_NAME</B> String =&gt; foreign key table name
      * being exported
-     * <LI><B>FKCOLUMN_NAME</B> String => foreign key column name
+     * <LI><B>FKCOLUMN_NAME</B> String =&gt; foreign key column name
      * being exported
-     * <LI><B>KEY_SEQ</B> short => sequence number within foreign key( a value
+     * <LI><B>KEY_SEQ</B> short =&gt; sequence number within foreign key( a value
      * of 1 represents the first column of the foreign key, a value of 2 would
      * represent the second column within the foreign key).
-     * <LI><B>UPDATE_RULE</B> short => What happens to
+     * <LI><B>UPDATE_RULE</B> short =&gt; What happens to
      * foreign key when parent key is updated:
      * <UL>
      * <LI> importedNoAction - do not allow update of parent
@@ -2491,7 +2491,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeyRestrict - same as importedKeyNoAction
      * (for ODBC 2.x compatibility)
      * </UL>
-     * <LI><B>DELETE_RULE</B> short => What happens to
+     * <LI><B>DELETE_RULE</B> short =&gt; What happens to
      * the foreign key when parent key is deleted.
      * <UL>
      * <LI> importedKeyNoAction - do not allow delete of parent
@@ -2504,9 +2504,9 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> importedKeySetDefault - change imported key to default if
      * its parent key has been deleted
      * </UL>
-     * <LI><B>FK_NAME</B> String => foreign key name (may be <code>null</code>)
-     * <LI><B>PK_NAME</B> String => parent key name (may be <code>null</code>)
-     * <LI><B>DEFERRABILITY</B> short => can the evaluation of foreign key
+     * <LI><B>FK_NAME</B> String =&gt; foreign key name (may be <code>null</code>)
+     * <LI><B>PK_NAME</B> String =&gt; parent key name (may be <code>null</code>)
+     * <LI><B>DEFERRABILITY</B> short =&gt; can the evaluation of foreign key
      * constraints be deferred until commit
      * <UL>
      * <LI> importedKeyInitiallyDeferred - see SQL92 for definition
@@ -2545,55 +2545,55 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves a description of all the data types supported by
      * this database. They are ordered by DATA_TYPE and then by how
      * closely the data type maps to the corresponding JDBC SQL type.
-     * <p/>
+     * 
      * <P>If the database supports SQL distinct types, then getTypeInfo() will return
      * a single row with a TYPE_NAME of DISTINCT and a DATA_TYPE of Types.DISTINCT.
      * If the database supports SQL structured types, then getTypeInfo() will return
      * a single row with a TYPE_NAME of STRUCT and a DATA_TYPE of Types.STRUCT.
-     * <p/>
+     * 
      * <P>If SQL distinct or structured types are supported, then information on the
      * individual types may be obtained from the getUDTs() method.
-     * <p/>
-     * <p/>
-     * <p/>
+     * 
+     * 
+     * 
      * <P>Each type description has the following columns:
      * <OL>
-     * <LI><B>TYPE_NAME</B> String => Type name
-     * <LI><B>DATA_TYPE</B> int => SQL data type from java.sql.Types
-     * <LI><B>PRECISION</B> int => maximum precision
-     * <LI><B>LITERAL_PREFIX</B> String => prefix used to quote a literal
+     * <LI><B>TYPE_NAME</B> String =&gt; Type name
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL data type from java.sql.Types
+     * <LI><B>PRECISION</B> int =&gt; maximum precision
+     * <LI><B>LITERAL_PREFIX</B> String =&gt; prefix used to quote a literal
      * (may be <code>null</code>)
-     * <LI><B>LITERAL_SUFFIX</B> String => suffix used to quote a literal
+     * <LI><B>LITERAL_SUFFIX</B> String =&gt; suffix used to quote a literal
      * (may be <code>null</code>)
-     * <LI><B>CREATE_PARAMS</B> String => parameters used in creating
+     * <LI><B>CREATE_PARAMS</B> String =&gt; parameters used in creating
      * the type (may be <code>null</code>)
-     * <LI><B>NULLABLE</B> short => can you use NULL for this type.
+     * <LI><B>NULLABLE</B> short =&gt; can you use NULL for this type.
      * <UL>
      * <LI> typeNoNulls - does not allow NULL values
      * <LI> typeNullable - allows NULL values
      * <LI> typeNullableUnknown - nullability unknown
      * </UL>
-     * <LI><B>CASE_SENSITIVE</B> boolean=> is it case sensitive.
-     * <LI><B>SEARCHABLE</B> short => can you use "WHERE" based on this type:
+     * <LI><B>CASE_SENSITIVE</B> boolean=&gt; is it case sensitive.
+     * <LI><B>SEARCHABLE</B> short =&gt; can you use "WHERE" based on this type:
      * <UL>
      * <LI> typePredNone - No support
      * <LI> typePredChar - Only supported with WHERE .. LIKE
      * <LI> typePredBasic - Supported except for WHERE .. LIKE
      * <LI> typeSearchable - Supported for all WHERE ..
      * </UL>
-     * <LI><B>UNSIGNED_ATTRIBUTE</B> boolean => is it unsigned.
-     * <LI><B>FIXED_PREC_SCALE</B> boolean => can it be a money value.
-     * <LI><B>AUTO_INCREMENT</B> boolean => can it be used for an
+     * <LI><B>UNSIGNED_ATTRIBUTE</B> boolean =&gt; is it unsigned.
+     * <LI><B>FIXED_PREC_SCALE</B> boolean =&gt; can it be a money value.
+     * <LI><B>AUTO_INCREMENT</B> boolean =&gt; can it be used for an
      * auto-increment value.
-     * <LI><B>LOCAL_TYPE_NAME</B> String => localized version of type name
+     * <LI><B>LOCAL_TYPE_NAME</B> String =&gt; localized version of type name
      * (may be <code>null</code>)
-     * <LI><B>MINIMUM_SCALE</B> short => minimum scale supported
-     * <LI><B>MAXIMUM_SCALE</B> short => maximum scale supported
-     * <LI><B>SQL_DATA_TYPE</B> int => unused
-     * <LI><B>SQL_DATETIME_SUB</B> int => unused
-     * <LI><B>NUM_PREC_RADIX</B> int => usually 2 or 10
+     * <LI><B>MINIMUM_SCALE</B> short =&gt; minimum scale supported
+     * <LI><B>MAXIMUM_SCALE</B> short =&gt; maximum scale supported
+     * <LI><B>SQL_DATA_TYPE</B> int =&gt; unused
+     * <LI><B>SQL_DATETIME_SUB</B> int =&gt; unused
+     * <LI><B>NUM_PREC_RADIX</B> int =&gt; usually 2 or 10
      * </OL>
-     * <p/>
+     * 
      * <p>The PRECISION column represents the maximum column size that the server supports for the given datatype.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -2848,19 +2848,19 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the given table's indices and statistics. They are
      * ordered by NON_UNIQUE, TYPE, INDEX_NAME, and ORDINAL_POSITION.
-     * <p/>
+     * 
      * <P>Each index column description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>NON_UNIQUE</B> boolean => Can index values be non-unique.
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>NON_UNIQUE</B> boolean =&gt; Can index values be non-unique.
      * false when TYPE is tableIndexStatistic
-     * <LI><B>INDEX_QUALIFIER</B> String => index catalog (may be <code>null</code>);
+     * <LI><B>INDEX_QUALIFIER</B> String =&gt; index catalog (may be <code>null</code>);
      * <code>null</code> when TYPE is tableIndexStatistic
-     * <LI><B>INDEX_NAME</B> String => index name; <code>null</code> when TYPE is
+     * <LI><B>INDEX_NAME</B> String =&gt; index name; <code>null</code> when TYPE is
      * tableIndexStatistic
-     * <LI><B>TYPE</B> short => index type:
+     * <LI><B>TYPE</B> short =&gt; index type:
      * <UL>
      * <LI> tableIndexStatistic - this identifies table statistics that are
      * returned in conjuction with a table's index descriptions
@@ -2868,20 +2868,20 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> tableIndexHashed - this is a hashed index
      * <LI> tableIndexOther - this is some other style of index
      * </UL>
-     * <LI><B>ORDINAL_POSITION</B> short => column sequence number
+     * <LI><B>ORDINAL_POSITION</B> short =&gt; column sequence number
      * within index; zero when TYPE is tableIndexStatistic
-     * <LI><B>COLUMN_NAME</B> String => column name; <code>null</code> when TYPE is
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name; <code>null</code> when TYPE is
      * tableIndexStatistic
-     * <LI><B>ASC_OR_DESC</B> String => column sort sequence, "A" => ascending,
-     * "D" => descending, may be <code>null</code> if sort sequence is not supported;
+     * <LI><B>ASC_OR_DESC</B> String =&gt; column sort sequence, "A" =&gt; ascending,
+     * "D" =&gt; descending, may be <code>null</code> if sort sequence is not supported;
      * <code>null</code> when TYPE is tableIndexStatistic
-     * <LI><B>CARDINALITY</B> int => When TYPE is tableIndexStatistic, then
+     * <LI><B>CARDINALITY</B> int =&gt; When TYPE is tableIndexStatistic, then
      * this is the number of rows in the table; otherwise, it is the
      * number of unique values in the index.
-     * <LI><B>PAGES</B> int => When TYPE is  tableIndexStatisic then
+     * <LI><B>PAGES</B> int =&gt; When TYPE is  tableIndexStatisic then
      * this is the number of pages used for the table, otherwise it
      * is the number of pages used for the current index.
-     * <LI><B>FILTER_CONDITION</B> String => Filter condition, if any.
+     * <LI><B>FILTER_CONDITION</B> String =&gt; Filter condition, if any.
      * (may be <code>null</code>)
      * </OL>
      *
@@ -3131,30 +3131,30 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * in a particular schema.  Schema-specific UDTs may have type
      * <code>JAVA_OBJECT</code>, <code>STRUCT</code>,
      * or <code>DISTINCT</code>.
-     * <p/>
+     * 
      * <P>Only types matching the catalog, schema, type name and type
      * criteria are returned.  They are ordered by <code>DATA_TYPE</code>,
      * <code>TYPE_CAT</code>, <code>TYPE_SCHEM</code>  and
      * <code>TYPE_NAME</code>.  The type name parameter may be a fully-qualified
      * name.  In this case, the catalog and schemaPattern parameters are
      * ignored.
-     * <p/>
+     * 
      * <P>Each type description has the following columns:
      * <OL>
-     * <LI><B>TYPE_CAT</B> String => the type's catalog (may be <code>null</code>)
-     * <LI><B>TYPE_SCHEM</B> String => type's schema (may be <code>null</code>)
-     * <LI><B>TYPE_NAME</B> String => type name
-     * <LI><B>CLASS_NAME</B> String => Java class name
-     * <LI><B>DATA_TYPE</B> int => type value defined in java.sql.Types.
+     * <LI><B>TYPE_CAT</B> String =&gt; the type's catalog (may be <code>null</code>)
+     * <LI><B>TYPE_SCHEM</B> String =&gt; type's schema (may be <code>null</code>)
+     * <LI><B>TYPE_NAME</B> String =&gt; type name
+     * <LI><B>CLASS_NAME</B> String =&gt; Java class name
+     * <LI><B>DATA_TYPE</B> int =&gt; type value defined in java.sql.Types.
      * One of JAVA_OBJECT, STRUCT, or DISTINCT
-     * <LI><B>REMARKS</B> String => explanatory comment on the type
-     * <LI><B>BASE_TYPE</B> short => type code of the source type of a
+     * <LI><B>REMARKS</B> String =&gt; explanatory comment on the type
+     * <LI><B>BASE_TYPE</B> short =&gt; type code of the source type of a
      * DISTINCT type or the type that implements the user-generated
      * reference type of the SELF_REFERENCING_COLUMN of a structured
      * type as defined in java.sql.Types (<code>null</code> if DATA_TYPE is not
      * DISTINCT or not STRUCT with REFERENCE_GENERATION = USER_DEFINED)
      * </OL>
-     * <p/>
+     * 
      * <P><B>Note:</B> If the driver does not support UDTs, an empty
      * result set is returned.
      *
@@ -3200,7 +3200,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
 
     /**
      * Retrieves the connection that produced this metadata object.
-     * <p/>
+     * 
      *
      * @return the connection that produced this metadata object
      * @throws java.sql.SQLException if a database access error occurs
@@ -3266,7 +3266,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * after a statement has executed; <code>false</code> otherwise
      * <p>If <code>true</code> is returned, the JDBC driver must support the
      * returning of auto-generated keys for at least SQL INSERT statements
-     * <p/>
+     * 
      * @throws java.sql.SQLException if a database access error occurs
      * @since 1.4
      */
@@ -3280,28 +3280,28 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves a description of the user-defined type (UDT) hierarchies defined in a
      * particular schema in this database. Only the immediate super type/
      * sub type relationship is modeled.
-     * <p/>
+     * 
      * Only supertype information for UDTs matching the catalog,
      * schema, and type name is returned. The type name parameter
      * may be a fully-qualified name. When the UDT name supplied is a
      * fully-qualified name, the catalog and schemaPattern parameters are
      * ignored.
-     * <p/>
+     * 
      * If a UDT does not have a direct super type, it is not listed here.
      * A row of the <code>ResultSet</code> object returned by this method
      * describes the designated UDT and a direct supertype. A row has the following
      * columns:
      * <OL>
-     * <LI><B>TYPE_CAT</B> String => the UDT's catalog (may be <code>null</code>)
-     * <LI><B>TYPE_SCHEM</B> String => UDT's schema (may be <code>null</code>)
-     * <LI><B>TYPE_NAME</B> String => type name of the UDT
-     * <LI><B>SUPERTYPE_CAT</B> String => the direct super type's catalog
+     * <LI><B>TYPE_CAT</B> String =&gt; the UDT's catalog (may be <code>null</code>)
+     * <LI><B>TYPE_SCHEM</B> String =&gt; UDT's schema (may be <code>null</code>)
+     * <LI><B>TYPE_NAME</B> String =&gt; type name of the UDT
+     * <LI><B>SUPERTYPE_CAT</B> String =&gt; the direct super type's catalog
      * (may be <code>null</code>)
-     * <LI><B>SUPERTYPE_SCHEM</B> String => the direct super type's schema
+     * <LI><B>SUPERTYPE_SCHEM</B> String =&gt; the direct super type's schema
      * (may be <code>null</code>)
-     * <LI><B>SUPERTYPE_NAME</B> String => the direct super type's name
+     * <LI><B>SUPERTYPE_NAME</B> String =&gt; the direct super type's name
      * </OL>
-     * <p/>
+     * 
      * <P><B>Note:</B> If the driver does not support type hierarchies, an
      * empty result set is returned.
      *
@@ -3326,7 +3326,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the table hierarchies defined in a particular
      * schema in this database.
-     * <p/>
+     * 
      * <P>Only supertable information for tables matching the catalog, schema
      * and table name are returned. The table name parameter may be a fully-
      * qualified name, in which case, the catalog and schemaPattern parameters
@@ -3334,15 +3334,15 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Supertables have to be defined in the same catalog and schema as the
      * sub tables. Therefore, the type description does not need to include
      * this information for the supertable.
-     * <p/>
+     * 
      * <P>Each type description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => the type's catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => type's schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => type name
-     * <LI><B>SUPERTABLE_NAME</B> String => the direct super type's name
+     * <LI><B>TABLE_CAT</B> String =&gt; the type's catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; type's schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; type name
+     * <LI><B>SUPERTABLE_NAME</B> String =&gt; the direct super type's name
      * </OL>
-     * <p/>
+     * 
      * <P><B>Note:</B> If the driver does not support type hierarchies, an
      * empty result set is returned.
      *
@@ -3367,45 +3367,45 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves a description of the given attribute of the given type
      * for a user-defined type (UDT) that is available in the given schema
      * and catalog.
-     * <p/>
+     * 
      * Descriptions are returned only for attributes of UDTs matching the
      * catalog, schema, type, and attribute name criteria. They are ordered by
      * <code>TYPE_CAT</code>, <code>TYPE_SCHEM</code>,
      * <code>TYPE_NAME</code> and <code>ORDINAL_POSITION</code>. This description
      * does not contain inherited attributes.
-     * <p/>
+     * 
      * The <code>ResultSet</code> object that is returned has the following
      * columns:
      * <OL>
-     * <LI><B>TYPE_CAT</B> String => type catalog (may be <code>null</code>)
-     * <LI><B>TYPE_SCHEM</B> String => type schema (may be <code>null</code>)
-     * <LI><B>TYPE_NAME</B> String => type name
-     * <LI><B>ATTR_NAME</B> String => attribute name
-     * <LI><B>DATA_TYPE</B> int => attribute type SQL type from java.sql.Types
-     * <LI><B>ATTR_TYPE_NAME</B> String => Data source dependent type name.
+     * <LI><B>TYPE_CAT</B> String =&gt; type catalog (may be <code>null</code>)
+     * <LI><B>TYPE_SCHEM</B> String =&gt; type schema (may be <code>null</code>)
+     * <LI><B>TYPE_NAME</B> String =&gt; type name
+     * <LI><B>ATTR_NAME</B> String =&gt; attribute name
+     * <LI><B>DATA_TYPE</B> int =&gt; attribute type SQL type from java.sql.Types
+     * <LI><B>ATTR_TYPE_NAME</B> String =&gt; Data source dependent type name.
      * For a UDT, the type name is fully qualified. For a REF, the type name is
      * fully qualified and represents the target type of the reference type.
-     * <LI><B>ATTR_SIZE</B> int => column size.  For char or date
+     * <LI><B>ATTR_SIZE</B> int =&gt; column size.  For char or date
      * types this is the maximum number of characters; for numeric or
      * decimal types this is precision.
-     * <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits. Null is returned for data types where
+     * <LI><B>DECIMAL_DIGITS</B> int =&gt; the number of fractional digits. Null is returned for data types where
      * DECIMAL_DIGITS is not applicable.
-     * <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     * <LI><B>NULLABLE</B> int => whether NULL is allowed
+     * <LI><B>NUM_PREC_RADIX</B> int =&gt; Radix (typically either 10 or 2)
+     * <LI><B>NULLABLE</B> int =&gt; whether NULL is allowed
      * <UL>
      * <LI> attributeNoNulls - might not allow NULL values
      * <LI> attributeNullable - definitely allows NULL values
      * <LI> attributeNullableUnknown - nullability unknown
      * </UL>
-     * <LI><B>REMARKS</B> String => comment describing column (may be <code>null</code>)
-     * <LI><B>ATTR_DEF</B> String => default value (may be <code>null</code>)
-     * <LI><B>SQL_DATA_TYPE</B> int => unused
-     * <LI><B>SQL_DATETIME_SUB</B> int => unused
-     * <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     * <LI><B>REMARKS</B> String =&gt; comment describing column (may be <code>null</code>)
+     * <LI><B>ATTR_DEF</B> String =&gt; default value (may be <code>null</code>)
+     * <LI><B>SQL_DATA_TYPE</B> int =&gt; unused
+     * <LI><B>SQL_DATETIME_SUB</B> int =&gt; unused
+     * <LI><B>CHAR_OCTET_LENGTH</B> int =&gt; for char types the
      * maximum number of bytes in the column
-     * <LI><B>ORDINAL_POSITION</B> int => index of the attribute in the UDT
+     * <LI><B>ORDINAL_POSITION</B> int =&gt; index of the attribute in the UDT
      * (starting at 1)
-     * <LI><B>IS_NULLABLE</B> String  => ISO rules are used to determine
+     * <LI><B>IS_NULLABLE</B> String  =&gt; ISO rules are used to determine
      * the nullability for a attribute.
      * <UL>
      * <LI> YES           --- if the attribute can include NULLs
@@ -3413,13 +3413,13 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> empty string  --- if the nullability for the
      * attribute is unknown
      * </UL>
-     * <LI><B>SCOPE_CATALOG</B> String => catalog of table that is the
+     * <LI><B>SCOPE_CATALOG</B> String =&gt; catalog of table that is the
      * scope of a reference attribute (<code>null</code> if DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_SCHEMA</B> String => schema of table that is the
+     * <LI><B>SCOPE_SCHEMA</B> String =&gt; schema of table that is the
      * scope of a reference attribute (<code>null</code> if DATA_TYPE isn't REF)
-     * <LI><B>SCOPE_TABLE</B> String => table name that is the scope of a
+     * <LI><B>SCOPE_TABLE</B> String =&gt; table name that is the scope of a
      * reference attribute (<code>null</code> if the DATA_TYPE isn't REF)
-     * <LI><B>SOURCE_DATA_TYPE</B> short => source type of a distinct type or user-generated
+     * <LI><B>SOURCE_DATA_TYPE</B> short =&gt; source type of a distinct type or user-generated
      * Ref type,SQL type from java.sql.Types (<code>null</code> if DATA_TYPE
      * isn't DISTINCT or user-generated REF)
      * </OL>
@@ -3453,7 +3453,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      *
      * @param holdability one of the following constants:
      *                    <code>ResultSet.HOLD_CURSORS_OVER_COMMIT</code> or
-     *                    <code>ResultSet.CLOSE_CURSORS_AT_COMMIT<code>
+     *                    <code>ResultSet.CLOSE_CURSORS_AT_COMMIT</code>
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @throws java.sql.SQLException if a database access error occurs
      * @see java.sql.Connection
@@ -3582,15 +3582,15 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Indicates whether or not this data source supports the SQL <code>ROWID</code> type,
      * and if so  the lifetime for which a <code>RowId</code> object remains valid.
-     * <p/>
+     * 
      * The returned int values have the following relationship:
      * <pre>
-     *     ROWID_UNSUPPORTED < ROWID_VALID_OTHER < ROWID_VALID_TRANSACTION
-     *         < ROWID_VALID_SESSION < ROWID_VALID_FOREVER
+     *     ROWID_UNSUPPORTED &lt; ROWID_VALID_OTHER &lt; ROWID_VALID_TRANSACTION
+     *         &lt; ROWID_VALID_SESSION &lt; ROWID_VALID_FOREVER
      * </pre>
      * so conditional logic such as
      * <pre>
-     *     if (metadata.getRowIdLifetime() > DatabaseMetaData.ROWID_VALID_TRANSACTION)
+     *     if (metadata.getRowIdLifetime() &gt; DatabaseMetaData.ROWID_VALID_TRANSACTION)
      * </pre>
      * can be used. Valid Forever means valid across all Sessions, and valid for
      * a Session means valid across all its contained Transactions.
@@ -3609,11 +3609,11 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * Retrieves the schema names available in this database.  The results
      * are ordered by <code>TABLE_CATALOG</code> and
      * <code>TABLE_SCHEM</code>.
-     * <p/>
+     * 
      * <P>The schema columns are:
      * <OL>
-     * <LI><B>TABLE_SCHEM</B> String => schema name
-     * <LI><B>TABLE_CATALOG</B> String => catalog name (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; schema name
+     * <LI><B>TABLE_CATALOG</B> String =&gt; catalog name (may be <code>null</code>)
      * </OL>
      *
      * @param catalog       a catalog name; must match the catalog name as it is stored
@@ -3677,24 +3677,24 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a list of the client info properties
      * that the driver supports.  The result set contains the following columns
-     * <p/>
+     * 
      * <ol>
-     * <li><b>NAME</b> String=> The name of the client info property<br>
-     * <li><b>MAX_LEN</b> int=> The maximum length of the value for the property<br>
-     * <li><b>DEFAULT_VALUE</b> String=> The default value of the property<br>
-     * <li><b>DESCRIPTION</b> String=> A description of the property.  This will typically
+     * <li><b>NAME</b> String=&gt; The name of the client info property<br>
+     * <li><b>MAX_LEN</b> int=&gt; The maximum length of the value for the property<br>
+     * <li><b>DEFAULT_VALUE</b> String=&gt; The default value of the property<br>
+     * <li><b>DESCRIPTION</b> String=&gt; A description of the property.  This will typically
      * contain information as to where this property is
      * stored in the database.
      * </ol>
-     * <p/>
+     * 
      * The <code>ResultSet</code> is sorted by the NAME column
-     * <p/>
+     * 
      *
      * @return A <code>ResultSet</code> object; each row is a supported client info
      * property
-     * <p/>
+     * 
      * @throws java.sql.SQLException if a database access error occurs
-     *                               <p/>
+     *                               
      * @since 1.6
      */
     @Override
@@ -3706,33 +3706,33 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the  system and user functions available
      * in the given catalog.
-     * <p/>
+     * 
      * Only system and user function descriptions matching the schema and
      * function name criteria are returned.  They are ordered by
      * <code>FUNCTION_CAT</code>, <code>FUNCTION_SCHEM</code>,
      * <code>FUNCTION_NAME</code> and
      * <code>SPECIFIC_ NAME</code>.
-     * <p/>
+     * 
      * <P>Each function description has the the following columns:
      * <OL>
-     * <LI><B>FUNCTION_CAT</B> String => function catalog (may be <code>null</code>)
-     * <LI><B>FUNCTION_SCHEM</B> String => function schema (may be <code>null</code>)
-     * <LI><B>FUNCTION_NAME</B> String => function name.  This is the name
+     * <LI><B>FUNCTION_CAT</B> String =&gt; function catalog (may be <code>null</code>)
+     * <LI><B>FUNCTION_SCHEM</B> String =&gt; function schema (may be <code>null</code>)
+     * <LI><B>FUNCTION_NAME</B> String =&gt; function name.  This is the name
      * used to invoke the function
-     * <LI><B>REMARKS</B> String => explanatory comment on the function
-     * <LI><B>FUNCTION_TYPE</B> short => kind of function:
+     * <LI><B>REMARKS</B> String =&gt; explanatory comment on the function
+     * <LI><B>FUNCTION_TYPE</B> short =&gt; kind of function:
      * <UL>
      * <LI>functionResultUnknown - Cannot determine if a return value
      * or table will be returned
      * <LI> functionNoTable- Does not return a table
      * <LI> functionReturnsTable - Returns a table
      * </UL>
-     * <LI><B>SPECIFIC_NAME</B> String  => the name which uniquely identifies
+     * <LI><B>SPECIFIC_NAME</B> String  =&gt; the name which uniquely identifies
      * this function within its schema.  This is a user specified, or DBMS
      * generated, name that may be different then the <code>FUNCTION_NAME</code>
      * for example with overload functions
      * </OL>
-     * <p/>
+     * 
      * A user may not have permission to execute any of the functions that are
      * returned by <code>getFunctions</code>
      *
@@ -3760,7 +3760,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Retrieves a description of the given catalog's system or user
      * function parameters and return type.
-     * <p/>
+     * 
      * <P>Only descriptions matching the schema,  function and
      * parameter name criteria are returned. They are ordered by
      * <code>FUNCTION_CAT</code>, <code>FUNCTION_SCHEM</code>,
@@ -3768,17 +3768,17 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <code>SPECIFIC_ NAME</code>. Within this, the return value,
      * if any, is first. Next are the parameter descriptions in call
      * order. The column descriptions follow in column number order.
-     * <p/>
+     * 
      * <P>Each row in the <code>ResultSet</code>
      * is a parameter description, column description or
      * return type description with the following fields:
      * <OL>
-     * <LI><B>FUNCTION_CAT</B> String => function catalog (may be <code>null</code>)
-     * <LI><B>FUNCTION_SCHEM</B> String => function schema (may be <code>null</code>)
-     * <LI><B>FUNCTION_NAME</B> String => function name.  This is the name
+     * <LI><B>FUNCTION_CAT</B> String =&gt; function catalog (may be <code>null</code>)
+     * <LI><B>FUNCTION_SCHEM</B> String =&gt; function schema (may be <code>null</code>)
+     * <LI><B>FUNCTION_NAME</B> String =&gt; function name.  This is the name
      * used to invoke the function
-     * <LI><B>COLUMN_NAME</B> String => column/parameter name
-     * <LI><B>COLUMN_TYPE</B> Short => kind of column/parameter:
+     * <LI><B>COLUMN_NAME</B> String =&gt; column/parameter name
+     * <LI><B>COLUMN_TYPE</B> Short =&gt; kind of column/parameter:
      * <UL>
      * <LI> functionColumnUnknown - nobody knows
      * <LI> functionColumnIn - IN parameter
@@ -3788,30 +3788,30 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> functionColumnResult - Indicates that the parameter or column
      * is a column in the <code>ResultSet</code>
      * </UL>
-     * <LI><B>DATA_TYPE</B> int => SQL type from java.sql.Types
-     * <LI><B>TYPE_NAME</B> String => SQL type name, for a UDT type the
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL type from java.sql.Types
+     * <LI><B>TYPE_NAME</B> String =&gt; SQL type name, for a UDT type the
      * type name is fully qualified
-     * <LI><B>PRECISION</B> int => precision
-     * <LI><B>LENGTH</B> int => length in bytes of data
-     * <LI><B>SCALE</B> short => scale -  null is returned for data types where
+     * <LI><B>PRECISION</B> int =&gt; precision
+     * <LI><B>LENGTH</B> int =&gt; length in bytes of data
+     * <LI><B>SCALE</B> short =&gt; scale -  null is returned for data types where
      * SCALE is not applicable.
-     * <LI><B>RADIX</B> short => radix
-     * <LI><B>NULLABLE</B> short => can it contain NULL.
+     * <LI><B>RADIX</B> short =&gt; radix
+     * <LI><B>NULLABLE</B> short =&gt; can it contain NULL.
      * <UL>
      * <LI> functionNoNulls - does not allow NULL values
      * <LI> functionNullable - allows NULL values
      * <LI> functionNullableUnknown - nullability unknown
      * </UL>
-     * <LI><B>REMARKS</B> String => comment describing column/parameter
-     * <LI><B>CHAR_OCTET_LENGTH</B> int  => the maximum length of binary
+     * <LI><B>REMARKS</B> String =&gt; comment describing column/parameter
+     * <LI><B>CHAR_OCTET_LENGTH</B> int  =&gt; the maximum length of binary
      * and character based parameters or columns.  For any other datatype the returned value
      * is a NULL
-     * <LI><B>ORDINAL_POSITION</B> int  => the ordinal position, starting
+     * <LI><B>ORDINAL_POSITION</B> int  =&gt; the ordinal position, starting
      * from 1, for the input and output parameters. A value of 0
      * is returned if this row describes the function's return value.
      * For result set columns, it is the
      * ordinal position of the column in the result set starting from 1.
-     * <LI><B>IS_NULLABLE</B> String  => ISO rules are used to determine
+     * <LI><B>IS_NULLABLE</B> String  =&gt; ISO rules are used to determine
      * the nullability for a parameter or column.
      * <UL>
      * <LI> YES           --- if the parameter or column can include NULLs
@@ -3819,12 +3819,12 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * <LI> empty string  --- if the nullability for the
      * parameter  or column is unknown
      * </UL>
-     * <LI><B>SPECIFIC_NAME</B> String  => the name which uniquely identifies
+     * <LI><B>SPECIFIC_NAME</B> String  =&gt; the name which uniquely identifies
      * this function within its schema.  This is a user specified, or DBMS
      * generated, name that may be different then the <code>FUNCTION_NAME</code>
      * for example with overload functions
      * </OL>
-     * <p/>
+     * 
      * <p>The PRECISION column represents the specified column size for the given
      * parameter or column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
@@ -3865,36 +3865,36 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * specified in the query's outermost SELECT list. Pseudo or hidden
      * columns may not necessarily be able to be modified. If there are
      * no pseudo or hidden columns, an empty ResultSet is returned.
-     * <p/>
+     * 
      * <P>Only column descriptions matching the catalog, schema, table
      * and column name criteria are returned.  They are ordered by
      * <code>TABLE_CAT</code>,<code>TABLE_SCHEM</code>, <code>TABLE_NAME</code>
      * and <code>COLUMN_NAME</code>.
-     * <p/>
+     * 
      * <P>Each column description has the following columns:
      * <OL>
-     * <LI><B>TABLE_CAT</B> String => table catalog (may be <code>null</code>)
-     * <LI><B>TABLE_SCHEM</B> String => table schema (may be <code>null</code>)
-     * <LI><B>TABLE_NAME</B> String => table name
-     * <LI><B>COLUMN_NAME</B> String => column name
-     * <LI><B>DATA_TYPE</B> int => SQL type from java.sql.Types
-     * <LI><B>COLUMN_SIZE</B> int => column size.
-     * <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits. Null is returned for data types where
+     * <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be <code>null</code>)
+     * <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be <code>null</code>)
+     * <LI><B>TABLE_NAME</B> String =&gt; table name
+     * <LI><B>COLUMN_NAME</B> String =&gt; column name
+     * <LI><B>DATA_TYPE</B> int =&gt; SQL type from java.sql.Types
+     * <LI><B>COLUMN_SIZE</B> int =&gt; column size.
+     * <LI><B>DECIMAL_DIGITS</B> int =&gt; the number of fractional digits. Null is returned for data types where
      * DECIMAL_DIGITS is not applicable.
-     * <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     * <LI><B>COLUMN_USAGE</B> String => The allowed usage for the column.  The
+     * <LI><B>NUM_PREC_RADIX</B> int =&gt; Radix (typically either 10 or 2)
+     * <LI><B>COLUMN_USAGE</B> String =&gt; The allowed usage for the column.  The
      * value returned will correspond to the enum name returned by {@link java.sql.PseudoColumnUsage#name PseudoColumnUsage.name()}
-     * <LI><B>REMARKS</B> String => comment describing column (may be <code>null</code>)
-     * <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     * <LI><B>REMARKS</B> String =&gt; comment describing column (may be <code>null</code>)
+     * <LI><B>CHAR_OCTET_LENGTH</B> int =&gt; for char types the
      * maximum number of bytes in the column
-     * <LI><B>IS_NULLABLE</B> String  => ISO rules are used to determine the nullability for a column.
+     * <LI><B>IS_NULLABLE</B> String  =&gt; ISO rules are used to determine the nullability for a column.
      * <UL>
      * <LI> YES           --- if the column can include NULLs
      * <LI> NO            --- if the column cannot include NULLs
      * <LI> empty string  --- if the nullability for the column is unknown
      * </UL>
      * </OL>
-     * <p/>
+     * 
      * <p>The COLUMN_SIZE column specifies the column size for the given column.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -3945,7 +3945,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     * <p/>
+     * 
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the

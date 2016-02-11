@@ -73,7 +73,7 @@ public class CBResultSet implements java.sql.ResultSet
      * before the first row; the first call to the method
      * <code>next</code> makes the first row the current row; the
      * second call makes the second row the current row, and so on.
-     * <p/>
+     * 
      * When a call to the <code>next</code> method returns <code>false</code>,
      * the cursor is positioned after the last row. Any
      * invocation of a <code>ResultSet</code> method which requires a
@@ -82,7 +82,7 @@ public class CBResultSet implements java.sql.ResultSet
      * whether their JDBC driver implementation will return <code>false</code> or
      * throw an <code>SQLException</code> on a
      * subsequent call to <code>next</code>.
-     * <p/>
+     * 
      * <P>If an input stream is open for the current row, a call
      * to the method <code>next</code> will
      * implicitly close it. A <code>ResultSet</code> object's
@@ -106,27 +106,27 @@ public class CBResultSet implements java.sql.ResultSet
      * Releases this <code>ResultSet</code> object's database and
      * JDBC resources immediately instead of waiting for
      * this to happen when it is automatically closed.
-     * <p/>
+     * 
      * <P>The closing of a <code>ResultSet</code> object does <strong>not</strong> close the <code>Blob</code>,
      * <code>Clob</code> or <code>NClob</code> objects created by the <code>ResultSet</code>. <code>Blob</code>,
      * <code>Clob</code> or <code>NClob</code> objects remain valid for at least the duration of the
      * transaction in which they are created, unless their <code>free</code> method is invoked.
-     * <p/>
+     * 
      * When a <code>ResultSet</code> is closed, any <code>ResultSetMetaData</code>
      * instances that were created by calling the  <code>getMetaData</code>
      * method remain accessible.
-     * <p/>
+     * 
      * <P><B>Note:</B> A <code>ResultSet</code> object
      * is automatically closed by the
      * <code>Statement</code> object that generated it when
      * that <code>Statement</code> object is closed,
      * re-executed, or is used to retrieve the next result from a
      * sequence of multiple results.
-     * <p/>
+     * 
      * Calling the method <code>close</code> on a <code>ResultSet</code>
      * object that is already closed is a no-op.
-     * <p/>
-     * <p/>
+     * 
+     * 
      *
      * @throws java.sql.SQLException if a database access error occurs
      */
@@ -186,7 +186,7 @@ public class CBResultSet implements java.sql.ResultSet
      * Retrieves the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
      * a <code>boolean</code> in the Java programming language.
-     * <p/>
+     * 
      * <P>If the designated column has a datatype of CHAR or VARCHAR
      * and contains a "0" or has a datatype of BIT, TINYINT, SMALLINT, INTEGER or BIGINT
      * and contains  a 0, a value of <code>false</code> is returned.  If the designated column has a datatype
@@ -478,7 +478,7 @@ public class CBResultSet implements java.sql.ResultSet
      * suitable for retrieving large <code>LONGVARCHAR</code> values.
      * The JDBC driver will
      * do any necessary conversion from the database format into ASCII.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream.  Also, a
@@ -511,13 +511,13 @@ public class CBResultSet implements java.sql.ResultSet
      * of this <code>ResultSet</code> object as
      * as a stream of two-byte 3 characters. The first byte is
      * the high byte; the second byte is the low byte.
-     * <p/>
+     * 
      * The value can then be read in chunks from the
      * stream. This method is particularly
      * suitable for retrieving large <code>LONGVARCHAR</code>values.  The
      * JDBC driver will do any necessary conversion from the database
      * format into Unicode.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream.
@@ -555,7 +555,7 @@ public class CBResultSet implements java.sql.ResultSet
      * uninterpreted bytes. The value can then be read in chunks from the
      * stream. This method is particularly
      * suitable for retrieving large <code>LONGVARBINARY</code> values.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream.  Also, a
@@ -641,7 +641,7 @@ public class CBResultSet implements java.sql.ResultSet
      * Retrieves the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
      * a <code>boolean</code> in the Java programming language.
-     * <p/>
+     * 
      * <P>If the designated column has a datatype of CHAR or VARCHAR
      * and contains a "0" or has a datatype of BIT, TINYINT, SMALLINT, INTEGER or BIGINT
      * and contains  a 0, a value of <code>false</code> is returned.  If the designated column has a datatype
@@ -1193,7 +1193,7 @@ public class CBResultSet implements java.sql.ResultSet
      * suitable for retrieving large <code>LONGVARCHAR</code> values.
      * The JDBC driver will
      * do any necessary conversion from the database format into ASCII.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream. Also, a
@@ -1250,13 +1250,13 @@ public class CBResultSet implements java.sql.ResultSet
      * of this <code>ResultSet</code> object as a stream of two-byte
      * Unicode characters. The first byte is the high byte; the second
      * byte is the low byte.
-     * <p/>
+     * 
      * The value can then be read in chunks from the
      * stream. This method is particularly
      * suitable for retrieving large <code>LONGVARCHAR</code> values.
      * The JDBC technology-enabled driver will
      * do any necessary conversion from the database format into Unicode.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream.
@@ -1315,7 +1315,7 @@ public class CBResultSet implements java.sql.ResultSet
      * stream. This method is particularly
      * suitable for retrieving large <code>LONGVARBINARY</code>
      * values.
-     * <p/>
+     * 
      * <P><B>Note:</B> All the data in the returned stream must be
      * read prior to getting the value of any other column. The next
      * call to a getter method implicitly closes the stream. Also, a
@@ -1365,12 +1365,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Subsequent warnings on this <code>ResultSet</code> object
      * will be chained to the <code>SQLWarning</code> object that
      * this method returns.
-     * <p/>
+     * 
      * <P>The warning chain is automatically cleared each time a new
      * row is read.  This method may not be called on a <code>ResultSet</code>
      * object that has been closed; doing so will cause an
      * <code>SQLException</code> to be thrown.
-     * <p/>
+     * 
      * <B>Note:</B> This warning chain only covers warnings caused
      * by <code>ResultSet</code> methods.  Any warning caused by
      * <code>Statement</code> methods
@@ -1422,7 +1422,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves the name of the SQL cursor used by this <code>ResultSet</code>
      * object.
-     * <p/>
+     * 
      * <P>In SQL, a result table is retrieved through a cursor that is
      * named. The current row of a result set can be updated or deleted
      * using a positioned update/delete statement that references the
@@ -1430,7 +1430,7 @@ public class CBResultSet implements java.sql.ResultSet
      * level to support update, the cursor's <code>SELECT</code> statement
      * should be of the form <code>SELECT FOR UPDATE</code>. If
      * <code>FOR UPDATE</code> is omitted, the positioned updates may fail.
-     * <p/>
+     * 
      * <P>The JDBC API supports this SQL feature by providing the name of the
      * SQL cursor used by a <code>ResultSet</code> object.
      * The current row of a <code>ResultSet</code> object
@@ -1465,28 +1465,28 @@ public class CBResultSet implements java.sql.ResultSet
      * <p>Gets the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
      * an <code>Object</code> in the Java programming language.
-     * <p/>
+     * 
      * <p>This method will return the value of the given column as a
      * Java object.  The type of the Java object will be the default
      * Java object type corresponding to the column's SQL type,
      * following the mapping for built-in types specified in the JDBC
      * specification. If the value is an SQL <code>NULL</code>,
      * the driver returns a Java <code>null</code>.
-     * <p/>
+     * 
      * <p>This method may also be used to read database-specific
      * abstract data types.
-     * <p/>
+     * 
      * In the JDBC 2.0 API, the behavior of method
      * <code>getObject</code> is extended to materialize
      * data of SQL user-defined types.
-     * <p/>
+     * 
      * If <code>Connection.getTypeMap</code> does not throw a
      * <code>SQLFeatureNotSupportedException</code>,
      * then when a column contains a structured or distinct value,
      * the behavior of this method is as
      * if it were a call to: <code>getObject(columnIndex,
      * this.getStatement().getConnection().getTypeMap())</code>.
-     * <p/>
+     * 
      * If <code>Connection.getTypeMap</code> does throw a
      * <code>SQLFeatureNotSupportedException</code>,
      * then structured values are not supported, and distinct values
@@ -1515,17 +1515,17 @@ public class CBResultSet implements java.sql.ResultSet
      * <p>Gets the value of the designated column in the current row
      * of this <code>ResultSet</code> object as
      * an <code>Object</code> in the Java programming language.
-     * <p/>
+     * 
      * <p>This method will return the value of the given column as a
      * Java object.  The type of the Java object will be the default
      * Java object type corresponding to the column's SQL type,
      * following the mapping for built-in types specified in the JDBC
      * specification. If the value is an SQL <code>NULL</code>,
      * the driver returns a Java <code>null</code>.
-     * <p/>
+     * 
      * This method may also be used to read database-specific
      * abstract data types.
-     * <p/>
+     * 
      * In the JDBC 2.0 API, the behavior of the method
      * <code>getObject</code> is extended to materialize
      * data of SQL user-defined types.  When a column contains
@@ -1797,7 +1797,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves whether the cursor is before the first row in
      * this <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <strong>Note:</strong>Support for the <code>isBeforeFirst</code> method
      * is optional for <code>ResultSet</code>s with a result
      * set type of <code>TYPE_FORWARD_ONLY</code>
@@ -1820,7 +1820,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves whether the cursor is after the last row in
      * this <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <strong>Note:</strong>Support for the <code>isAfterLast</code> method
      * is optional for <code>ResultSet</code>s with a result
      * set type of <code>TYPE_FORWARD_ONLY</code>
@@ -1843,7 +1843,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves whether the cursor is on the first row of
      * this <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <strong>Note:</strong>Support for the <code>isFirst</code> method
      * is optional for <code>ResultSet</code>s with a result
      * set type of <code>TYPE_FORWARD_ONLY</code>
@@ -1869,7 +1869,7 @@ public class CBResultSet implements java.sql.ResultSet
      * because the JDBC driver
      * might need to fetch ahead one row in order to determine
      * whether the current row is the last row in the result set.
-     * <p/>
+     * 
      * <strong>Note:</strong> Support for the <code>isLast</code> method
      * is optional for <code>ResultSet</code>s with a result
      * set type of <code>TYPE_FORWARD_ONLY</code>
@@ -1977,7 +1977,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves the current row number.  The first row is number 1, the
      * second number 2, and so on.
-     * <p/>
+     * 
      * <strong>Note:</strong>Support for the <code>getRow</code> method
      * is optional for <code>ResultSet</code>s with a result
      * set type of <code>TYPE_FORWARD_ONLY</code>
@@ -1999,26 +1999,26 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Moves the cursor to the given row number in
      * this <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <p>If the row number is positive, the cursor moves to
      * the given row number with respect to the
      * beginning of the result set.  The first row is row 1, the second
      * is row 2, and so on.
-     * <p/>
+     * 
      * <p>If the given row number is negative, the cursor moves to
      * an absolute row position with respect to
      * the end of the result set.  For example, calling the method
      * <code>absolute(-1)</code> positions the
      * cursor on the last row; calling the method <code>absolute(-2)</code>
      * moves the cursor to the next-to-last row, and so on.
-     * <p/>
+     * 
      * <p>If the row number specified is zero, the cursor is moved to
      * before the first row.
-     * <p/>
+     * 
      * <p>An attempt to position the cursor beyond the first/last row in
      * the result set leaves the cursor before the first row or after
      * the last row.
-     * <p/>
+     * 
      * <p><B>Note:</B> Calling <code>absolute(1)</code> is the same
      * as calling <code>first()</code>. Calling <code>absolute(-1)</code>
      * is the same as calling <code>last()</code>.
@@ -2051,7 +2051,7 @@ public class CBResultSet implements java.sql.ResultSet
      * result set positions the cursor before/after the
      * the first/last row. Calling <code>relative(0)</code> is valid, but does
      * not change the cursor position.
-     * <p/>
+     * 
      * <p>Note: Calling the method <code>relative(1)</code>
      * is identical to calling the method <code>next()</code> and
      * calling the method <code>relative(-1)</code> is identical
@@ -2078,16 +2078,16 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Moves the cursor to the previous row in this
      * <code>ResultSet</code> object.
-     * <p/>
+     * 
      * When a call to the <code>previous</code> method returns <code>false</code>,
      * the cursor is positioned before the first row.  Any invocation of a
      * <code>ResultSet</code> method which requires a current row will result in a
      * <code>SQLException</code> being thrown.
-     * <p/>
+     * 
      * If an input stream is open for the current row, a call to the method
      * <code>previous</code> will implicitly close it.  A <code>ResultSet</code>
      * object's warning change is cleared when a new row is read.
-     * <p/>
+     * 
      *
      * @return <code>true</code> if the cursor is now positioned on a valid row;
      * <code>false</code> if the cursor is positioned before the first row
@@ -2166,7 +2166,7 @@ public class CBResultSet implements java.sql.ResultSet
      * @param rows the number of rows to fetch
      * @throws java.sql.SQLException if a database access error occurs; this method
      *                               is called on a closed result set or the
-     *                               condition <code>rows >= 0 </code> is not satisfied
+     *                               condition <code>rows &gt;= 0 </code> is not satisfied
      * @see #getFetchSize
      * @since 1.2
      */
@@ -2235,7 +2235,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Retrieves whether the current row has been updated.  The value returned
      * depends on whether or not the result set can detect updates.
-     * <p/>
+     * 
      * <strong>Note:</strong> Support for the <code>rowUpdated</code> method is optional with a result set
      * concurrency of <code>CONCUR_READ_ONLY</code>
      *
@@ -2258,7 +2258,7 @@ public class CBResultSet implements java.sql.ResultSet
      * Retrieves whether the current row has had an insertion.
      * The value returned depends on whether or not this
      * <code>ResultSet</code> object can detect visible inserts.
-     * <p/>
+     * 
      * <strong>Note:</strong> Support for the <code>rowInserted</code> method is optional with a result set
      * concurrency of <code>CONCUR_READ_ONLY</code>
      *
@@ -2282,7 +2282,7 @@ public class CBResultSet implements java.sql.ResultSet
      * a visible "hole" in a result set.  This method can be used to
      * detect holes in a result set.  The value returned depends on whether
      * or not this <code>ResultSet</code> object can detect deletions.
-     * <p/>
+     * 
      * <strong>Note:</strong> Support for the <code>rowDeleted</code> method is optional with a result set
      * concurrency of <code>CONCUR_READ_ONLY</code>
      *
@@ -2304,7 +2304,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     /**
      * Updates the designated column with a <code>null</code> value.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code>
@@ -2707,7 +2707,7 @@ public class CBResultSet implements java.sql.ResultSet
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * If the second argument is an <code>InputStream</code> then the stream must contain
      * the number of bytes specified by scaleOrLength.  If the second argument is a
      * <code>Reader</code> then the reader must contain the number of characters specified
@@ -3015,7 +3015,7 @@ public class CBResultSet implements java.sql.ResultSet
 
     /**
      * Updates the designated column with a byte array value.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code>
@@ -3189,7 +3189,7 @@ public class CBResultSet implements java.sql.ResultSet
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * If the second argument is an <code>InputStream</code> then the stream must contain
      * the number of bytes specified by scaleOrLength.  If the second argument is a
      * <code>Reader</code> then the reader must contain the number of characters specified
@@ -3304,7 +3304,7 @@ public class CBResultSet implements java.sql.ResultSet
      * Refreshes the current row with its most recent value in
      * the database.  This method cannot be called when
      * the cursor is on the insert row.
-     * <p/>
+     * 
      * <P>The <code>refreshRow</code> method provides a way for an
      * application to
      * explicitly tell the JDBC driver to refetch a row(s) from the
@@ -3313,7 +3313,7 @@ public class CBResultSet implements java.sql.ResultSet
      * fetch the latest value of a row from the database.  The JDBC driver
      * may actually refresh multiple rows at once if the fetch size is
      * greater than one.
-     * <p/>
+     * 
      * <P> All values are refetched subject to the transaction isolation
      * level and cursor sensitivity.  If <code>refreshRow</code> is called after
      * calling an updater method, but before calling
@@ -3364,12 +3364,12 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Moves the cursor to the insert row.  The current cursor position is
      * remembered while the cursor is positioned on the insert row.
-     * <p/>
+     * 
      * The insert row is a special row associated with an updatable
      * result set.  It is essentially a buffer where a new row may
      * be constructed by calling the updater methods prior to
      * inserting the row into the result set.
-     * <p/>
+     * 
      * Only the updater, getter,
      * and <code>insertRow</code> methods may be
      * called when the cursor is on the insert row.  All of the columns in
@@ -4576,7 +4576,7 @@ public class CBResultSet implements java.sql.ResultSet
      * row. The updater methods do not update the underlying database; instead
      * the <code>updateRow</code> or <code>insertRow</code> methods are called
      * to update the database.
-     * <p/>
+     * 
      *
      * @param columnIndex the first column is 1, the second 2, ...
      * @param xmlObject   the value for the column to be updated
@@ -4607,7 +4607,7 @@ public class CBResultSet implements java.sql.ResultSet
      * row. The updater methods do not update the underlying database; instead
      * the <code>updateRow</code> or <code>insertRow</code> methods are called
      * to update the database.
-     * <p/>
+     * 
      *
      * @param columnLabel the label for the column specified with the SQL AS clause.  If the SQL AS clause was not specified, then the label is the name of the column
      * @param xmlObject   the column value
@@ -4750,7 +4750,7 @@ public class CBResultSet implements java.sql.ResultSet
      * It is intended for use when
      * updating  <code>NCHAR</code>,<code>NVARCHAR</code>
      * and <code>LONGNVARCHAR</code> columns.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4780,7 +4780,7 @@ public class CBResultSet implements java.sql.ResultSet
      * It is intended for use when
      * updating  <code>NCHAR</code>,<code>NVARCHAR</code>
      * and <code>LONGNVARCHAR</code> columns.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4806,7 +4806,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with an ascii stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4832,7 +4832,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with a binary stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4858,7 +4858,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with a character stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4884,7 +4884,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with an ascii stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4910,7 +4910,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with a binary stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4936,7 +4936,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column with a character stream value, which will have
      * the specified number of bytes.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4963,8 +4963,8 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column using the given input stream, which
      * will have the specified number of bytes.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -4991,8 +4991,8 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column using the given input stream, which
      * will have the specified number of bytes.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -5023,8 +5023,8 @@ public class CBResultSet implements java.sql.ResultSet
      * parameter, it may be more practical to send it via a
      * <code>java.io.Reader</code> object. The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -5054,8 +5054,8 @@ public class CBResultSet implements java.sql.ResultSet
      * parameter, it may be more practical to send it via a
      * <code>java.io.Reader</code> object.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -5085,8 +5085,8 @@ public class CBResultSet implements java.sql.ResultSet
      * parameter, it may be more practical to send it via a
      * <code>java.io.Reader</code> object. The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -5118,8 +5118,8 @@ public class CBResultSet implements java.sql.ResultSet
      * parameter, it may be more practical to send it via a
      * <code>java.io.Reader</code> object. The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
@@ -5153,12 +5153,12 @@ public class CBResultSet implements java.sql.ResultSet
      * It is intended for use when
      * updating  <code>NCHAR</code>,<code>NVARCHAR</code>
      * and <code>LONGNVARCHAR</code> columns.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateNCharacterStream</code> which takes a length parameter.
@@ -5187,12 +5187,12 @@ public class CBResultSet implements java.sql.ResultSet
      * It is intended for use when
      * updating  <code>NCHAR</code>,<code>NVARCHAR</code>
      * and <code>LONGNVARCHAR</code> columns.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateNCharacterStream</code> which takes a length parameter.
@@ -5217,12 +5217,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with an ascii stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateAsciiStream</code> which takes a length parameter.
@@ -5248,12 +5248,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with a binary stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateBinaryStream</code> which takes a length parameter.
@@ -5278,12 +5278,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with a character stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateCharacterStream</code> which takes a length parameter.
@@ -5308,12 +5308,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with an ascii stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateAsciiStream</code> which takes a length parameter.
@@ -5338,12 +5338,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with a binary stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateBinaryStream</code> which takes a length parameter.
@@ -5369,12 +5369,12 @@ public class CBResultSet implements java.sql.ResultSet
      * Updates the designated column with a character stream value.
      * The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateCharacterStream</code> which takes a length parameter.
@@ -5398,12 +5398,12 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column using the given input stream. The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateBlob</code> which takes a length parameter.
@@ -5427,12 +5427,12 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Updates the designated column using the given input stream. The data will be read from the stream
      * as needed until end-of-stream is reached.
-     * <p/>
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateBlob</code> which takes a length parameter.
@@ -5459,13 +5459,13 @@ public class CBResultSet implements java.sql.ResultSet
      * The data will be read from the stream
      * as needed until end-of-stream is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateClob</code> which takes a length parameter.
@@ -5492,13 +5492,13 @@ public class CBResultSet implements java.sql.ResultSet
      * The data will be read from the stream
      * as needed until end-of-stream is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateClob</code> which takes a length parameter.
@@ -5520,17 +5520,17 @@ public class CBResultSet implements java.sql.ResultSet
 
     /**
      * Updates the designated column using the given <code>Reader</code>
-     * <p/>
+     * 
      * The data will be read from the stream
      * as needed until end-of-stream is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateNClob</code> which takes a length parameter.
@@ -5559,13 +5559,13 @@ public class CBResultSet implements java.sql.ResultSet
      * The data will be read from the stream
      * as needed until end-of-stream is reached.  The JDBC driver will
      * do any necessary conversion from UNICODE to the database char format.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * The updater methods are used to update column values in the
      * current row or the insert row.  The updater methods do not
      * update the underlying database; instead the <code>updateRow</code> or
      * <code>insertRow</code> methods are called to update the database.
-     * <p/>
+     * 
      * <P><B>Note:</B> Consult your JDBC driver documentation to determine if
      * it might be more efficient to use a version of
      * <code>updateNClob</code> which takes a length parameter.
@@ -5594,7 +5594,7 @@ public class CBResultSet implements java.sql.ResultSet
      * conversion is supported. If the conversion is not
      * supported  or null is specified for the type, a
      * <code>SQLException</code> is thrown.
-     * <p/>
+     * 
      * At a minimum, an implementation must support the conversions defined in
      * Appendix B, Table B-3 and conversion of appropriate user defined SQL
      * types to a Java type which implements {@code SQLData}, or {@code Struct}.
@@ -5628,7 +5628,7 @@ public class CBResultSet implements java.sql.ResultSet
      * conversion is supported. If the conversion is not
      * supported  or null is specified for the type, a
      * <code>SQLException</code> is thrown.
-     * <p/>
+     * 
      * At a minimum, an implementation must support the conversions defined in
      * Appendix B, Table B-3 and conversion of appropriate user defined SQL
      * types to a Java type which implements {@code SQLData}, or {@code Struct}.
@@ -5672,7 +5672,7 @@ public class CBResultSet implements java.sql.ResultSet
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     * <p/>
+     * 
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the

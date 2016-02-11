@@ -102,7 +102,7 @@ public class CBConnection implements java.sql.Connection
      * executed using <code>Statement</code> objects. If the same SQL statement
      * is executed many times, it may be more efficient to use a
      * <code>PreparedStatement</code> object.
-     * <p/>
+     * 
      * Result sets created using the returned <code>Statement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -123,13 +123,13 @@ public class CBConnection implements java.sql.Connection
     /**
      * Creates a <code>PreparedStatement</code> object for sending
      * parameterized SQL statements to the database.
-     * <p/>
+     * 
      * A SQL statement with or without IN parameters can be
      * pre-compiled and stored in a <code>PreparedStatement</code> object. This
      * object can then be used to efficiently execute this statement
      * multiple times.
-     * <p/>
-     * <P><B>Note:</B> This method is optimized for handling
+     * 
+     * <B>Note:</B> This method is optimized for handling
      * parametric SQL statements that benefit from precompilation. If
      * the driver supports precompilation,
      * the method <code>prepareStatement</code> will send
@@ -138,7 +138,7 @@ public class CBConnection implements java.sql.Connection
      * not be sent to the database until the <code>PreparedStatement</code>
      * object is executed.  This has no direct effect on users; however, it does
      * affect which methods throw certain <code>SQLException</code> objects.
-     * <p/>
+     * 
      * Result sets created using the returned <code>PreparedStatement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -165,8 +165,8 @@ public class CBConnection implements java.sql.Connection
      * The <code>CallableStatement</code> object provides
      * methods for setting up its IN and OUT parameters, and
      * methods for executing the call to a stored procedure.
-     * <p/>
-     * <P><B>Note:</B> This method is optimized for handling stored
+     * 
+     * <B>Note:</B> This method is optimized for handling stored
      * procedure call statements. Some drivers may send the call
      * statement to the database when the method <code>prepareCall</code>
      * is done; others
@@ -174,7 +174,7 @@ public class CBConnection implements java.sql.Connection
      * is executed. This has no
      * direct effect on users; however, it does affect which method
      * throws certain SQLExceptions.
-     * <p/>
+     * 
      * Result sets created using the returned <code>CallableStatement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -225,7 +225,7 @@ public class CBConnection implements java.sql.Connection
      * the method <code>commit</code> or the method <code>rollback</code>.
      * By default, new connections are in auto-commit
      * mode.
-     * <p/>
+     * 
      * The commit occurs when the statement completes. The time when the statement
      * completes depends on the type of SQL Statement:
      * <ul>
@@ -238,7 +238,7 @@ public class CBConnection implements java.sql.Connection
      * when all of the associated result sets have been closed, and all update
      * counts and output parameters have been retrieved.
      * </ul>
-     * <p/>
+     * 
      * <B>NOTE:</B>  If this method is called during a transaction and the
      * auto-commit mode is changed, the transaction is committed.  If
      * <code>setAutoCommit</code> is called and the auto-commit mode is
@@ -315,15 +315,15 @@ public class CBConnection implements java.sql.Connection
     /**
      * Releases this <code>Connection</code> object's database and JDBC resources
      * immediately instead of waiting for them to be automatically released.
-     * <p/>
+     * 
      * Calling the method <code>close</code> on a <code>Connection</code>
      * object that is already closed is a no-op.
-     * <p/>
+     * 
      * It is <b>strongly recommended</b> that an application explicitly
      * commits or rolls back an active transaction prior to calling the
      * <code>close</code> method.  If the <code>close</code> method is called
      * and there is an active transaction, the results are implementation-defined.
-     * <p/>
+     * 
      *
      * @throws java.sql.SQLException SQLException if a database access error occurs
      */
@@ -353,7 +353,7 @@ public class CBConnection implements java.sql.Connection
      * This method is guaranteed to return <code>true</code> only when
      * it is called after the method <code>Connection.close</code> has
      * been called.
-     * <p/>
+     * 
      * This method generally cannot be called to determine whether a
      * connection to a database is valid or invalid.  A typical client
      * can determine that a connection is invalid by catching any
@@ -392,8 +392,8 @@ public class CBConnection implements java.sql.Connection
     /**
      * Puts this connection in read-only mode as a hint to the driver to enable
      * database optimizations.
-     * <p/>
-     * <P><B>Note:</B> This method cannot be called during a transaction.
+     * 
+     * <B>Note:</B> This method cannot be called during a transaction.
      *
      * @param readOnly <code>true</code> enables read-only mode;
      *                 <code>false</code> disables it
@@ -428,10 +428,10 @@ public class CBConnection implements java.sql.Connection
      * Sets the given catalog name in order to select
      * a subspace of this <code>Connection</code> object's database
      * in which to work.
-     * <p/>
+     * 
      * If the driver does not support catalogs, it will
      * silently ignore this request.
-     * <p/>
+     * 
      * Calling {@code setCatalog} has no effect on previously created or prepared
      * {@code Statement} objects. It is implementation defined whether a DBMS
      * prepare operation takes place immediately when the {@code Connection}
@@ -473,7 +473,7 @@ public class CBConnection implements java.sql.Connection
      * <code>Connection</code> object to the one given.
      * The constants defined in the interface <code>Connection</code>
      * are the possible transaction isolation levels.
-     * <p/>
+     * 
      * <B>Note:</B> If this method is called during a transaction, the result
      * is implementation-defined.
      *
@@ -539,12 +539,12 @@ public class CBConnection implements java.sql.Connection
      * and can be retrieved by calling the method
      * <code>SQLWarning.getNextWarning</code> on the warning
      * that was retrieved previously.
-     * <p/>
+     * 
      * This method may not be
      * called on a closed connection; doing so will cause an
      * <code>SQLException</code> to be thrown.
-     * <p/>
-     * <P><B>Note:</B> Subsequent warnings will be chained to this
+     * 
+     * <B>Note:</B> Subsequent warnings will be chained to this
      * SQLWarning.
      *
      * @return the first <code>SQLWarning</code> object or <code>null</code>
@@ -698,12 +698,12 @@ public class CBConnection implements java.sql.Connection
      * <code>Connection</code> object.
      * Unless the application has added an entry, the type map returned
      * will be empty.
-     * <p/>
+     * 
      * You must invoke <code>setTypeMap</code> after making changes to the
      * <code>Map</code> object returned from
      * <code>getTypeMap</code> as a JDBC driver may create an internal
      * copy of the <code>Map</code> object passed to <code>setTypeMap</code>:
-     * <p/>
+     * 
      * <pre>
      *      Map&lt;String,Class&lt;?&gt;&gt; myMap = con.getTypeMap();
      *      myMap.put("mySchemaName.ATHLETES", Athletes.class);
@@ -730,11 +730,11 @@ public class CBConnection implements java.sql.Connection
      * Installs the given <code>TypeMap</code> object as the type map for
      * this <code>Connection</code> object.  The type map will be used for the
      * custom mapping of SQL structured types and distinct types.
-     * <p/>
+     * 
      * You must set the the values for the <code>TypeMap</code> prior to
      * callng <code>setMap</code> as a JDBC driver may create an internal copy
      * of the <code>TypeMap</code>:
-     * <p/>
+     * 
      * <pre>
      *      Map myMap&lt;String,Class&lt;?&gt;&gt; = new HashMap&lt;String,Class&lt;?&gt;&gt;();
      *      myMap.put("mySchemaName.ATHLETES", Athletes.class);
@@ -811,8 +811,8 @@ public class CBConnection implements java.sql.Connection
     /**
      * Creates an unnamed savepoint in the current transaction and
      * returns the new <code>Savepoint</code> object that represents it.
-     * <p/>
-     * <p> if setSavepoint is invoked outside of an active transaction, a transaction will be started at this newly created
+     * 
+     *  if setSavepoint is invoked outside of an active transaction, a transaction will be started at this newly created
      * savepoint.
      *
      * @return the new <code>Savepoint</code> object
@@ -836,8 +836,8 @@ public class CBConnection implements java.sql.Connection
     /**
      * Creates a savepoint with the given name in the current transaction
      * and returns the new <code>Savepoint</code> object that represents it.
-     * <p/>
-     * <p> if setSavepoint is invoked outside of an active transaction, a transaction will be started at this newly created
+     * 
+     *  if setSavepoint is invoked outside of an active transaction, a transaction will be started at this newly created
      * savepoint.
      *
      * @param name a <code>String</code> containing the name of the savepoint
@@ -862,7 +862,7 @@ public class CBConnection implements java.sql.Connection
     /**
      * Undoes all changes made after the given <code>Savepoint</code> object
      * was set.
-     * <p/>
+     * 
      * This method should be used only when auto-commit has been disabled.
      *
      * @param savepoint the <code>Savepoint</code> object to roll back to
@@ -951,7 +951,7 @@ public class CBConnection implements java.sql.Connection
      * Creates a <code>PreparedStatement</code> object that will generate
      * <code>ResultSet</code> objects with the given type, concurrency,
      * and holdability.
-     * <p/>
+     * 
      * This method is the same as the <code>prepareStatement</code> method
      * above, but it allows the default result set
      * type, concurrency, and holdability to be overridden.
@@ -1043,7 +1043,7 @@ public class CBConnection implements java.sql.Connection
      * available for retrieval.  This parameter is ignored if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * <B>Note:</B> This method is optimized for handling
      * parametric SQL statements that benefit from precompilation. If
      * the driver supports precompilation,
@@ -1053,7 +1053,7 @@ public class CBConnection implements java.sql.Connection
      * not be sent to the database until the <code>PreparedStatement</code>
      * object is executed.  This has no direct effect on users; however, it does
      * affect which methods throw certain SQLExceptions.
-     * <p/>
+     * 
      * Result sets created using the returned <code>PreparedStatement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -1093,12 +1093,12 @@ public class CBConnection implements java.sql.Connection
      * available.  The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * An SQL statement with or without IN parameters can be
      * pre-compiled and stored in a <code>PreparedStatement</code> object. This
      * object can then be used to efficiently execute this statement
      * multiple times.
-     * <p/>
+     * 
      * <B>Note:</B> This method is optimized for handling
      * parametric SQL statements that benefit from precompilation. If
      * the driver supports precompilation,
@@ -1108,7 +1108,7 @@ public class CBConnection implements java.sql.Connection
      * not be sent to the database until the <code>PreparedStatement</code>
      * object is executed.  This has no direct effect on users; however, it does
      * affect which methods throw certain SQLExceptions.
-     * <p/>
+     * 
      * Result sets created using the returned <code>PreparedStatement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -1144,12 +1144,12 @@ public class CBConnection implements java.sql.Connection
      * The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * An SQL statement with or without IN parameters can be
      * pre-compiled and stored in a <code>PreparedStatement</code> object. This
      * object can then be used to efficiently execute this statement
      * multiple times.
-     * <p/>
+     * 
      * <B>Note:</B> This method is optimized for handling
      * parametric SQL statements that benefit from precompilation. If
      * the driver supports precompilation,
@@ -1159,7 +1159,7 @@ public class CBConnection implements java.sql.Connection
      * not be sent to the database until the <code>PreparedStatement</code>
      * object is executed.  This has no direct effect on users; however, it does
      * affect which methods throw certain SQLExceptions.
-     * <p/>
+     * 
      * Result sets created using the returned <code>PreparedStatement</code>
      * object will by default be type <code>TYPE_FORWARD_ONLY</code>
      * and have a concurrency level of <code>CONCUR_READ_ONLY</code>.
@@ -1277,7 +1277,7 @@ public class CBConnection implements java.sql.Connection
      * The driver shall submit a query on the connection or use some other
      * mechanism that positively verifies the connection is still valid when
      * this method is called.
-     * <p/>
+     * 
      * The query submitted by the driver to validate the connection shall be
      * executed in the context of the current transaction.
      *
@@ -1287,13 +1287,13 @@ public class CBConnection implements java.sql.Connection
      *                completes, this method returns false.  A value of
      *                0 indicates a timeout is not applied to the
      *                database operation.
-     *                <p/>
+     *                
      * @return true if the connection is valid, false otherwise
      * @throws java.sql.SQLException if the value supplied for <code>timeout</code>
      *                               is less then 0
      * @see java.sql.DatabaseMetaData#getClientInfoProperties
      * @since 1.6
-     * <p/>
+     * 
      */
     @Override
     public boolean isValid(int timeout) throws SQLException
@@ -1305,11 +1305,11 @@ public class CBConnection implements java.sql.Connection
     /**
      * Sets the value of the client info property specified by name to the
      * value specified by value.
-     * <p/>
+     * 
      * Applications may use the <code>DatabaseMetaData.getClientInfoProperties</code>
      * method to determine the client info properties supported by the driver
      * and the maximum length that may be specified for each property.
-     * <p/>
+     * 
      * The driver stores the value specified in a suitable location in the
      * database.  For example in a special register, session parameter, or
      * system table column.  For efficiency the driver may defer setting the
@@ -1318,21 +1318,21 @@ public class CBConnection implements java.sql.Connection
      * place in the database, these methods shall not alter the behavior of
      * the connection in anyway.  The values supplied to these methods are
      * used for accounting, diagnostics and debugging purposes only.
-     * <p/>
+     * 
      * The driver shall generate a warning if the client info name specified
      * is not recognized by the driver.
-     * <p/>
+     * 
      * If the value specified to this method is greater than the maximum
      * length for the property the driver may either truncate the value and
      * generate a warning or generate a <code>SQLClientInfoException</code>.  If the driver
      * generates a <code>SQLClientInfoException</code>, the value specified was not set on the
      * connection.
-     * <p/>
+     * 
      * The following are standard client info properties.  Drivers are not
      * required to support these properties however if the driver supports a
      * client info property that can be described by one of the standard
      * properties, the standard property name should be used.
-     * <p/>
+     * 
      * <ul>
      * <li>ApplicationName  -       The name of the application currently utilizing
      * the connection</li>
@@ -1343,17 +1343,17 @@ public class CBConnection implements java.sql.Connection
      * <li>ClientHostname   -       The hostname of the computer the application
      * using the connection is running on.</li>
      * </ul>
-     * <p/>
+     * 
      *
      * @param name  The name of the client info property to set
      * @param value The value to set the client info property to.  If the
      *              value is null, the current value of the specified
      *              property is cleared.
-     *              <p/>
+     *              
      * @throws java.sql.SQLClientInfoException if the database server returns an error while
      *                                         setting the client info value on the database server or this method
      *                                         is called on a closed connection
-     *                                         <p/>
+     *                                         
      * @since 1.6
      */
     @Override
@@ -1372,7 +1372,7 @@ public class CBConnection implements java.sql.Connection
      * cleared.  Specifying an empty properties list will clear all of the
      * properties on the connection.  See <code>setClientInfo (String, String)</code> for
      * more information.
-     * <p/>
+     * 
      * If an error occurs in setting any of the client info properties, a
      * <code>SQLClientInfoException</code> is thrown. The <code>SQLClientInfoException</code>
      * contains information indicating which client info properties were not set.
@@ -1380,17 +1380,17 @@ public class CBConnection implements java.sql.Connection
      * some databases do not allow multiple client info properties to be set
      * atomically.  For those databases, one or more properties may have been
      * set before the error occurred.
-     * <p/>
+     * 
      *
      * @param properties the list of client info properties to set
-     *                   <p/>
+     *                   
      * @throws java.sql.SQLClientInfoException if the database server returns an error while
      *                                         setting the clientInfo values on the database server or this method
      *                                         is called on a closed connection
-     *                                         <p/>
+     *                                         
      * @see java.sql.Connection#setClientInfo(String, String) setClientInfo(String, String)
      * @since 1.6
-     * <p/>
+     * 
      */
     @Override
     public void setClientInfo(Properties properties) throws SQLClientInfoException
@@ -1404,22 +1404,22 @@ public class CBConnection implements java.sql.Connection
      * been set and does not have a default value.  This method will also
      * return null if the specified client info property name is not supported
      * by the driver.
-     * <p/>
+     * 
      * Applications may use the <code>DatabaseMetaData.getClientInfoProperties</code>
      * method to determine the client info properties supported by the driver.
-     * <p/>
+     * 
      *
      * @param name The name of the client info property to retrieve
-     *             <p/>
+     *             
      * @return The value of the client info property specified
-     * <p/>
+     * 
      * @throws java.sql.SQLException if the database server returns an error when
      *                               fetching the client info value from the database
      *                               or this method is called on a closed connection
-     *                               <p/>
+     *                               
      * @see java.sql.DatabaseMetaData#getClientInfoProperties
      * @since 1.6
-     * <p/>
+     * 
      */
     @Override
     public String getClientInfo(String name) throws SQLException
@@ -1432,15 +1432,15 @@ public class CBConnection implements java.sql.Connection
      * property supported by the driver.  The value of a client info property
      * may be null if the property has not been set and does not have a
      * default value.
-     * <p/>
+     * 
      *
      * @return A <code>Properties</code> object that contains the name and current value of
      * each of the client info properties supported by the driver.
-     * <p/>
+     * 
      * @throws java.sql.SQLException if the database server returns an error when
      *                               fetching the client info values from the database
      *                               or this method is called on a closed connection
-     *                               <p/>
+     *                               
      * @since 1.6
      */
     @Override
@@ -1451,12 +1451,12 @@ public class CBConnection implements java.sql.Connection
 
     /**
      * Factory method for creating Array objects.
-     * <p/>
+     * 
      * <b>Note: </b>When <code>createArrayOf</code> is used to create an array object
      * that maps to a primitive data type, then it is implementation-defined
      * whether the <code>Array</code> object is an array of that primitive
      * data type or an array of <code>Object</code>.
-     * <p/>
+     * 
      * <b>Note: </b>The JDBC driver is responsible for mapping the elements
      * <code>Object</code> array to the default JDBC SQL type defined in
      * java.sql.Types for the given class of <code>Object</code>. The default
@@ -1504,10 +1504,10 @@ public class CBConnection implements java.sql.Connection
 
     /**
      * Sets the given schema name to access.
-     * <p/>
+     * 
      * If the driver does not support schemas, it will
      * silently ignore this request.
-     * <p/>
+     * 
      * Calling {@code setSchema} has no effect on previously created or prepared
      * {@code Statement} objects. It is implementation defined whether a DBMS
      * prepare operation takes place immediately when the {@code Connection}
@@ -1553,17 +1553,17 @@ public class CBConnection implements java.sql.Connection
      * <li>Insures that any thread that is currently accessing the connection
      * will either progress to completion or throw an <code>SQLException</code>.
      * </ul>
-     * <p/>
+     * 
      * Calling <code>abort</code> marks the connection closed and releases any
      * resources. Calling <code>abort</code> on a closed connection is a
      * no-op.
-     * <p/>
+     * 
      * It is possible that the aborting and releasing of the resources that are
      * held by the connection can take an extended period of time.  When the
      * <code>abort</code> method returns, the connection will have been marked as
      * closed and the <code>Executor</code> that was passed as a parameter to abort
      * may still be executing tasks to release resources.
-     * <p/>
+     * 
      * This method checks to see that there is an <code>SQLPermission</code>
      * object before allowing the method to proceed.  If a
      * <code>SecurityManager</code> exists and its
@@ -1599,7 +1599,7 @@ public class CBConnection implements java.sql.Connection
      * the objects, with the exception of the <code>close</code>,
      * <code>isClosed</code> or <code>Connection.isValid</code>
      * methods, will result in  a <code>SQLException</code>.
-     * <p/>
+     * 
      * <b>Note</b>: This method is intended to address a rare but serious
      * condition where network partitions can cause threads issuing JDBC calls
      * to hang uninterruptedly in socket reads, until the OS TCP-TIMEOUT
@@ -1612,23 +1612,23 @@ public class CBConnection implements java.sql.Connection
      * connection. This method is severe in it's effects, and should be
      * given a high enough value so it is never triggered before any more
      * normal timeouts, such as transaction timeouts.
-     * <p/>
+     * 
      * JDBC driver implementations  may also choose to support the
      * {@code setNetworkTimeout} method to impose a limit on database
      * response time, in environments where no network is present.
-     * <p/>
+     * 
      * Drivers may internally implement some or all of their API calls with
      * multiple internal driver-database transmissions, and it is left to the
      * driver implementation to determine whether the limit will be
      * applied always to the response to the API call, or to any
      * single  request made during the API call.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * This method can be invoked more than once, such as to set a limit for an
      * area of JDBC code, and to reset to the default on exit from this area.
      * Invocation of this method has no impact on already outstanding
      * requests.
-     * <p/>
+     * 
      * The {@code Statement.setQueryTimeout()} timeout value is independent of the
      * timeout value specified in {@code setNetworkTimeout}. If the query timeout
      * expires  before the network timeout then the
@@ -1639,12 +1639,12 @@ public class CBConnection implements java.sql.Connection
      * problems, the connection will be marked as closed, any resources held by
      * the connection will be released and both the connection and
      * statement will be unusable.
-     * <p/>
+     * 
      * When the driver determines that the {@code setNetworkTimeout} timeout
      * value has expired, the JDBC driver marks the connection
      * closed and releases any resources held by the connection.
-     * <p/>
-     * <p/>
+     * 
+     * 
      * This method checks to see that there is an <code>SQLPermission</code>
      * object before allowing the method to proceed.  If a
      * <code>SecurityManager</code> exists and its
@@ -1709,7 +1709,7 @@ public class CBConnection implements java.sql.Connection
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     * <p/>
+     * 
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the
@@ -1721,7 +1721,7 @@ public class CBConnection implements java.sql.Connection
      * @param iface A Class defining an interface that the result must implement.
      * @return an object that implements the interface. May be a proxy for the actual implementing object.
      * @throws java.sql.SQLException If no object found that implements the interface
-     * @since 1.6
+     * @since 1.6131G
      */
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException

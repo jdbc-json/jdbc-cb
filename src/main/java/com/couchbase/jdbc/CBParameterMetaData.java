@@ -74,7 +74,7 @@ public class CBParameterMetaData implements ParameterMetaData
 
     /**
      * Retrieves the designated parameter's specified column size.
-     * <p/>
+     * 
      * <P>The returned value represents the maximum column size for the given parameter.
      * For numeric data, this is the maximum precision.  For character data, this is the length in characters.
      * For datetime datatypes, this is the length in characters of the String representation (assuming the
@@ -114,7 +114,7 @@ public class CBParameterMetaData implements ParameterMetaData
      * @param param the first parameter is 1, the second is 2, ...
      * @return SQL type from <code>java.sql.Types</code>
      * @throws SQLException if a database access error occurs
-     * @see Types
+     * @see java.sql.Types
      * @since 1.4
      */
     @Override
@@ -178,7 +178,7 @@ public class CBParameterMetaData implements ParameterMetaData
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     * <p/>
+     * 
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the

@@ -95,6 +95,7 @@ public class StatementTest extends CouchBaseTestCase
             assertTrue(resultSet.getInt(1)>0);
         }
 
+// A known problem, assigned issue #16.
 //        boolean hasResultSet = statement.execute("update default set default=0 returning default");
 //        if ( hasResultSet )
 //        {

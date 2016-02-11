@@ -81,7 +81,7 @@ public interface SQLJSON
     Object getObject() throws SQLException;
     void setObject(Object val) throws SQLException;
 
-    /**
+    /*
      *
      * @param columnName
      * @return  if the SQLJSON object is a JSON object.
@@ -91,7 +91,7 @@ public interface SQLJSON
     Object getObject(String columnName) throws SQLException;
 
 
-    /**
+    /*
      *
      * Set the given object with the given fieldName, if the SQLJSON object is a JSON object.
      * @param columnName
@@ -101,7 +101,7 @@ public interface SQLJSON
     void setObject(String columnName, Object val) throws SQLException;
 
 
-    /**
+    /*
      * Return the object at the given index, if the SQLJSON object is a JSON array.
      * Return NULL if the SQLJSON object is not a JSON array
      * or if the SQLJSON object is a JSON array and does not have an element at the given index.
@@ -111,11 +111,10 @@ public interface SQLJSON
      */
     Object get(int index) ;
 
-    /**
+    /*
      * Set the given index with the given element, if the SQLJSON object is a JSON array.
      *
      * @param index
-     * @return
      */
     void set(int index, Object object) throws SQLException;
     boolean isNull() throws SQLException;

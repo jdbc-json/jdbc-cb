@@ -48,7 +48,7 @@ public class CBStatement implements java.sql.Statement
     /**
      * Executes the given SQL statement, which returns a single
      * <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -79,7 +79,7 @@ public class CBStatement implements java.sql.Statement
      * Executes the given SQL statement, which may be an <code>INSERT</code>,
      * <code>UPDATE</code>, or <code>DELETE</code> statement or an
      * SQL statement that returns nothing, such as an SQL DDL statement.
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -113,10 +113,10 @@ public class CBStatement implements java.sql.Statement
      * It is generally good practice to release resources as soon as
      * you are finished with them to avoid tying up database
      * resources.
-     * <p/>
+     * 
      * Calling the method <code>close</code> on a <code>Statement</code>
      * object that is already closed has no effect.
-     * <p/>
+     * 
      * <B>Note:</B>When a <code>Statement</code> object is
      * closed, its current <code>ResultSet</code> object, if one exists, is
      * also closed.
@@ -157,7 +157,7 @@ public class CBStatement implements java.sql.Statement
      * Sets the limit for the maximum number of bytes that can be returned for
      * character and binary column values in a <code>ResultSet</code>
      * object produced by this <code>Statement</code> object.
-     * <p/>
+     * 
      * This limit applies
      * only to <code>BINARY</code>, <code>VARBINARY</code>,
      * <code>LONGVARBINARY</code>, <code>CHAR</code>, <code>VARCHAR</code>,
@@ -169,7 +169,7 @@ public class CBStatement implements java.sql.Statement
      * @param max the new column size limit in bytes; zero means there is no limit
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code>
-     *                               or the condition max >= 0 is not satisfied
+     *                               or the condition max &gt;= 0 is not satisfied
      * @see #getMaxFieldSize
      */
     @Override
@@ -208,7 +208,7 @@ public class CBStatement implements java.sql.Statement
      * @param max the new max rows limit; zero means there is no limit
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code>
-     *                               or the condition max >= 0 is not satisfied
+     *                               or the condition max &gt;= 0 is not satisfied
      * @see #getMaxRows
      */
     @Override
@@ -222,7 +222,7 @@ public class CBStatement implements java.sql.Statement
      * Sets escape processing on or off.
      * If escape scanning is on (the default), the driver will do
      * escape substitution before sending the SQL statement to the database.
-     * <p/>
+     * 
      * Note: Since prepared statements have usually been parsed prior
      * to making this call, disabling escape processing for
      * <code>PreparedStatements</code> objects will have no effect.
@@ -267,11 +267,11 @@ public class CBStatement implements java.sql.Statement
      * <code>SQLTimeoutException</code> is thrown.
      * A JDBC driver must apply this limit to the <code>execute</code>,
      * <code>executeQuery</code> and <code>executeUpdate</code> methods.
-     * <p/>
+     * 
      * <strong>Note:</strong> JDBC driver implementations may also apply this
      * limit to {@code ResultSet} methods
      * (consult your driver vendor documentation for details).
-     * <p/>
+     * 
      * <strong>Note:</strong> In the case of {@code Statement} batching, it is
      * implementation defined as to whether the time-out is applied to
      * individual SQL commands added via the {@code addBatch} method or to
@@ -282,7 +282,7 @@ public class CBStatement implements java.sql.Statement
      *                there is no limit
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code>
-     *                               or the condition seconds >= 0 is not satisfied
+     *                               or the condition seconds &gt;= 0 is not satisfied
      * @see #getQueryTimeout
      */
     @Override
@@ -315,12 +315,12 @@ public class CBStatement implements java.sql.Statement
      * Retrieves the first warning reported by calls on this <code>Statement</code> object.
      * Subsequent <code>Statement</code> object warnings will be chained to this
      * <code>SQLWarning</code> object.
-     * <p/>
+     * 
      * <p>The warning chain is automatically cleared each time
      * a statement is (re)executed. This method may not be called on a closed
      * <code>Statement</code> object; doing so will cause an <code>SQLException</code>
      * to be thrown.
-     * <p/>
+     * 
      * <P><B>Note:</B> If you are processing a <code>ResultSet</code> object, any
      * warnings associated with reads on that <code>ResultSet</code> object
      * will be chained on it rather than on the <code>Statement</code>
@@ -368,7 +368,7 @@ public class CBStatement implements java.sql.Statement
      * level to support updates, the cursor's <code>SELECT</code> statement
      * should have the form <code>SELECT FOR UPDATE</code>.  If
      * <code>FOR UPDATE</code> is not present, positioned updates may fail.
-     * <p/>
+     * 
      * <P><B>Note:</B> By definition, the execution of positioned updates and
      * deletes must be done by a different <code>Statement</code> object than
      * the one that generated the <code>ResultSet</code> object being used for
@@ -394,13 +394,13 @@ public class CBStatement implements java.sql.Statement
      * this unless you are (1) executing a stored procedure that you know may
      * return multiple results or (2) you are dynamically executing an
      * unknown SQL string.
-     * <p/>
+     * 
      * The <code>execute</code> method executes an SQL statement and indicates the
      * form of the first result.  You must then use the methods
      * <code>getResultSet</code> or <code>getUpdateCount</code>
      * to retrieve the result, and <code>getMoreResults</code> to
      * move to any subsequent result(s).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -472,11 +472,11 @@ public class CBStatement implements java.sql.Statement
      * <code>true</code> if it is a <code>ResultSet</code> object, and
      * implicitly closes any current <code>ResultSet</code>
      * object(s) obtained with the method <code>getResultSet</code>.
-     * <p/>
+     * 
      * <P>There are no more results when the following is true:
      * <PRE>
      * // stmt is a Statement object
-     * ((stmt.getMoreResults() == false) && (stmt.getUpdateCount() == -1))
+     * ((stmt.getMoreResults() == false) &amp;&amp; (stmt.getUpdateCount() == -1))
      * </PRE>
      *
      * @return <code>true</code> if the next result is a <code>ResultSet</code>
@@ -498,7 +498,7 @@ public class CBStatement implements java.sql.Statement
      * rows will be processed in <code>ResultSet</code>
      * objects created using this <code>Statement</code> object.  The
      * default value is <code>ResultSet.FETCH_FORWARD</code>.
-     * <p/>
+     * 
      * Note that this method sets the default fetch direction for
      * result sets generated by this <code>Statement</code> object.
      * Each result set has its own methods for getting and setting
@@ -552,7 +552,7 @@ public class CBStatement implements java.sql.Statement
      * @param rows the number of rows to fetch
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code> or the
-     *                               condition  <code>rows >= 0</code> is not satisfied.
+     *                               condition  <code>rows &gt;= 0</code> is not satisfied.
      * @see #getFetchSize
      * @since 1.2
      */
@@ -623,7 +623,7 @@ public class CBStatement implements java.sql.Statement
      * Adds the given SQL command to the current list of commmands for this
      * <code>Statement</code> object. The commands in this list can be
      * executed as a batch by calling the method <code>executeBatch</code>.
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -634,7 +634,7 @@ public class CBStatement implements java.sql.Statement
      *                               driver does not support batch updates, the method is called on a
      *                               <code>PreparedStatement</code> or <code>CallableStatement</code>
      * @see #executeBatch
-     * @see DatabaseMetaData#supportsBatchUpdates
+     * @see CBDatabaseMetaData#supportsBatchUpdates
      * @since 1.2
      */
     @Override
@@ -647,13 +647,13 @@ public class CBStatement implements java.sql.Statement
     /**
      * Empties this <code>Statement</code> object's current list of
      * SQL commands.
-     * <p/>
+     * 
      *
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code> or the
      *                               driver does not support batch updates
      * @see #addBatch
-     * @see DatabaseMetaData#supportsBatchUpdates
+     * @see CBDatabaseMetaData#supportsBatchUpdates
      * @since 1.2
      */
     @Override
@@ -680,7 +680,7 @@ public class CBStatement implements java.sql.Statement
      * <LI>A value of <code>SUCCESS_NO_INFO</code> -- indicates that the command was
      * processed successfully but that the number of rows affected is
      * unknown
-     * <p/>
+     * 
      * If one of the commands in a batch update fails to execute properly,
      * this method throws a <code>BatchUpdateException</code>, and a JDBC
      * driver may or may not continue to process the remaining commands in
@@ -691,12 +691,12 @@ public class CBStatement implements java.sql.Statement
      * <code>BatchUpdateException.getUpdateCounts</code>
      * will contain as many elements as there are commands in the batch, and
      * at least one of the elements will be the following:
-     * <p/>
+     * 
      * <LI>A value of <code>EXECUTE_FAILED</code> -- indicates that the command failed
      * to execute successfully and occurs only if a driver continues to
      * process commands after a command fails
      * </OL>
-     * <p/>
+     * 
      * The possible implementations and return values have been modified in
      * the Java 2 SDK, Standard Edition, version 1.3 to
      * accommodate the option of continuing to proccess commands in a batch
@@ -707,7 +707,7 @@ public class CBStatement implements java.sql.Statement
      * to the order in which commands were added to the batch.
      * @throws java.sql.SQLException if a database access error occurs,
      *                               this method is called on a closed <code>Statement</code> or the
-     *                               driver does not support batch statements. Throws {@link BatchUpdateException}
+     *                               driver does not support batch statements. Throws <code>BatchUpdateException</code>
      *                               (a subclass of <code>SQLException</code>) if one of the commands sent to the
      *                               database fails to execute properly or attempts to return a result set.
      * @throws SQLTimeoutException   when the driver has determined that the
@@ -715,7 +715,7 @@ public class CBStatement implements java.sql.Statement
      *                               method has been exceeded and has at least attempted to cancel
      *                               the currently running {@code Statement}
      * @see #addBatch
-     * @see DatabaseMetaData#supportsBatchUpdates
+     * @see CBDatabaseMetaData#supportsBatchUpdates
      * @since 1.2
      */
     @Override
@@ -747,11 +747,11 @@ public class CBStatement implements java.sql.Statement
      * any current <code>ResultSet</code> object(s) according  to the instructions
      * specified by the given flag, and returns
      * <code>true</code> if the next result is a <code>ResultSet</code> object.
-     * <p/>
+     * 
      * <P>There are no more results when the following is true:
      * <PRE>
      * // stmt is a Statement object
-     * ((stmt.getMoreResults(current) == false) && (stmt.getUpdateCount() == -1))
+     * ((stmt.getMoreResults(current) == false) &amp;&amp; (stmt.getUpdateCount() == -1))
      * </PRE>
      *
      * @param current one of the following <code>Statement</code>
@@ -791,7 +791,7 @@ public class CBStatement implements java.sql.Statement
      * <code>Statement</code> object. If this <code>Statement</code> object did
      * not generate any keys, an empty <code>ResultSet</code>
      * object is returned.
-     * <p/>
+     * 
      * <p><B>Note:</B>If the columns which represent the auto-generated keys were not specified,
      * the JDBC driver implementation will determine the columns which best represent the auto-generated keys.
      *
@@ -817,7 +817,7 @@ public class CBStatement implements java.sql.Statement
      * flag if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -859,7 +859,7 @@ public class CBStatement implements java.sql.Statement
      * available. The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -898,7 +898,7 @@ public class CBStatement implements java.sql.Statement
      * available. The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -937,19 +937,19 @@ public class CBStatement implements java.sql.Statement
      * for retrieval.  The driver will ignore this signal if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * In some (uncommon) situations, a single SQL statement may return
      * multiple result sets and/or update counts.  Normally you can ignore
      * this unless you are (1) executing a stored procedure that you know may
      * return multiple results or (2) you are dynamically executing an
      * unknown SQL string.
-     * <p/>
+     * 
      * The <code>execute</code> method executes an SQL statement and indicates the
      * form of the first result.  You must then use the methods
      * <code>getResultSet</code> or <code>getUpdateCount</code>
      * to retrieve the result, and <code>getMoreResults</code> to
      * move to any subsequent result(s).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -997,19 +997,19 @@ public class CBStatement implements java.sql.Statement
      * available.  The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * Under some (uncommon) situations, a single SQL statement may return
      * multiple result sets and/or update counts.  Normally you can ignore
      * this unless you are (1) executing a stored procedure that you know may
      * return multiple results or (2) you are dynamically executing an
      * unknown SQL string.
-     * <p/>
+     * 
      * The <code>execute</code> method executes an SQL statement and indicates the
      * form of the first result.  You must then use the methods
      * <code>getResultSet</code> or <code>getUpdateCount</code>
      * to retrieve the result, and <code>getMoreResults</code> to
      * move to any subsequent result(s).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -1051,19 +1051,19 @@ public class CBStatement implements java.sql.Statement
      * available.  The driver will ignore the array if the SQL statement
      * is not an <code>INSERT</code> statement, or an SQL statement able to return
      * auto-generated keys (the list of such statements is vendor-specific).
-     * <p/>
+     * 
      * In some (uncommon) situations, a single SQL statement may return
      * multiple result sets and/or update counts.  Normally you can ignore
      * this unless you are (1) executing a stored procedure that you know may
      * return multiple results or (2) you are dynamically executing an
      * unknown SQL string.
-     * <p/>
+     * 
      * The <code>execute</code> method executes an SQL statement and indicates the
      * form of the first result.  You must then use the methods
      * <code>getResultSet</code> or <code>getUpdateCount</code>
      * to retrieve the result, and <code>getMoreResults</code> to
      * move to any subsequent result(s).
-     * <p/>
+     * 
      * <strong>Note:</strong>This method cannot be called on a
      * <code>PreparedStatement</code> or <code>CallableStatement</code>.
      *
@@ -1134,22 +1134,22 @@ public class CBStatement implements java.sql.Statement
      * specified is a hint to the statement pool implementation indicating
      * whether the applicaiton wants the statement to be pooled.  It is up to
      * the statement pool manager as to whether the hint is used.
-     * <p/>
+     * 
      * The poolable value of a statement is applicable to both internal
      * statement caches implemented by the driver and external statement caches
      * implemented by application servers and other applications.
-     * <p/>
+     * 
      * By default, a <code>Statement</code> is not poolable when created, and
      * a <code>PreparedStatement</code> and <code>CallableStatement</code>
      * are poolable when created.
-     * <p/>
+     * 
      *
      * @param poolable requests that the statement be pooled if true and
      *                 that the statement not be pooled if false
-     *                 <p/>
+     *                 
      * @throws java.sql.SQLException if this method is called on a closed
      *                               <code>Statement</code>
-     *                               <p/>
+     *                               
      * @since 1.6
      */
     @Override
@@ -1162,17 +1162,17 @@ public class CBStatement implements java.sql.Statement
     /**
      * Returns a  value indicating whether the <code>Statement</code>
      * is poolable or not.
-     * <p/>
+     * 
      *
      * @return <code>true</code> if the <code>Statement</code>
      * is poolable; <code>false</code> otherwise
-     * <p/>
+     * 
      * @throws java.sql.SQLException if this method is called on a closed
      *                               <code>Statement</code>
-     *                               <p/>
+     *                               
      * @see java.sql.Statement#setPoolable(boolean) setPoolable(boolean)
      * @since 1.6
-     * <p/>
+     * 
      */
     @Override
     public boolean isPoolable() throws SQLException
@@ -1185,7 +1185,7 @@ public class CBStatement implements java.sql.Statement
      * Specifies that this {@code Statement} will be closed when all its
      * dependent result sets are closed. If execution of the {@code Statement}
      * does not produce any result sets, this method has no effect.
-     * <p/>
+     * 
      * <strong>Note:</strong> Multiple calls to {@code closeOnCompletion} do
      * not toggle the effect on this {@code Statement}. However, a call to
      * {@code closeOnCompletion} does effect both the subsequent execution of
@@ -1223,7 +1223,7 @@ public class CBStatement implements java.sql.Statement
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     * <p/>
+     * 
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the

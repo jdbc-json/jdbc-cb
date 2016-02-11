@@ -146,7 +146,7 @@ public class SqlParser
     private static final short ESC_OUTERJOIN = 5;
     private static final short ESC_ESCAPECHAR = 7;
 
-    /**
+    /*
      * parse the given sql from index i, appending it to the gven buffer
      * until we hit an unmatched right parentheses or end of string.  When
      * the stopOnComma flag is set we also stop processing when a comma is
@@ -158,7 +158,7 @@ public class SqlParser
      * @param stopOnComma should we stop after hitting the first comma in sql text?
      * @return the position we stopped processing at
      */
-    protected int parseSql(String p_sql,int i,StringBuilder newsql, boolean stopOnComma )throws SQLException
+    protected int parseSql(String p_sql,int i,StringBuilder newsql, boolean stopOnComma ) throws SQLException
     {
         short state = IN_SQLCODE;
         int len = p_sql.length();
