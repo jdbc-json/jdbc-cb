@@ -6,8 +6,12 @@ These instructions assume you are conversant with the Java ecosystem, and theref
 know your way around Eclipse and Maven. You need to be running at least Java 7.
 
 Install Couchbase on your local machine. You should be able to access the administration interface at http://localhost:8091. The *beer-sample* sample data bucket should be present and accessible without a password.
+You also need to create a primary index on the *beer-sample* bucket by running this command in the
+[CBQ shell](http://developer.couchbase.com/documentation/server/4.0/n1ql/n1ql-intro/cbq.html).
 
-Create a new Maven project in Eclipse. Add this dependency to the pom.xml file:
+    create primary index on `beer-sample`;
+
+Create a new Maven project in Eclipse. Add this dependency to the pom.xml file, which should already exist in your new project:
 
     <dependencies>
       <dependency>
