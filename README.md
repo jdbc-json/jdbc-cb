@@ -116,7 +116,7 @@ Run a specific test with a command like this:
 
 ##Usage
 
-The Maven coordinates of the driver is
+The Maven coordinates of the driver are
 
     <dependency>
         <groupId>com.github.jdbc-json</groupId>
