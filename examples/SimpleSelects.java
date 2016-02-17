@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-
 /*
  * This example shows
  * a) How to run a simple SELECT statement using the Couchbase JDBC driver.
