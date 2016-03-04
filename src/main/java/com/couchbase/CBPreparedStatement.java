@@ -280,7 +280,7 @@ public class CBPreparedStatement extends CBStatement implements java.sql.Prepare
         checkClosed();
         checkFields(parameterIndex);
 
-        fields[parameterIndex-1] = Long.toString(x);
+        fields[parameterIndex-1] = x;
     }
 
     /**
