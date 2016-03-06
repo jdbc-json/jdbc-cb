@@ -75,39 +75,41 @@ public class StatementTest extends CouchBaseTestCase
         for (int i = 0; i++< 100;)
         {
 
-            int inserted = statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K" + i +"'," + i +")");
+            int inserted = statement.executeUpdate("INSERT INTO default  (KEY, VALUE) VALUES ( 'K" + i + "', { 'id': " + i + ", 'val': " + i + " })");
             assertEquals(1, inserted);
         }
+        Thread.sleep(5000);
 
         ResultSet resultSet = statement.executeQuery("select count(1) as test_count from default");
         assertTrue(resultSet.next());
         assertEquals(100,resultSet.getInt("test_count"));
 
-        resultSet = statement.executeQuery("select * from default order by default");
+        resultSet = statement.executeQuery("select val from default order by val");
         for (int i=0; resultSet.next(); i++)
         {
             assertEquals(i+1, resultSet.getInt(1));
         }
 
-        resultSet = statement.executeQuery("select raw default from default order by default");
+        resultSet = statement.executeQuery("select raw val from default order by val");
         for (int i=0; resultSet.next(); i++)
         {
             assertTrue(resultSet.getInt(1)>0);
         }
 
 // A known problem, assigned issue #16.
-//        boolean hasResultSet = statement.execute("update default set default=0 returning default");
-//        if ( hasResultSet )
-//        {
-//            resultSet = statement.getResultSet();
-//            for (int i=0; resultSet.next(); i++)
-//            {
-//                assertEquals(0, resultSet.getInt(1));
-//            }
-//
-//        }
+        boolean hasResultSet = statement.execute("update default set val=0 returning val");
+        if ( hasResultSet )
+        {
+            resultSet = statement.getResultSet();
+            for (int i=0; resultSet.next(); i++)
+            {
+                assertEquals(0, resultSet.getInt(1));
+            }
+
+        }
 
         statement.executeUpdate("delete from default");
+        Thread.sleep(5000);
 
         resultSet = statement.executeQuery("select count(1) as count from default");
         assertTrue(resultSet.next());
