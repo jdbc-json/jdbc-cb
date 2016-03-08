@@ -80,57 +80,7 @@ Run the new class. You should see this output:
     
 The */examples* directory contains additional example files, showing how to use the driver.
 
-##Build instructions
-
-### Requirements:
-* java 1.8
-* git
-* maven
-
-Steps:
-
-    git clone https://github.com/jdbc-json/jdbc-cb
-    cd jdbc-cb
-    mvn -Dmaven.test.skip=true package
-
-the jar file will be in the target directory.
-
-##Test instructions
-
-The unit tests assume an instance of Couchbase Enterprise Edition is set up and accessible on
-the local machine. The administrator and password should be "Administrator" and "password",
-respectively. The *beer-sample* and *default* data buckets
-should be present. The *default* bucket is always present; *beer-sample* is created on request at installation time.
-
-The beer-sample and default buckets must be indexed for the tests to run correctly.
-You can index them by running these two commands in the
-[CBQ shell](http://developer.couchbase.com/documentation/server/4.0/n1ql/n1ql-intro/cbq.html).
-
-    create primary index on default;
-    create primary index on `beer-sample`;
-    
-Note the back-ticks in the second line.
-
-If the Couchbase instance is Community Edition, the SSLConnectionTest will fail because
-Community Edition instances are not accessible over SSL.
-
-Run all the tests with this command:
-
-    mvn test
-
-Run a specific test with a command like this:
-
-    mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
-
-##Usage
-
-The Maven coordinates of the driver are
-
-    <dependency>
-        <groupId>com.github.jdbc-json</groupId>
-        <artifactId>jdbc-cb</artifactId>
-        <version>0.4.0</version>
-    </dependency>
+##Additional Usage Notes
 
 The connection string, used in the `DriverManager.getConnection()` call, should be of the form  `jdbc:couchbase://<host>:<port>`.
 
@@ -140,5 +90,43 @@ If you are working with a Couchbase cluster, the host should be the name or ip a
 The driver will then distribute the queries around the nodes of the cluster in round-robin fashion. You can check which nodes are
 running the Query service on the "Server Nodes" tab of the Couchbase Admin Console. The "Services" column shows which nodes are
 running which service. The port is the port of the query service; 8093 by default.
+##Build instructions
 
+##Building the Driver from Source
 
+You need to have Git, Maven 3 and Java 8 installed on your machine.
+
+Run the following commands:
+
+    git clone https://github.com/jdbc-json/jdbc-cb
+    cd jdbc-cb
+    mvn -Dmaven.test.skip=true package
+
+The JAR file will be in the */target* directory.
+
+##Running the Unit Tests
+
+(Assuming you have downloaded and built the driver from source, as described above.)
+
+The unit tests assume an instance of Couchbase Enterprise Edition is set up and accessible on
+the local machine. If the Couchbase instance is Community Edition, the SSLConnectionTest will fail because
+Community Edition instances are not accessible over SSL. 
+The administrator and password should be "Administrator" and "password",
+respectively. The *beer-sample* and *default* data buckets
+should be present. The *default* bucket is always present; *beer-sample* is created on request at installation time.
+
+The beer-sample and default buckets must be indexed for the tests to run correctly.
+You can index them by running these two commands in the CBQ:
+
+    create primary index on default;
+    create primary index on `beer-sample`;
+    
+Note the back-ticks in the second line.
+
+Run all the tests with this command:
+
+    mvn test
+
+Run a specific test with a command like this:
+
+    mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
