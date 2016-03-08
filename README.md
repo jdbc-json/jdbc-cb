@@ -1,9 +1,27 @@
 #Couchbase JDBC Driver
 
-## Setup and Use
+## Brief Setup Instructions
+
+The Maven coordinates of the driver are 
+
+      <dependency>
+        <groupId>com.github.jdbc-json</groupId>
+        <artifactId>jdbc-cb</artifactId>
+        <version>0.4.0</version>
+      </dependency>
+
+The driver enables communication with Couchbase through the standard JDBC interfaces. Use connect string `"jdbc:couchbase://localhost:8093"` to connect to the Couchbase instance on your local machine.
+
+If you have the *beer-sample* sample bucket installed, this query returns a manageable set of ten rows with two fields per row:
+
+    select name, code from `beer-sample` where city = 'San Francisco' and type = 'brewery'
+
+To run the query, you will need to create a primary index on *beer-sample*.
+
+## Detailed Setup Instructions
 
 These instructions assume you are conversant with the Java ecosystem, and therefore
-know your way around Eclipse and Maven. You need to be running at least Java 7.
+know your way around Maven. Use Maven 3 and Java 8. 
 
 Install Couchbase on your local machine. You should be able to access the administration interface at http://localhost:8091. The *beer-sample* sample data bucket should be present and accessible without a password.
 You also need to create a primary index on the *beer-sample* bucket by running this command in the
