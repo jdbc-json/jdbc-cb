@@ -23,13 +23,15 @@ To run the query, you will need to create a primary index on *beer-sample*.
 These instructions assume you are conversant with the Java ecosystem, and therefore
 know your way around Maven. Use Maven 3 and Java 8. 
 
-* Install Couchbase on your local machine. Instructions are [here](http://developer.couchbase.com/documentation/server/4.1/getting-started/installing.html).
-* Go to to Administration Console at *http://localhost:8091* and log in using the Administrator password you supplied during installation. In the *Settings* tab you will find the *Sample Buckets* section, with a set of available sample buckets. Check the *beer-sample* box to create this set of sample data.
-* CBQ is the tool for running N1QL queries against Couchbase. Instructions for running it are [here](http://developer.couchbase.com/documentation/server/4.1/n1ql/n1ql-intro/cbq.html). Create a primary index on the *beer-sample* bucket by running this command in CBQ:
+Install Couchbase on your local machine. Instructions are [here](http://developer.couchbase.com/documentation/server/4.1/getting-started/installing.html).
+
+Go to to Administration Console at *http://localhost:8091* and log in using the Administrator password you supplied during installation. In the *Settings* tab you will find the *Sample Buckets* section, with a set of available sample buckets. Check the *beer-sample* box to create this set of sample data.
+
+CBQ is the tool for running N1QL queries against Couchbase. Instructions for running it are [here](http://developer.couchbase.com/documentation/server/4.1/n1ql/n1ql-intro/cbq.html). Create a primary index on the *beer-sample* bucket by running this command in CBQ:
 
     create primary index on `beer-sample`;
     
-* Create a new Maven project. Add this dependency to the pom.xml file, which should already exist in your new project:
+Create a new Maven project. Add this dependency to the *pom.xml* file, which should already exist in your new project:
 
     <dependencies>
       <dependency>
@@ -39,7 +41,7 @@ know your way around Maven. Use Maven 3 and Java 8.
       </dependency>
     </dependencies>
     
-* Add a new Java class to the src/main/java/trial directory of the project:
+Add a new Java class to the src/main/java/trial directory of the project:
 
     package trial;
     import java.sql.Connection;
@@ -60,7 +62,7 @@ know your way around Maven. Use Maven 3 and Java 8.
         }
     }
 
-* Run the new class. You should see this output:
+Run the new class. You should see this output:
 
     12:35:18.397 [main] INFO  com.couchbase.CBDriver - Constructor called
     12:35:18.401 [main] INFO  com.couchbase.CBDriver - Constructor called
