@@ -90,7 +90,6 @@ If you are working with a Couchbase cluster, the host should be the name or ip a
 The driver will then distribute the queries around the nodes of the cluster in round-robin fashion. You can check which nodes are
 running the Query service on the "Server Nodes" tab of the Couchbase Admin Console. The "Services" column shows which nodes are
 running which service. The port is the port of the query service; 8093 by default.
-##Build instructions
 
 ##Building the Driver from Source
 
