@@ -59,18 +59,6 @@ Run the new class as a Java Application. You should see this output:
     name: ThirstyBear Brewing, code: 94105
     
 The */examples* directory contains additional example files, showing how to use the driver.
-From simplest to most sophisticated, they are:
-
-* SimpleSelects.java
-* CrudOperations.java
-* PreparedStatements.java
-* CompoundElements.java
-* UseCredentials.java
-
-To use these files, copy them to the project you created at the beginning of this section.
-All five files have main() functions, so you can run them directly.
-The first four require *beer-sample* and *default* buckets to exist
-and have primary indexes. The last one has more specific set-up instructions in the comments of the file itself.
 
 ##Build instructions
 
