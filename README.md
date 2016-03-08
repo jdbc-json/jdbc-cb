@@ -1,5 +1,17 @@
 #Couchbase JDBC Driver
 
+This project is a JDBC driver for accessing the Couchbase NoSQL database. Couchbase stores data as JSON documents.
+The N1QL query language is based on SQL, but designed for querying JSON data sources, such as Couchbase.
+This driver lets the user run N1QL queries against Couchbase, and retrieve JSON data through the standard
+JDBC interfaces. 
+
+Both simple JSON values (string/numbers/booleans) and compound JSON values (objects/arrays) are supported.
+Both types of values can be retrieved as fields and supplied as parameters.
+
+Eventually, this driver will serve as the basis for a standardized way of accessing JSON data through
+the JDBC interface, first using the existing JDBC interfaces, and later with JSON-specific extensions
+to the JDBC interfaces.
+
 ## Brief Setup Instructions
 
 The Maven coordinates of the driver are 
