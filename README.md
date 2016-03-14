@@ -8,9 +8,9 @@ JDBC interfaces.
 Both simple JSON values (string/numbers/booleans) and compound JSON values (objects/arrays) are supported.
 Both types of values can be retrieved as fields and supplied as parameters.
 
-Eventually, this driver will serve as the basis for a standardized way of accessing JSON data through
-the JDBC interface, first using the existing JDBC interfaces, and later with JSON-specific extensions
-to the JDBC interfaces.
+Users who do not have a pre-existing investment in JDBC but still want to access Couchbase through Java
+may find the [Couchbase Java SDK](http://developer.couchbase.com/documentation/server/4.1/sdks/java-2.2/java-intro.html)
+a more convenient solution.
 
 ## Brief Setup Instructions
 
