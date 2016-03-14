@@ -1,3 +1,5 @@
+# How to Use the Driver
+
 This directory contains example files that show how to use the driver. 
 All five files have `main()` functions, so you can run them directly;
 they are set up to connect to the Couchbase instance running on the local machine.
