@@ -9,14 +9,13 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import org.junit.Test;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import com.couchbase.jdbc.TestUtil;
-import com.couchbase.jdbc.JDBCTestUtils;
+
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;

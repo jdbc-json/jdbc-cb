@@ -1,10 +1,8 @@
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import com.couchbase.json.SQLJSON;
 import com.couchbase.jdbc.CBResultSet;
-import com.couchbase.jdbc.ClusterInfo;
-import com.couchbase.jdbc.ClusterSetupUtils;
-import com.couchbase.jdbc.JDBCTestUtils;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -20,7 +18,6 @@ import java.sql.Types;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import com.couchbase.jdbc.TestUtil;
 
 @RunWith(JUnit4.class)
 public class ProjectionJDBCDriverTests {

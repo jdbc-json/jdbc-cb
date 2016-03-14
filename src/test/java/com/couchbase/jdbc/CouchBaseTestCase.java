@@ -9,10 +9,10 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import com.couchbase.jdbc.ConnectionParameters;
-import com.couchbase.jdbc.TestUtil;
+
 import junit.framework.TestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

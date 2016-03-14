@@ -1,4 +1,4 @@
-package com.couchbase;
+package com.couchbase.jdbc;
 import org.junit.After;
 import org.junit.AfterClass;
 
@@ -11,11 +11,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import com.couchbase.jdbc.TestUtil;
-import com.couchbase.jdbc.ClusterInfo;
-import com.couchbase.jdbc.ClusterSetupUtils;
-import com.couchbase.jdbc.JDBCTestUtils;
-import com.couchbase.jdbc.TestResultAnalysis;
 
 import junit.framework.TestCase;
 import java.sql.*;

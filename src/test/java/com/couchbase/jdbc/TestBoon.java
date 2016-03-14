@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import junit.framework.TestCase;
 import org.boon.core.value.ValueList;

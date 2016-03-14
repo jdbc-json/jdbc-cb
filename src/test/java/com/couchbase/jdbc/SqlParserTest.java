@@ -9,9 +9,9 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
-import com.couchbase.CouchBaseTestCase;
+import com.couchbase.jdbc.CouchBaseTestCase;
 import com.couchbase.jdbc.util.SqlParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

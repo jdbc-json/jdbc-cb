@@ -9,18 +9,16 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
-import com.couchbase.jdbc.TestUtil;
 import com.couchbase.jdbc.CBResultSet;
-import com.couchbase.jdbc.JDBCTestUtils;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import com.couchbase.jdbc.TestUtil;
 
 import java.io.InputStream;
 import java.io.Reader;

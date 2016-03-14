@@ -1,8 +1,7 @@
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import static org.junit.Assert.assertEquals;
 
-import com.couchbase.jdbc.TestUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,9 +17,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.couchbase.jdbc.CBResultSet;
-import com.couchbase.jdbc.ClusterInfo;
-import com.couchbase.jdbc.ClusterSetupUtils;
-import com.couchbase.jdbc.JDBCTestUtils;
 import com.couchbase.json.SQLJSON;
 
 @RunWith(JUnit4.class)

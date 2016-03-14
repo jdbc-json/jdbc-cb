@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.couchbase.jdbc.CBArray;
 import com.couchbase.jdbc.CBResultSet;
-import com.couchbase.jdbc.JDBCTestUtils;
+
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;

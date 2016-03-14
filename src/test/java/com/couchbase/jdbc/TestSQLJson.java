@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import com.couchbase.json.SQLJSON;
 import org.boon.json.JsonFactory;
@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import com.couchbase.jdbc.CBConnection;
 import com.couchbase.jdbc.CBPreparedStatement;
 import com.couchbase.jdbc.CBResultSet;
-import com.couchbase.jdbc.JDBCTestUtils;
+
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;

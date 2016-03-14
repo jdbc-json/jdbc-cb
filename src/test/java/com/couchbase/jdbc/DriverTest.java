@@ -10,12 +10,12 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import ch.qos.logback.classic.Level;
 
 import com.couchbase.jdbc.CBDriver;
-import com.couchbase.jdbc.TestUtil;
+
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;

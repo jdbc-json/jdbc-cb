@@ -1,4 +1,4 @@
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,15 +6,10 @@ import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import com.couchbase.jdbc.ClusterInfo;
-import com.couchbase.jdbc.ClusterSetupUtils;
-import com.couchbase.jdbc.JDBCTestUtils;
-import com.couchbase.jdbc.TestUtil;
 
 @RunWith(JUnit4.class)
 public class BigDataJDBCDriverTests {	
