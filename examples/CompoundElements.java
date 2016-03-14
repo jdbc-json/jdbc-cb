@@ -1,4 +1,4 @@
-package examples;
+package com.couchbase.jdbc.examples;
 
 import java.sql.Array;
 import java.sql.Connection;
