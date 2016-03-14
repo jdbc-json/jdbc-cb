@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.jdbc-json</groupId>
-  <artifactId>jdbc-cb</artifactId>
-  <version>0.4.1-SNAPSHOT</version>
+  <groupId>com.couchbase.jdbc</groupId>
+  <artifactId>jdbc-n1ql</artifactId>
+  <version>0.4.5</version>
 
   <packaging>jar</packaging>
 
@@ -14,7 +14,7 @@
     <version>7</version>
    </parent>
 
-  <name>org.github.jdbc-json:jdbc-cb</name>
+  <name>Couchbase JDBC-JSON Driver</name>
   <description>A JDBC driver for the Couchbase database, based on the N1QL query language.</description>
   <url>http://maven.apache.org</url>
   
