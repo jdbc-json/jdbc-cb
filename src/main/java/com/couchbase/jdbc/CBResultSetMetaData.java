@@ -10,7 +10,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

@@ -16,6 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.couchbase.jdbc.CBConnection;
+import com.couchbase.jdbc.CBStatement;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;

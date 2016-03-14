@@ -12,6 +12,7 @@
 package com.couchbase;
 
 import com.couchbase.jdbc.TestUtil;
+import com.couchbase.jdbc.CBResultSet;
 import com.couchbase.jdbc.JDBCTestUtils;
 import org.junit.Rule;
 import org.junit.Test;

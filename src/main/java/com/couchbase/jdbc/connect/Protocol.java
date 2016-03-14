@@ -9,10 +9,10 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase.jdbc;
+package com.couchbase.jdbc.connect;
 
-import com.couchbase.CBResultSet;
-import com.couchbase.CBStatement;
+import com.couchbase.jdbc.CBResultSet;
+import com.couchbase.jdbc.CBStatement;
 import com.couchbase.jdbc.core.CouchResponse;
 
 import java.sql.SQLException;

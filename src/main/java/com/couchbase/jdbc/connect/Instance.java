@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase.jdbc;
+package com.couchbase.jdbc.connect;
 
 import java.net.URI;
 import java.net.URISyntaxException;

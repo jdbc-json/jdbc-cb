@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 /**
  * Created by davec on 2015-03-04.

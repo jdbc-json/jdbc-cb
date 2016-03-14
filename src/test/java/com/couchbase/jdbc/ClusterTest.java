@@ -9,10 +9,11 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
-import com.couchbase.jdbc.Cluster;
-import com.couchbase.jdbc.TestUtil;
+import com.couchbase.jdbc.CBConnection;
+import com.couchbase.jdbc.ConnectionParameters;
+import com.couchbase.jdbc.connect.Cluster;
 import com.couchbase.jdbc.core.ProtocolImpl;
 import junit.framework.TestCase;
 

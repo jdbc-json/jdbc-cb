@@ -23,6 +23,10 @@ import org.junit.After;
 import org.junit.Ignore;
 
 import java.math.BigDecimal;
+
+import com.couchbase.jdbc.CBConnection;
+import com.couchbase.jdbc.CBPreparedStatement;
+import com.couchbase.jdbc.CBResultSet;
 import com.couchbase.jdbc.JDBCTestUtils;
 import java.sql.*;
 import java.sql.Date;

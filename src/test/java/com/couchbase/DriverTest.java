@@ -13,6 +13,8 @@
 package com.couchbase;
 
 import ch.qos.logback.classic.Level;
+
+import com.couchbase.jdbc.CBDriver;
 import com.couchbase.jdbc.TestUtil;
 import junit.framework.TestCase;
 import org.junit.Before;

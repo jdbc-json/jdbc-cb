@@ -10,7 +10,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import com.couchbase.jdbc.core.CouchError;
 import com.couchbase.jdbc.core.CouchResponse;

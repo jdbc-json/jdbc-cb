@@ -10,9 +10,9 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
-import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.connect.Protocol;
 import com.couchbase.jdbc.util.SqlParser;
 
 import java.sql.Connection;

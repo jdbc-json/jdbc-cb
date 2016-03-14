@@ -12,12 +12,13 @@
 package com.couchbase.jdbc.core;
 
 
-import com.couchbase.CBResultSet;
-import com.couchbase.CBStatement;
-import com.couchbase.ConnectionParameters;
-import com.couchbase.jdbc.Cluster;
-import com.couchbase.jdbc.Instance;
-import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.CBResultSet;
+import com.couchbase.jdbc.CBStatement;
+import com.couchbase.jdbc.ConnectionParameters;
+import com.couchbase.jdbc.connect.Cluster;
+import com.couchbase.jdbc.connect.Instance;
+import com.couchbase.jdbc.connect.Protocol;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;

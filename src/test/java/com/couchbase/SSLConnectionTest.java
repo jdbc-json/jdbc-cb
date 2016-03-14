@@ -11,6 +11,7 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.ConnectionParameters;
 import com.couchbase.jdbc.TestUtil;
 import junit.framework.TestCase;
 import org.junit.Test;

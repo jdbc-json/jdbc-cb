@@ -16,7 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import com.couchbase.CBResultSet;
+
+import com.couchbase.jdbc.CBResultSet;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;
 import com.couchbase.jdbc.JDBCTestUtils;

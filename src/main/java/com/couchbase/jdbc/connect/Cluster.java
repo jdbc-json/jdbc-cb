@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase.jdbc;
+package com.couchbase.jdbc.connect;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

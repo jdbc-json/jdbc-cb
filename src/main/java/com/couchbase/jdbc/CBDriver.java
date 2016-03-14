@@ -10,12 +10,12 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.couchbase.jdbc.Cluster;
+
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;

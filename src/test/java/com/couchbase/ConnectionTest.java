@@ -11,6 +11,7 @@
 
 package com.couchbase;
 
+import com.couchbase.jdbc.CBConnection;
 import com.couchbase.jdbc.TestUtil;
 
 import org.junit.Ignore;
@@ -300,15 +301,15 @@ public class ConnectionTest extends CouchBaseTestCase
         assertNotNull(con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY));
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 
         con.close();
@@ -323,7 +324,7 @@ public class ConnectionTest extends CouchBaseTestCase
         String sql = "select 1 as one";
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareCall");
         con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
         con.close();
@@ -336,7 +337,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testGetTypeMap() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.getTypeMap");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.getTypeMap");
         con.getTypeMap();
 
         con.close();
@@ -349,7 +350,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testSetTypeMap() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.setTypeMap");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.setTypeMap");
         con.setTypeMap(new HashMap<String, Class<?>>());
 
         con.close();
@@ -362,7 +363,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testSetHoldability() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.setHoldability");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.setHoldability");
         con.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
 
         con.close();
@@ -386,7 +387,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testSetSavepoint() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.setSavepoint");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.setSavepoint");
         con.setSavepoint();
 
         con.close();
@@ -398,7 +399,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testSetSavepoint1() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.setSavepoint");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.setSavepoint");
         con.setSavepoint("foo");
 
         con.close();
@@ -410,7 +411,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testRollback1() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.rollback");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.rollback");
         con.rollback(null);
 
         con.close();
@@ -423,7 +424,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testReleaseSavepoint() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.releaseSavepoint");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.releaseSavepoint");
         con.releaseSavepoint(null);
 
         con.close();
@@ -436,7 +437,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateStatement2() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createStatement");
         con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
         con.close();
@@ -450,7 +451,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
         con.close();
@@ -463,7 +464,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareCall");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareCall");
         con.prepareCall(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
 
         con.close();
@@ -477,7 +478,7 @@ public class ConnectionTest extends CouchBaseTestCase
     {
         String sql="select 1";
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
         con.close();
@@ -493,7 +494,7 @@ public class ConnectionTest extends CouchBaseTestCase
         int columns[] = {1,2};
 
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.prepareStatement");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.prepareStatement");
         con.prepareStatement(sql, columns);
 
         con.close();
@@ -520,7 +521,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateClob() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createClob");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createClob");
         con.createClob();
     }
 
@@ -528,7 +529,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateBlob() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createBlob");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createBlob");
         con.createBlob();
 
     }
@@ -537,7 +538,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateNClob() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createNClob");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createNClob");
         con.createNClob();
 
     }
@@ -546,7 +547,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateSQLXML() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createSQLXML");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createSQLXML");
         con.createSQLXML();
 
     }
@@ -588,7 +589,7 @@ public class ConnectionTest extends CouchBaseTestCase
     public void testCreateStruct() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
-        expectedException.expectMessage("com.couchbase.CBConnection.createStruct");
+        expectedException.expectMessage("com.couchbase.jdbc.CBConnection.createStruct");
         con.createStruct(null, null);
 
         con.close();

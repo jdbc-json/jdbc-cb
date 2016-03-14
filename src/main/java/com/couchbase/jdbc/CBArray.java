@@ -9,7 +9,7 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
 import org.boon.json.JsonFactory;
 
@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Created by davec on 2015-07-21.
  */
-class CBArray implements Array
+public class CBArray implements Array
 {
     private String baseType;
     private Object []array;
@@ -427,7 +427,7 @@ class CBArray implements Array
         array=null;
         jsonArray=null;
     }
-    String getJsonArray()
+    public String getJsonArray()
     {
         return jsonArray;
     }

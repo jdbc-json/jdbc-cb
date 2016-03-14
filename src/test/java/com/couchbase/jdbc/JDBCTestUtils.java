@@ -1,5 +1,4 @@
 package com.couchbase.jdbc;
-import com.couchbase.CBResultSet;
 import com.couchbase.jdbc.BucketInfo;
 import com.couchbase.jdbc.ClusterInfo;
 import com.couchbase.jdbc.ClusterSetupUtils;

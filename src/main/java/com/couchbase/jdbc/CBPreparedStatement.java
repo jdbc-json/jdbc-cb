@@ -10,11 +10,9 @@
  * //  and limitations under the License.
  */
 
-package com.couchbase;
+package com.couchbase.jdbc;
 
-import com.couchbase.jdbc.CBParameterMetaData;
-import com.couchbase.jdbc.CBPreparedResult;
-import com.couchbase.jdbc.Protocol;
+import com.couchbase.jdbc.connect.Protocol;
 import com.couchbase.jdbc.core.CouchResponse;
 import com.couchbase.jdbc.util.SqlParser;
 import com.couchbase.jdbc.util.TimestampUtils;

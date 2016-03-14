@@ -22,6 +22,9 @@ import org.junit.After;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+
+import com.couchbase.jdbc.CBArray;
+import com.couchbase.jdbc.CBResultSet;
 import com.couchbase.jdbc.JDBCTestUtils;
 import java.sql.*;
 import java.sql.Date;
@@ -841,7 +844,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setClob");
             preparedStatement.setClob(1,(Clob)null);
 
         }
@@ -852,7 +855,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setClob");
             preparedStatement.setClob(1,null, 0);
 
         }
@@ -863,7 +866,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setClob");
 
             preparedStatement.setClob(1,(Reader)null);
 
@@ -875,7 +878,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setNClob");
 
             preparedStatement.setNClob(1, (NClob) null);
 
@@ -887,7 +890,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setNClob");
 
             preparedStatement.setNClob(1, null, 0);
 
@@ -899,7 +902,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setNClob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setNClob");
             preparedStatement.setNClob(1, (Reader) null);
 
         }
@@ -911,7 +914,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setBlob");
             preparedStatement.setBlob(1,(Blob)null);
 
         }
@@ -922,7 +925,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setBlob");
 
             preparedStatement.setBlob(1,null,0);
 
@@ -934,7 +937,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBlob");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setBlob");
             preparedStatement.setBlob(1,(InputStream)null);
 
         }
@@ -946,7 +949,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setRowId");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setRowId");
             preparedStatement.setRowId(1,null);
 
         }
@@ -957,7 +960,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         try(PreparedStatement preparedStatement = con.prepareStatement("insert into default(key,value) values (?,?)"))
         {
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setRef");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setRef");
             preparedStatement.setRef(1, null);
 
         }
@@ -981,7 +984,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         {
 
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.getMetaData");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.getMetaData");
             ResultSetMetaData rsmd = preparedStatement.getMetaData();
 
         }
@@ -1115,7 +1118,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         {
 
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setBinaryStream");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setBinaryStream");
             preparedStatement.setBinaryStream(2, new ByteArrayInputStream(bytes));
 
         }
@@ -1129,7 +1132,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         {
 
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setCharacterStream");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setCharacterStream");
             preparedStatement.setCharacterStream(2, new StringReader(foo));
 
         }
@@ -1144,7 +1147,7 @@ public class PreparedStatementTest extends CouchBaseTestCase
         {
 
             expectedException.expect(SQLFeatureNotSupportedException.class);
-            expectedException.expectMessage("com.couchbase.CBPreparedStatement.setAsciiStream");
+            expectedException.expectMessage("com.couchbase.jdbc.CBPreparedStatement.setAsciiStream");
             preparedStatement.setAsciiStream(2, new ByteArrayInputStream(bytes));
 
         }
