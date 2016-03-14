@@ -17,12 +17,12 @@ to the JDBC interfaces.
 The Maven coordinates of the driver are 
 
       <dependency>
-        <groupId>com.github.jdbc-json</groupId>
-        <artifactId>jdbc-cb</artifactId>
-        <version>0.4.0</version>
+        <groupId>com.couchbase.jdbc</groupId>
+        <artifactId>jdbc-n1ql</artifactId>
+        <version>0.4.5</version>
       </dependency>
 
-The driver enables communication with Couchbase through the standard JDBC interfaces. Use connect string `"jdbc:couchbase://localhost:8093"` to connect to the Couchbase instance on your local machine.
+The driver enables communication with Couchbase through the standard JDBC interfaces. Use connect string `jdbc:couchbase://localhost:8093` to connect to the Couchbase instance on your local machine.
 
 If you have the *beer-sample* sample bucket installed, this query returns a manageable set of ten rows with two fields per row:
 
@@ -47,9 +47,9 @@ Create a new Maven project. Add this dependency to the *pom.xml* file, which sho
 
     <dependencies>
       <dependency>
-        <groupId>com.github.jdbc-json</groupId>
-        <artifactId>jdbc-cb</artifactId>
-        <version>0.4.0</version>
+        <groupId>com.couchbase.jdbc</groupId>
+        <artifactId>jdbc-n1ql</artifactId>
+        <version>0.4.5</version>
       </dependency>
     </dependencies>
     
@@ -96,7 +96,7 @@ The */examples* directory contains additional example files, showing how to use 
 
 The connection string, used in the `DriverManager.getConnection()` call, should be of the form  `jdbc:couchbase://<host>:<port>`.
 
-If you are working with an instance of Couchbase on your local machine, use the string `"jdbc:couchbase://localhost:8093"`. 
+If you are working with an instance of Couchbase on your local machine, use the string `jdbc:couchbase://localhost:8093`. 
 
 If you are working with a Couchbase cluster, the host should be the name or ip address of a Couchbase node running the Query service.
 The driver will then distribute the queries around the nodes of the cluster in round-robin fashion. You can check which nodes are
