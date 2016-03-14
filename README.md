@@ -103,6 +103,10 @@ The driver will then distribute the queries around the nodes of the cluster in r
 running the Query service on the "Server Nodes" tab of the Couchbase Admin Console. The "Services" column shows which nodes are
 running which service. The port is the port of the query service; 8093 by default.
 
+Couchbase supports access over SSL-protected connections, but only Enterprise Edition supports this, not Community Edition.
+To use SSL, connect on the 18093 port rather than the standard 8093 port. For a more detailed example of how to use SSL, consult
+the SSL connection test at *src/test/java/com/couchbase/SSLConnectionTest.java*.
+
 ##Building the Driver from Source
 
 You need to have Git, Maven 3 and Java 8 installed on your machine.
