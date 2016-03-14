@@ -55,7 +55,7 @@ Create a new Maven project. Add this dependency to the *pom.xml* file, which sho
     
 Add a new Java class to the src/main/java/trial directory of the project:
 
-    package trial;
+    package com.couchbase.jdbc.examples;
     import java.sql.Connection;
     import java.sql.DriverManager;
     import java.sql.ResultSet;
