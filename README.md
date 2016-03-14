@@ -115,6 +115,10 @@ Run the following commands:
 
 The JAR file will be in the */target* directory.
 
+By default, `mvn package` runs the unit tests before creating the JAR. 
+These directions specifically omit running the unit tests, because the tests require additional setup, as explained in the next section. 
+After the setup is complete, you can run `mvn package` without the extra flag.
+
 ##Running the Unit Tests
 
 (Assuming you have downloaded and built the driver from source, as described above.)
