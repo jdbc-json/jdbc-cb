@@ -52,8 +52,10 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
@@ -237,13 +239,45 @@ public class ProtocolImpl implements Protocol
 
     }
 
+    private void rewriteURLs(Map<String, String> m, String sourceHost) {
+        for (String key: m.keySet()) {
+            String val = m.get(key);
+            if (val != null && val.startsWith("http")) {
+                try {
+                    URL cur = new URL(val);
+                    if (cur.getHost().equals("127.0.0.1")) {
+                        URL revisedURL = new URL(
+                                cur.getProtocol(),
+                                sourceHost,
+                                cur.getPort(),
+                                cur.getFile());
+                        m.put(key, revisedURL.toString());
+                    }
+                } catch (MalformedURLException e) {
+                    // Not a real URL. Do nothing. Keep going.
+                    continue;
+                }
+            }
+        }
+    }
+
+    // The URLs in the JSON array may contain 127.0.0.1-based addresses.
+    // If they do, we rewrite them based on the host address we used to fetch the data.
+    private void rewriteURLs(List<Map> jsonArray) throws IOException {
+        URL sourceURL = new URL(url);
+        String sourceHost = sourceURL.getHost();
+        for (Map m : jsonArray) {
+           rewriteURLs(m, sourceHost);
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Cluster handleClusterResponse(CloseableHttpResponse response) throws IOException
     {
         int status = response.getStatusLine().getStatusCode();
         HttpEntity entity = response.getEntity();
         String string = EntityUtils.toString(entity);
         logger.trace ("Cluster response {}", string);
-
         ObjectMapper mapper = JsonFactory.create();
 
         // has to be an object here since we can get a 404 back which is a string
@@ -255,6 +289,7 @@ public class ProtocolImpl implements Protocol
         {
             case 200:
                 //noinspection unchecked
+                rewriteURLs((List<Map>)jsonArray);
                 return new Cluster((List)jsonArray, ssl);
             case 400:
                 message = "Bad Request";
@@ -324,7 +359,6 @@ public class ProtocolImpl implements Protocol
 
             httpGet.setHeader("Accept", "application/json");
             logger.trace("Get request {}", httpGet.toString());
-
 
             try {
 
