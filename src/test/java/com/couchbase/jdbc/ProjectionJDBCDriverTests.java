@@ -254,14 +254,7 @@ public class ProjectionJDBCDriverTests {
                 try (ResultSet rs = stmt.executeQuery(query))
                 {
                 	while(rs.next()){
-                		CBResultSet cbrs = (CBResultSet) rs;
-                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON("nested.nested");
-		                Map actualMap = jsonVal1.getMap();
-                		if(actualMap != null){
-                			jsonObjNew.putAll(actualMap);
-                		}
-		                assertEquals(nestedobj, jsonObjNew);
+		                assertEquals("1", rs.getString("nested.nested"));
                 	}
                 }
                 finally{
@@ -290,6 +283,12 @@ public class ProjectionJDBCDriverTests {
 		String query = "select * from default where x=1234";
 		JSONArray actualArray = JDBCTestUtils.runQueryAndExtractMap(query);
 		assertEquals(expectedArray, actualArray);
+
+		// Clean up after ourselves.
+        JDBCTestUtils.setConnection(null);
+		Statement stmt = JDBCTestUtils.con.createStatement();
+		stmt.executeUpdate("delete from default");
+        Thread.sleep(10000);
 	 }
 	
 	@SuppressWarnings("unchecked")
@@ -398,16 +397,8 @@ public class ProjectionJDBCDriverTests {
                 try (ResultSet rs = stmt.executeQuery(query))
                 {
                 	while(rs.next()){
-                		CBResultSet cbrs = (CBResultSet) rs;
-                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON("nested_data");
-		                Map actualMap = jsonVal1.getMap();
-                		if(actualMap != null){
-                			jsonObjNew.putAll(actualMap);
-                		}
-		                assertEquals(obj, jsonObjNew);
+		                assertEquals("{}", rs.getString("nested_data"));
                 	}
-                
                 }
                 finally{
                 	stmt.executeUpdate("delete from default");
@@ -454,17 +445,10 @@ public class ProjectionJDBCDriverTests {
                 try (ResultSet rs = stmt.executeQuery(query))
                 {
                 	while(rs.next()){
-                		CBResultSet cbrs = (CBResultSet) rs;
-                		java.sql.ResultSetMetaData meta = cbrs.getMetaData();
-		                SQLJSON jsonVal1 = cbrs.getSQLJSON(1);
-		                
-		                assertEquals(1, jsonVal1.getInt());
-		                jsonVal1 = cbrs.getSQLJSON(2);
-		                assertEquals("2", jsonVal1.getString());
-		                jsonVal1 = cbrs.getSQLJSON(3);
-		                assertEquals("test_nest_1", jsonVal1.getInt());
-		                jsonVal1 = cbrs.getSQLJSON(4);
-		                assertEquals("test_nest_2", jsonVal1.getString());
+		                assertEquals(1, rs.getInt("nest_field_id_1"));
+		                assertEquals("2", rs.getString("nest_field_id_2"));
+		                assertEquals("test_nest_1", rs.getString("nest_field_name_1"));
+		                assertEquals("test_nest_2", rs.getString("nest_field_name_2"));
                 	}
                 }
                 finally{
