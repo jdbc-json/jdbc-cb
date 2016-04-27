@@ -56,7 +56,6 @@ public class CBDriver implements java.sql.Driver
 
     public CBDriver() throws SQLException
     {
-        logger.info("Constructor called");
         ct = new ClusterThread();
         houseKeepingThread = new Thread(ct, "Couchbase housekeeping thread");
         houseKeepingThread.setDaemon(true);
