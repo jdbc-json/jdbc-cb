@@ -19,7 +19,7 @@ The Maven coordinates of the driver are
       <dependency>
         <groupId>com.couchbase.jdbc</groupId>
         <artifactId>jdbc-n1ql</artifactId>
-        <version>0.4.5</version>
+        <version>0.5.0</version>
       </dependency>
 
 The driver enables communication with Couchbase through the standard JDBC interfaces. Use connect string `jdbc:couchbase://localhost:8093` to connect to the Couchbase instance on your local machine.
