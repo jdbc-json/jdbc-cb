@@ -9,7 +9,7 @@ Both simple JSON values (string/numbers/booleans) and compound JSON values (obje
 Both types of values can be retrieved as fields and supplied as parameters.
 
 Users who do not have a pre-existing investment in JDBC but still want to access Couchbase through Java
-may find the [Couchbase Java SDK](http://developer.couchbase.com/documentation/server/4.1/sdks/java-2.2/java-intro.html)
+may find the [Couchbase Java SDK](http://developer.couchbase.com/documentation/server/current/sdks/java-2.2/java-intro.html)
 a more convenient solution.
 
 ## Brief Setup Instructions
@@ -35,11 +35,11 @@ To run the query, you will need to create a primary index on *beer-sample*.
 These instructions assume you are conversant with the Java ecosystem, and therefore
 know your way around Maven. Use Maven 3 and Java 8. 
 
-Install Couchbase on your local machine. Instructions are [here](http://developer.couchbase.com/documentation/server/4.1/getting-started/installing.html).
+Install Couchbase on your local machine. Instructions are [here](http://developer.couchbase.com/documentation/server/current/getting-started/installing.html).
 
 Go to to Administration Console at *http://localhost:8091* and log in using the Administrator password you supplied during installation. In the *Settings* tab you will find the *Sample Buckets* section, with a set of available sample buckets. Check the *beer-sample* box to create this set of sample data.
 
-CBQ is the tool for running N1QL queries against Couchbase. Instructions for running it are [here](http://developer.couchbase.com/documentation/server/4.1/n1ql/n1ql-intro/cbq.html). Create a primary index on the *beer-sample* bucket by running this command in CBQ:
+CBQ is the tool for running N1QL queries against Couchbase. Instructions for running it are [here](http://developer.couchbase.com/documentation/server/current/n1ql/n1ql-intro/cbq.html). Create a primary index on the *beer-sample* bucket by running this command in CBQ:
 
     create primary index on `beer-sample`;
     
@@ -76,8 +76,6 @@ Add a new Java class to the src/main/java/trial directory of the project:
 
 Run the new class. You should see this output:
 
-    12:35:18.397 [main] INFO  com.couchbase.CBDriver - Constructor called
-    12:35:18.401 [main] INFO  com.couchbase.CBDriver - Constructor called
     12:35:19.121 [main] DEBUG com.couchbase.CBResultSet - Loaded result set
     name: 21st Amendment Brewery Cafe, code: 94107
     name: Anchor Brewing, code: 94107
@@ -105,7 +103,7 @@ running which service. The port is the port of the query service; 8093 by defaul
 
 Couchbase supports access over SSL-protected connections, but only Enterprise Edition supports this, not Community Edition.
 To use SSL, connect on the 18093 port rather than the standard 8093 port. For a more detailed example of how to use SSL, consult
-the SSL connection test at *src/test/java/com/couchbase/SSLConnectionTest.java*.
+the SSL connection test at *src/test/java/com/couchbase/jdbc/SSLConnectionTest.java*.
 
 ##Building the Driver from Source
 
@@ -148,4 +146,4 @@ Run all the tests with this command:
 
 Run a specific test with a command like this:
 
-    mvn test -Dtest=com.couchbase.ReadOnlyQueryTest
+    mvn test -Dtest=com.couchbase.jdbc.PreparedStatementTest
