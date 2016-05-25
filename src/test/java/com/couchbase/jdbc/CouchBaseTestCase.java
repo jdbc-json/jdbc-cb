@@ -14,10 +14,9 @@ package com.couchbase.jdbc;
 import com.couchbase.jdbc.ConnectionParameters;
 
 import junit.framework.TestCase;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -26,11 +25,7 @@ import java.util.Properties;
  * Created by davec on 2015-09-08.
  */
 
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses({CBDatabaseMetaDataTest.class, ConnectionTest.class, PreparedStatementTest.class, ResultSetMetaDataTest.class, ResultSetTest.class, SqlParserTest.class, StatementTest.class, Test16017.class, TestSQLJson.class, WrapperTest.class})
+@Ignore  // Do not run this class, since it has no test methods of its own. Run test derived from it, instead.
 public class CouchBaseTestCase extends TestCase
 {
     
