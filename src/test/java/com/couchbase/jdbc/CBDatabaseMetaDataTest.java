@@ -177,31 +177,6 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testStoresUpperCaseQuotedIdentifiers() throws Exception {
-
-    }
-
-    @Test
-    public void testStoresLowerCaseQuotedIdentifiers() throws Exception {
-
-    }
-
-    @Test
-    public void testStoresMixedCaseQuotedIdentifiers() throws Exception {
-
-    }
-
-    @Test
-    public void testGetIdentifierQuoteString() throws Exception {
-
-    }
-
-    @Test
-    public void testGetSQLKeywords() throws Exception {
-
-    }
-
-    @Test
     public void testGetNumericFunctions() throws Exception
     {
         assertEquals(0, dbmd.getNumericFunctions().compareTo("add,div,mod,mult,neg,sub,abs,acos,asin,atan,atan2,ceil,cos,deg,degrees,e,exp,ln,log,floor,inf,nan,neginf,pi,posinf,power,rad,radians,random,round,sign,sin,sqrt,tan,trunc"));
@@ -211,11 +186,6 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     public void testGetStringFunctions() throws Exception
     {
         assertEquals(0, dbmd.getStringFunctions().compareTo("contains,initcap,length,lower,ltrim,position,pos,regex_contains,regex_like,regex_position,regex_pos,regex_replace,repeat,replace,rtrim,split,substr,title,trim,upper"));
-    }
-
-    @Test
-    public void testGetSystemFunctions() throws Exception {
-
     }
 
     @Test
@@ -267,11 +237,6 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
     public void testSupportsConvert() throws Exception
     {
         assertTrue(dbmd.supportsConvert());
-    }
-
-    @Test
-    public void testSupportsConvert1() throws Exception {
-
     }
 
     @Test
@@ -886,12 +851,6 @@ public class CBDatabaseMetaDataTest extends CouchBaseTestCase
         {
             assertTrue(!rs.getString("TYPE_NAME").isEmpty());
         }
-    }
-
-    @Test
-    public void testGetIndexInfo() throws Exception
-    {
-
     }
 
     @Test

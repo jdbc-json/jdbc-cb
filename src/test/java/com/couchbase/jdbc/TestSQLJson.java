@@ -104,24 +104,6 @@ public class TestSQLJson extends CouchBaseTestCase
     }
 
     @Test
-    public void testFree() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetBinaryStream() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetCharacterStream() throws Exception
-    {
-
-    }
-
-    @Test
     public void testGetString() throws Exception
     {
         String query = "SELECT true as c1, false as c2, 0 as c3, 1 as c4, '' as c5, 'some' as c6, [1,2,3,5,8] as c7, [] as c8, { 'a1': 'Object' } as c9, {} as c10";
@@ -219,17 +201,6 @@ public class TestSQLJson extends CouchBaseTestCase
                     assertEquals(i+1,returned.get(i));
             }
         }
-    }
-    @Test
-    public void testSetBinaryStream() throws Exception
-    {
-        //todo implement
-    }
-
-    @Test
-    public void testSetCharacterStream() throws Exception
-    {
-        //todo implement
     }
 
     @Test
@@ -909,18 +880,6 @@ public class TestSQLJson extends CouchBaseTestCase
     }
 
     @Test
-    public void testSetBytes() throws Exception
-    {
-      // not sure setBytes makes sense
-    }
-
-    @Test
-    public void testGetBytes() throws Exception
-    {
-        // not sure bytes make sense
-    }
-
-    @Test
     public void testSetDate() throws Exception
     {
         Calendar calendar= Calendar.getInstance();
@@ -1335,17 +1294,5 @@ public class TestSQLJson extends CouchBaseTestCase
             assertEquals(sqljson.getJDBCType(), Types.VARCHAR);
 
         }
-    }
-
-    @Test
-    public void testParse() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testParse1() throws Exception
-    {
-
     }
 }

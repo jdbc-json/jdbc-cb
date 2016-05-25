@@ -32,12 +32,6 @@ public class SqlParserTest extends CouchBaseTestCase
 {
 
     @Test
-    public void testParse() throws Exception
-    {
-
-    }
-
-    @Test
     public void testReplaceProcessing() throws Exception
     {
         SqlParser sqlParser = new SqlParser("select {fn acos(-0.6)} as acos ");

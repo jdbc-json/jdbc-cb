@@ -560,31 +560,6 @@ public class ConnectionTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testSetClientInfo() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testSetClientInfo1() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetClientInfo() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetClientInfo1() throws Exception
-    {
-
-    }
-
-
-    @Test
     public void testCreateStruct() throws Exception
     {
         expectedException.expect(SQLFeatureNotSupportedException.class);
@@ -641,29 +616,4 @@ public class ConnectionTest extends CouchBaseTestCase
         expectedException.expectMessage("Executor is null");
         con.abort(null);
     }
-
-    @Test
-    public void testSetNetworkTimeout() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetNetworkTimeout() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testCheckClosed() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testCreateSQLJSON() throws Exception
-    {
-
-    }
-
 }

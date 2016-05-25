@@ -63,43 +63,6 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
     }
 
     @Test
-    public void testIsCaseSensitive() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsSearchable() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsCurrency() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsNullable() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsSigned() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetColumnDisplaySize() throws Exception
-    {
-
-    }
-
-
-    @Test
     public void testGetColumnLabel() throws Exception
     {
         for (int i=1;i<=6;i++)
@@ -115,36 +78,6 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
         {
             assertEquals("c"+i,resultSetMetaData.getColumnName(i));
         }
-
-    }
-
-    @Test
-    public void testGetSchemaName() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetPrecision() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetScale() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetTableName() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetCatalogName() throws Exception
-    {
 
     }
 
@@ -168,29 +101,5 @@ public class ResultSetMetaDataTest extends CouchBaseTestCase
         {
             assertEquals(types[i-1],resultSetMetaData.getColumnTypeName(i));
         }
-    }
-
-    @Test
-    public void testIsReadOnly() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsWritable() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testIsDefinitelyWritable() throws Exception
-    {
-
-    }
-
-    @Test
-    public void testGetColumnClassName() throws Exception
-    {
-
     }
 }
