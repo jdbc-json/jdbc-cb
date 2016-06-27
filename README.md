@@ -49,7 +49,7 @@ Create a new Maven project. Add this dependency to the *pom.xml* file, which sho
       <dependency>
         <groupId>com.couchbase.jdbc</groupId>
         <artifactId>jdbc-n1ql</artifactId>
-        <version>0.4.5</version>
+        <version>1.0-BETA/version>
       </dependency>
     </dependencies>
     
