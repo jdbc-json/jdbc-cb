@@ -9,7 +9,7 @@ Both simple JSON values (string/numbers/booleans) and compound JSON values (obje
 Both types of values can be retrieved as fields and supplied as parameters.
 
 Users who do not have a pre-existing investment in JDBC but still want to access Couchbase through Java
-may find the [Couchbase Java SDK](http://developer.couchbase.com/documentation/server/current/sdks/java-2.2/java-intro.html)
+may find the [Couchbase Java SDK](http://developer.couchbase.com/documentation/server/current/sdk/java/start-using-sdk.html)
 a more convenient solution.
 
 ## Brief Setup Instructions
