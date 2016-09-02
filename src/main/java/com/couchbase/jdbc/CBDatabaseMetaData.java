@@ -2926,7 +2926,7 @@ public class CBDatabaseMetaData implements DatabaseMetaData
             sql += " and is_primary = true";
         }
         sql += " order by name";
-        
+
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, table);
         if (schema != null) {
@@ -2939,12 +2939,12 @@ public class CBDatabaseMetaData implements DatabaseMetaData
             Array indexKeysArray = rs.getArray("index_key");
             Object[] indexKeys = (Object[]) indexKeysArray.getArray();
             if (indexKeys == null || indexKeys.length == 0) {
-                indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"), 
+                indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"),
                         "meta().id", (short) 1, rs.getBoolean("is_primary")));
             } else {
                 short ordinal = 1;
                 for (Object o: indexKeys) {
-                    indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"), 
+                    indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"),
                             o.toString(), ordinal, rs.getBoolean("is_primary")));
                     ordinal++;
                 }
