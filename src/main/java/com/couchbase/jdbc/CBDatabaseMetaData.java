@@ -14,7 +14,12 @@ package com.couchbase.jdbc;
 
 import com.couchbase.jdbc.core.CouchMetrics;
 import com.couchbase.jdbc.core.CouchResponse;
+import com.couchbase.jdbc.util.StringUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -2904,9 +2909,92 @@ public class CBDatabaseMetaData implements DatabaseMetaData
      * @throws java.sql.SQLException if a database access error occurs
      */
     @Override
-    public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) throws SQLException
-    {
-        return getEmptyResultSet();
+    public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate)
+            throws SQLException {
+        // We ignore the catalog parameter entirely. There is no such thing in Couchbase.
+        // The schema parameter maps to "namespace_id", and we check that in the issued query if necessary.
+        // The table parameter maps to "keyspace_id", and we check that in the issued query.
+        // For unique = true, we return only primary indexes. For unique = false, we return all indexes.
+        // We ignore the approximate parameter entirely.
+        schema = StringUtil.stripBackquotes(schema);
+        table = StringUtil.stripBackquotes(table);
+        String sql = "select namespace_id, keyspace_id, name, index_key, is_primary from system:indexes where keyspace_id = (?)";
+        if (schema != null) {
+            sql += " and namespace_id = (?)";
+        }
+        if (unique) {
+            sql += " and is_primary = true";
+        }
+        sql += " order by name";
+        
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, table);
+        if (schema != null) {
+            statement.setString(2, schema);
+        }
+        ResultSet rs = statement.executeQuery();
+
+        List<Map<String, Object>> indexCols = new ArrayList<>(2);
+        while (rs.next()) {
+            Array indexKeysArray = rs.getArray("index_key");
+            Object[] indexKeys = (Object[]) indexKeysArray.getArray();
+            if (indexKeys == null || indexKeys.length == 0) {
+                indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"), 
+                        "meta().id", (short) 1, rs.getBoolean("is_primary")));
+            } else {
+                short ordinal = 1;
+                for (Object o: indexKeys) {
+                    indexCols.add(createIndexInfoCol(rs.getString("namespace_id"), rs.getString("keyspace_id"), rs.getString("name"), 
+                            o.toString(), ordinal, rs.getBoolean("is_primary")));
+                    ordinal++;
+                }
+            }
+        }
+
+        Map<String, String> signature = new HashMap<>();
+        signature.put("TABLE_CAT", "string");
+        signature.put("TABLE_SCHEM", "string");
+        signature.put("TABLE_NAME", "string");
+        signature.put("NON_UNIQUE", "boolean");
+        signature.put("INDEX_QUALIFIER", "string");
+        signature.put("INDEX_NAME", "string");
+        signature.put("TYPE", "numeric");
+        signature.put("ORDINAL_POSITION", "numeric");
+        signature.put("COLUMN_NAME", "numeric");
+        signature.put("ASC_OR_DESC", "string");
+        signature.put("CARDINALITY", "numeric");
+        signature.put("PAGES", "numeric");
+        signature.put("FILTER_CONDITION", "numeric");
+
+        CouchMetrics metrics = new CouchMetrics();
+        metrics.setResultCount(indexCols.size());
+        // this just has to be not 0
+        metrics.setResultSize(2);
+
+        CouchResponse couchResponse = new CouchResponse();
+        couchResponse.setResults(indexCols);
+        couchResponse.setMetrics(metrics);
+        couchResponse.setSignature(signature);
+
+        return new CBResultSet(null, couchResponse);
+    }
+
+    static private Map<String, Object> createIndexInfoCol(String namespaceId, String keyspaceId, String name, String columnName, short ordinal, boolean isPrimary) throws SQLException {
+        Map<String, Object> indexCol = new HashMap<>(13);
+        indexCol.put("TABLE_CAT", "");
+        indexCol.put("TABLE_SCHEM", namespaceId);
+        indexCol.put("TABLE_NAME", keyspaceId);
+        indexCol.put("NON_UNIQUE", !isPrimary);
+        indexCol.put("INDEX_QUALIFIER", null);
+        indexCol.put("INDEX_NAME", name);
+        indexCol.put("TYPE", tableIndexHashed);
+        indexCol.put("ORDINAL_POSITION", ordinal);
+        indexCol.put("COLUMN_NAME", StringUtil.stripBackquotes(columnName));
+        indexCol.put("ASC_OR_DESC", "A");
+        indexCol.put("CARDINALITY", 0);
+        indexCol.put("PAGES", 0);
+        indexCol.put("FILTER_CONDITION", null);
+        return indexCol;
     }
 
     /**

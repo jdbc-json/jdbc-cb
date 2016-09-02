@@ -25,7 +25,7 @@ import java.util.Properties;
  * Created by davec on 2015-09-08.
  */
 
-@Ignore  // Do not run this class, since it has no test methods of its own. Run test derived from it, instead.
+@Ignore  // Do not run this class, since it has no test methods of its own. Run tests derived from it, instead.
 public class CouchBaseTestCase extends TestCase
 {
     
