@@ -13,5 +13,6 @@ through the driver.
 * *PreparedStatements.java* shows how to use prepared statements and parameters. There queries are readied once, and can then
 be executed multiple times with varying parameters.
 * *CompoundElements.java* shows how to insert and retrieve JSON object and array values.
+* *UseSQLJSON.java* shows how to use SQLJSON, an extended interface for results, available only this driver.
 * In Couchbase, buckets can be protected with passwords. *UseCredentials.java* shows how to provide such passwords to the driver
 to allow access to these buckets.
