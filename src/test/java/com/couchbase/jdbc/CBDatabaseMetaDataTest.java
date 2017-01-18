@@ -13,26 +13,50 @@ package com.couchbase.jdbc;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.couchbase.jdbc.util.Credentials;
+
+import junit.framework.TestCase;
+
 import java.sql.*;
+import java.util.Properties;
 
 /**
  * Created by davec on 2015-09-09.
  */
 @RunWith(JUnit4.class)
-public class CBDatabaseMetaDataTest extends CouchBaseTestCase
+public class CBDatabaseMetaDataTest extends TestCase
 {
+    public Connection con;
+    public static Properties properties;
     DatabaseMetaData dbmd;
-    @Before
-    public void getDatabaseMetaData() throws Exception
-    {
-        super.openConnection();
-        dbmd = con.getMetaData();
 
+    @BeforeClass
+    public static void initialize() throws Exception
+    {
+        CBDatabaseMetaDataTest.properties = new Properties();
+        properties.put(ConnectionParameters.SCAN_CONSISTENCY,"request_plus");
+        properties.put(ConnectionParameters.USER,TestUtil.getUser());
+        properties.put(ConnectionParameters.PASSWORD,TestUtil.getPassword());
+        Credentials cred = new Credentials();
+        cred.add("Administrator", "password");
+        properties.setProperty("credentials", cred.toString());
+        TestUtil.resetEnvironmentProperties(null);
     }
+
+    @Before
+    public void openConnection() throws Exception
+    {
+        con = DriverManager.getConnection(TestUtil.getURL(), CBDatabaseMetaDataTest.properties);
+        assertNotNull(con);
+        dbmd = con.getMetaData();
+        assertNotNull(dbmd);
+    }
+
     @After
     public void close() throws Exception
     {
