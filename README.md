@@ -1,4 +1,4 @@
-#Couchbase JDBC Driver
+# Couchbase JDBC Driver
 
 This project is a JDBC driver for accessing the Couchbase NoSQL database. Couchbase stores data as JSON documents.
 The N1QL query language is based on SQL, but designed for querying JSON data sources, such as Couchbase.
@@ -90,7 +90,7 @@ Run the new class. You should see this output:
     
 The */examples* directory contains additional example files, showing how to use the driver.
 
-##Additional Usage Notes
+## Additional Usage Notes
 
 The connection string, used in the `DriverManager.getConnection()` call, should be of the form  `jdbc:couchbase://<host>:<port>`.
 
@@ -105,7 +105,7 @@ Couchbase supports access over SSL-protected connections, but only Enterprise Ed
 To use SSL, connect on the 18093 port rather than the standard 8093 port. For a more detailed example of how to use SSL, consult
 the SSL connection test at *src/test/java/com/couchbase/jdbc/SSLConnectionTest.java*.
 
-##Building the Driver from Source
+## Building the Driver from Source
 
 You need to have Git, Maven 3 and Java 8 installed on your machine.
 
@@ -121,7 +121,7 @@ By default, `mvn package` runs the unit tests before creating the JAR.
 These directions specifically omit running the unit tests, because the tests require additional setup, as explained in the next section. 
 After the setup is complete, you can run `mvn package` without the extra flag.
 
-##Running the Unit Tests
+## Running the Unit Tests
 
 (Assuming you have downloaded and built the driver from source, as described above.)
 
