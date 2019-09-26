@@ -332,7 +332,7 @@ public class ProtocolImpl implements Protocol
         @SuppressWarnings("unchecked") Map <String,String>parameters = new HashMap();
 
         parameters.put(STATEMENT,sql);
-        addOptions(parameters);
+        addOptions(parameters, false);
 
         List<NameValuePair>parms = new ArrayList<NameValuePair>();
 
@@ -606,7 +606,7 @@ public class ProtocolImpl implements Protocol
                 httpPost.setHeader("Accept", "application/json");
 
                 logger.trace("do query {}", httpPost.toString());
-                addOptions(queryParameters);
+                addOptions(queryParameters, true);
 
 
                 String jsonParameters = JsonFactory.toJson(queryParameters);
@@ -713,7 +713,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             Map <String,Object> parameters = new HashMap<String,Object>();
-            addOptions(parameters);
+            addOptions(parameters, true);
             for (String query:batchStatements)
             {
                 parameters.put(STATEMENT, query);
@@ -869,7 +869,7 @@ public class ProtocolImpl implements Protocol
     }
 
 
-    private void addOptions(Map parameters)
+    private void addOptions(Map parameters, boolean isJson)
     {
 
         //noinspection unchecked
@@ -893,8 +893,13 @@ public class ProtocolImpl implements Protocol
 
         if (credentials != null)
         {
-            //noinspection unchecked
-            parameters.put(CREDENTIALS, credentials);
+            if (isJson) {
+                //noinspection unchecked
+                parameters.put(CREDENTIALS, JsonFactory.create().readValue(credentials, List.class));
+            } else {
+                //noinspection unchecked
+                parameters.put(CREDENTIALS, credentials);
+            }
         }
 
         //noinspection unchecked
