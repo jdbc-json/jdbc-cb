@@ -1,2 +1,36 @@
-{"node_info":[{"isMasterNode":"true","membasePassword":"password","n1qlPort":8093,"membaseUserId":"Administrator","port":8091,"machineUserId":"root","ip":"localhost","services":["kv","n1ql","index"],"machinePassword":"couchbase","indexPort":9102}],
-"bucket_info":[],"global":{"membasePassword":"password","n1qlPort":8093,"membaseUserId":"Administrator","port":8091,"machineUserId":"root","ip":"localhost","services":["kv","n1ql","index"],"machinePassword":"couchbase","indexPort":9102}}
+{
+  "node_info": [
+    {
+      "isMasterNode": "true",
+      "membasePassword": "password",
+      "n1qlPort": 8093,
+      "membaseUserId": "Administrator",
+      "port": 8091,
+      "machineUserId": "root",
+      "ip": "localhost",
+      "services": [
+        "kv",
+        "n1ql",
+        "index"
+      ],
+      "machinePassword": "couchbase",
+      "indexPort": 9102
+    }
+  ],
+  "bucket_info": [],
+  "global": {
+    "membasePassword": "password",
+    "n1qlPort": 8093,
+    "membaseUserId": "Administrator",
+    "port": 8091,
+    "machineUserId": "root",
+    "ip": "localhost",
+    "services": [
+      "kv",
+      "n1ql",
+      "index"
+    ],
+    "machinePassword": "couchbase",
+    "indexPort": 9102
+  }
+}

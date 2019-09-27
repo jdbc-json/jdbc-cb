@@ -99,9 +99,7 @@ public class ProtocolImpl implements Protocol
 
     String schema;
     String url;
-    String user;
-    String password;
-    String credentials;
+    List<Map<String, String>> credentials;
     String scanConsistency = "not_bounded";
 
     SQLWarning sqlWarning;
@@ -121,17 +119,17 @@ public class ProtocolImpl implements Protocol
         return url;
     }
 
-    public String getUserName()
-    {
-        return user;
+    @Override
+    public String getUserName() {
+        return credentials.get(0).get("user");
     }
 
-    public String getPassword()
-    {
-        return password;
+    @Override
+    public String getPassword() {
+        return credentials.get(0).get("pass");
     }
 
-    public String getCredentials() { return credentials; }
+    public List<Map<String, String>> getCredentials() { return credentials; }
 
     public void setReadOnly( boolean readOnly )
     {
@@ -148,19 +146,22 @@ public class ProtocolImpl implements Protocol
 
     public ProtocolImpl(String url, Properties props)
     {
-
-        if ( props.containsKey(ConnectionParameters.USER))
-        {
-            user=props.getProperty(ConnectionParameters.USER);
-        }
-        if (props.containsKey(ConnectionParameters.PASSWORD))
-        {
-            password=props.getProperty(ConnectionParameters.PASSWORD);
-        }
         if (props.containsKey("credentials"))
         {
-            credentials = props.getProperty("credentials");
+            //noinspection unchecked
+            credentials = JsonFactory.create().readValue(props.getProperty("credentials"), List.class);
+        } else if (props.containsKey(ConnectionParameters.USER) || props.containsKey(ConnectionParameters.PASSWORD)) {
+            credentials = new ArrayList<>();
+            Map<String, String> cred = new HashMap<>();
+            if (props.containsKey(ConnectionParameters.USER)) {
+                cred.put("user", props.getProperty(ConnectionParameters.USER));
+            }
+            if (props.containsKey(ConnectionParameters.PASSWORD)) {
+                cred.put("pass", props.getProperty(ConnectionParameters.PASSWORD));
+            }
+            credentials.add(cred);
         }
+
         this.url = url;
         setConnectionTimeout(props.getProperty(ConnectionParameters.CONNECTION_TIMEOUT));
         if (props.containsKey(ConnectionParameters.SCAN_CONSISTENCY))
@@ -332,7 +333,7 @@ public class ProtocolImpl implements Protocol
         @SuppressWarnings("unchecked") Map <String,String>parameters = new HashMap();
 
         parameters.put(STATEMENT,sql);
-        addOptions(parameters);
+        addOptions(parameters, false);
 
         List<NameValuePair>parms = new ArrayList<NameValuePair>();
 
@@ -606,7 +607,7 @@ public class ProtocolImpl implements Protocol
                 httpPost.setHeader("Accept", "application/json");
 
                 logger.trace("do query {}", httpPost.toString());
-                addOptions(queryParameters);
+                addOptions(queryParameters, true);
 
 
                 String jsonParameters = JsonFactory.toJson(queryParameters);
@@ -713,7 +714,7 @@ public class ProtocolImpl implements Protocol
             httpPost.setHeader("Accept", "application/json");
 
             Map <String,Object> parameters = new HashMap<String,Object>();
-            addOptions(parameters);
+            addOptions(parameters, true);
             for (String query:batchStatements)
             {
                 parameters.put(STATEMENT, query);
@@ -869,7 +870,7 @@ public class ProtocolImpl implements Protocol
     }
 
 
-    private void addOptions(Map parameters)
+    private void addOptions(Map parameters, boolean isJson)
     {
 
         //noinspection unchecked
@@ -893,8 +894,13 @@ public class ProtocolImpl implements Protocol
 
         if (credentials != null)
         {
-            //noinspection unchecked
-            parameters.put(CREDENTIALS, credentials);
+            if (isJson) {
+                //noinspection unchecked
+                parameters.put(CREDENTIALS, credentials);
+            } else {
+                //noinspection unchecked
+                parameters.put(CREDENTIALS, JsonFactory.create().writeValueAsString(credentials));
+            }
         }
 
         //noinspection unchecked
